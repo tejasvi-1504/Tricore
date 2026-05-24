@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="default">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TriCore Technologies | Premium Digital Agency</title>
+    <meta name="description" content="TriCore Technologies — We build intelligent CRMs, custom management systems, and high-converting websites for law firms, brands, and modern businesses.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="scroll-progress-bar"></div>
+    <div class="cursor-glow"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <svg class="logo-mark" width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="nT" x1="0.5" y1="0" x2="0.5" y2="1" gradientUnits="objectBoundingBox">
+                            <stop offset="0%" stop-color="#c7d2fe"/><stop offset="100%" stop-color="#818cf8"/>
+                        </linearGradient>
+                        <linearGradient id="nL" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
+                            <stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#3730a3"/>
+                        </linearGradient>
+                        <linearGradient id="nR" x1="1" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox">
+                            <stop offset="0%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#6d28d9"/>
+                        </linearGradient>
+                    </defs>
+                    <polygon points="3,10.5 18,18 18,33 3,25.5"    fill="url(#nL)"/>
+                    <polygon points="18,18 33,10.5 33,25.5 18,33"  fill="url(#nR)"/>
+                    <polygon points="18,3 33,10.5 18,18 3,10.5"    fill="url(#nT)"/>
+                    <polyline points="18,3 33,10.5" stroke="rgba(255,255,255,0.65)" stroke-width="1"    stroke-linecap="round"/>
+                    <polyline points="18,3 3,10.5"  stroke="rgba(255,255,255,0.4)"  stroke-width="0.8" stroke-linecap="round"/>
+                </svg>
+                <span class="logo-text"><span class="logo-tri">Tri</span><span class="logo-core">Core</span></span>
+            </a>
+            <div class="nav-links">
+                <a href="#services">Services</a>
+                <a href="#process">Process</a>
+                <a href="#portfolio">Portfolio</a>
+                <a href="#pricing">Pricing</a>
+                <a href="#contact" class="btn btn-gradient btn-sm">Get Started <i class="ph ph-arrow-right"></i></a>
+            </div>
+            <div class="theme-switcher">
+                <div class="theme-btn" id="theme-toggle"><i class="ph ph-palette"></i></div>
+                <div class="theme-dropdown" id="theme-dropdown">
+                    <button class="theme-option" data-theme="default"><span class="color-dot default"></span> Midnight Purple</button>
+                    <button class="theme-option" data-theme="ocean"><span class="color-dot ocean"></span> Ocean Waves</button>
+                    <button class="theme-option" data-theme="emerald"><span class="color-dot emerald"></span> Emerald Tech</button>
+                    <button class="theme-option" data-theme="sunset"><span class="color-dot sunset"></span> Vivid Sunset</button>
+                    <button class="theme-option" data-theme="cyberpunk"><span class="color-dot cyberpunk"></span> Cyberpunk</button>
+                    <button class="theme-option" data-theme="clean"><span class="color-dot clean"></span> Clean Light</button>
+                    <button class="theme-option" data-theme="lavender"><span class="color-dot lavender"></span> Lavender</button>
+                    <button class="theme-option" data-theme="golden"><span class="color-dot golden"></span> Golden Dark</button>
+                </div>
+            </div>
+            <button class="mobile-menu-btn" aria-label="Toggle menu"><i class="ph ph-list"></i></button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <canvas id="particle-canvas"></canvas>
+        <div class="hero-orb orb-1"></div>
+        <div class="hero-orb orb-2"></div>
+        <div class="hero-orb orb-3"></div>
+        <div class="hero-grid-bg"></div>
+        <div class="container hero-container">
+            <div class="hero-content reveal">
+                <div class="hero-badge">
+                    <span class="badge-pulse"></span>
+                    <span>🇮🇳 Fresh Agency &nbsp;·&nbsp; Real Skills &nbsp;·&nbsp; Full Commitment</span>
+                </div>
+                <h1 class="hero-title">
+                    We Build Digital<br><span class="gradient-text-anim">Products That</span><br>Grow Businesses
+                </h1>
+                <p class="hero-subtitle">A young, hungry agency from India — we're not shuffling tickets. You work directly with the founders. Every project gets our complete attention.</p>
+                <div class="hero-cta">
+                    <a href="#contact" class="btn btn-gradient">Get Free Consultation <i class="ph ph-arrow-up-right"></i></a>
+                    <a href="https://wa.me/919720311891" target="_blank" rel="noopener" class="btn btn-whatsapp"><i class="ph ph-whatsapp-logo"></i> Chat on WhatsApp</a>
+                </div>
+                <div class="hero-proof">
+                    <div class="hero-proof-chips">
+                        <span class="proof-chip"><i class="ph ph-check-circle-fill"></i> 100% Client Satisfaction</span>
+                        <span class="proof-chip"><i class="ph ph-lightning-fill"></i> Founder-led delivery</span>
+                        <span class="proof-chip"><i class="ph ph-lock-simple-fill"></i> Transparent pricing</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual reveal delay-1">
+                <div class="dashboard-card">
+                    <div class="dashboard-header">
+                        <div class="dash-dots">
+                            <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+                        </div>
+                        <span class="dash-title">analytics.tricore.in</span>
+                        <div class="dash-actions"><span></span><span></span></div>
+                    </div>
+                    <div class="dashboard-body">
+                        <div class="dash-sidebar">
+                            <div class="sidebar-item active"></div>
+                            <div class="sidebar-item"></div>
+                            <div class="sidebar-item"></div>
+                            <div class="sidebar-item"></div>
+                            <div class="sidebar-item"></div>
+                        </div>
+                        <div class="dash-main">
+                            <div class="dash-stats">
+                                <div class="dash-stat-card">
+                                    <div class="dash-stat-label"></div>
+                                    <div class="dash-stat-value grad-1"></div>
+                                </div>
+                                <div class="dash-stat-card">
+                                    <div class="dash-stat-label"></div>
+                                    <div class="dash-stat-value grad-2"></div>
+                                </div>
+                                <div class="dash-stat-card">
+                                    <div class="dash-stat-label"></div>
+                                    <div class="dash-stat-value grad-3"></div>
+                                </div>
+                            </div>
+                            <div class="dash-chart">
+                                <div class="chart-bars">
+                                    <div class="chart-bar" style="--h:60%"></div>
+                                    <div class="chart-bar" style="--h:85%"></div>
+                                    <div class="chart-bar" style="--h:45%"></div>
+                                    <div class="chart-bar" style="--h:72%"></div>
+                                    <div class="chart-bar" style="--h:90%"></div>
+                                    <div class="chart-bar" style="--h:58%"></div>
+                                    <div class="chart-bar" style="--h:76%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="float-card float-1">
+                    <i class="ph ph-rocket-launch"></i>
+                    <div><strong>99.9%</strong><span>Uptime SLA</span></div>
+                </div>
+                <div class="float-card float-2">
+                    <i class="ph ph-chart-line-up"></i>
+                    <div><strong>+240%</strong><span>Avg. ROI</span></div>
+                </div>
+                <div class="float-card float-3">
+                    <i class="ph ph-star-fill"></i>
+                    <div><strong>5.0 ★</strong><span>Client Rating</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <span>Scroll to explore</span>
+            <div class="scroll-arrow"><i class="ph ph-arrow-down"></i></div>
+        </div>
+    </section>
+
+    <!-- Marquee Strip -->
+    <div class="marquee-section">
+        <div class="marquee-fade left"></div>
+        <div class="marquee-fade right"></div>
+        <div class="marquee-track">
+            <div class="marquee-inner">
+                <span><i class="ph ph-atom"></i> React</span>
+                <span><i class="ph ph-triangle"></i> Next.js</span>
+                <span><i class="ph ph-code"></i> Node.js</span>
+                <span><i class="ph ph-database"></i> MongoDB</span>
+                <span><i class="ph ph-cylinder"></i> PostgreSQL</span>
+                <span><i class="ph ph-cloud"></i> AWS</span>
+                <span><i class="ph ph-figma-logo"></i> Figma</span>
+                <span><i class="ph ph-lightning"></i> TypeScript</span>
+                <span><i class="ph ph-app-window"></i> Tailwind CSS</span>
+                <span><i class="ph ph-git-branch"></i> Docker</span>
+                <span><i class="ph ph-atom"></i> React</span>
+                <span><i class="ph ph-triangle"></i> Next.js</span>
+                <span><i class="ph ph-code"></i> Node.js</span>
+                <span><i class="ph ph-database"></i> MongoDB</span>
+                <span><i class="ph ph-cylinder"></i> PostgreSQL</span>
+                <span><i class="ph ph-cloud"></i> AWS</span>
+                <span><i class="ph ph-figma-logo"></i> Figma</span>
+                <span><i class="ph ph-lightning"></i> TypeScript</span>
+                <span><i class="ph ph-app-window"></i> Tailwind CSS</span>
+                <span><i class="ph ph-git-branch"></i> Docker</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Services Section -->
+    <section class="services section" id="services">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">What We Do</span>
+                <h2>Services Built for <span class="gradient-text">Modern Business</span></h2>
+                <p>From intelligent software systems to jaw-dropping websites — we deliver end-to-end digital excellence.</p>
+            </div>
+            <div class="services-grid">
+                <div class="service-card reveal">
+                    <div class="service-icon-wrap"><div class="service-icon"><i class="ph ph-database"></i></div></div>
+                    <h3>Custom CRMs</h3>
+                    <p>Intelligent CRM systems built from scratch to match your workflow and scale with your business effortlessly.</p>
+                    <a href="#contact" class="service-link">Learn more <i class="ph ph-arrow-right"></i></a>
+                </div>
+                <div class="service-card reveal delay-1">
+                    <div class="service-icon-wrap"><div class="service-icon"><i class="ph ph-kanban"></i></div></div>
+                    <h3>Management Systems</h3>
+                    <p>Tailored ERPs and business management dashboards that give you full real-time operational control.</p>
+                    <a href="#contact" class="service-link">Learn more <i class="ph ph-arrow-right"></i></a>
+                </div>
+                <div class="service-card reveal delay-2">
+                    <div class="service-icon-wrap"><div class="service-icon"><i class="ph ph-scales"></i></div></div>
+                    <h3>Law Firm Websites</h3>
+                    <p>Professional, secure, and client-converting web presences designed to build authority and trust.</p>
+                    <a href="#contact" class="service-link">Learn more <i class="ph ph-arrow-right"></i></a>
+                </div>
+                <div class="service-card reveal">
+                    <div class="service-icon-wrap"><div class="service-icon"><i class="ph ph-paint-brush-broad"></i></div></div>
+                    <h3>Brand Websites</h3>
+                    <p>Stunning, highly interactive websites that tell your brand story and captivate audiences instantly.</p>
+                    <a href="#contact" class="service-link">Learn more <i class="ph ph-arrow-right"></i></a>
+                </div>
+                <div class="service-card reveal delay-1">
+                    <div class="service-icon-wrap"><div class="service-icon"><i class="ph ph-figma-logo"></i></div></div>
+                    <h3>UI/UX Design</h3>
+                    <p>User-centric interfaces that feel intuitive and look spectacular — from wireframe to final pixel.</p>
+                    <a href="#contact" class="service-link">Learn more <i class="ph ph-arrow-right"></i></a>
+                </div>
+                <div class="service-card reveal delay-2">
+                    <div class="service-icon-wrap"><div class="service-icon"><i class="ph ph-magnifying-glass"></i></div></div>
+                    <h3>SEO & Growth</h3>
+                    <p>Data-driven SEO strategies and growth engineering to dominate search rankings and drive qualified leads.</p>
+                    <a href="#contact" class="service-link">Learn more <i class="ph ph-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section class="process section" id="process">
+        <div class="process-bg"></div>
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">How We Work</span>
+                <h2>Idea to Launch in <span class="gradient-text">4 Powerful Steps</span></h2>
+                <p>Our battle-tested process ensures every project is delivered on time, on budget, and beyond expectations.</p>
+            </div>
+            <div class="process-grid">
+                <div class="process-step reveal">
+                    <div class="step-number">01</div>
+                    <div class="step-icon"><i class="ph ph-chat-circle-text"></i></div>
+                    <h3>Discover</h3>
+                    <p>We dive deep into your business goals and audience to define a strategy that delivers measurable results.</p>
+                </div>
+                <div class="process-connector reveal delay-1"><div class="connector-line"></div></div>
+                <div class="process-step reveal delay-1">
+                    <div class="step-number">02</div>
+                    <div class="step-icon"><i class="ph ph-pencil-ruler"></i></div>
+                    <h3>Design</h3>
+                    <p>Our designers craft stunning, conversion-focused interfaces with meticulous attention to every detail.</p>
+                </div>
+                <div class="process-connector reveal delay-2"><div class="connector-line"></div></div>
+                <div class="process-step reveal delay-2">
+                    <div class="step-number">03</div>
+                    <div class="step-icon"><i class="ph ph-code-simple"></i></div>
+                    <h3>Develop</h3>
+                    <p>Clean, scalable code on modern architecture — fast, secure, and future-proof from day one.</p>
+                </div>
+                <div class="process-connector reveal"><div class="connector-line"></div></div>
+                <div class="process-step reveal">
+                    <div class="step-number">04</div>
+                    <div class="step-icon"><i class="ph ph-rocket-launch"></i></div>
+                    <h3>Launch & Grow</h3>
+                    <p>We deploy, monitor, and continuously optimize to ensure your digital product keeps performing at its peak.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section class="portfolio section" id="portfolio">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">Our Work</span>
+                <h2>Real Projects + <span class="gradient-text">Sample Work</span></h2>
+                <p>We've delivered 2 real projects so far — and we're actively building our portfolio. Sample work below shows our capability and design vision.</p>
+            </div>
+            <div class="portfolio-filters reveal">
+                <button class="filter-btn active" data-filter="all">All Projects</button>
+                <button class="filter-btn" data-filter="crm">CRM Systems</button>
+                <button class="filter-btn" data-filter="web">Websites</button>
+                <button class="filter-btn" data-filter="design">UI/UX</button>
+            </div>
+            <div class="portfolio-grid">
+                <!-- REAL PROJECT 1 -->
+                <div class="portfolio-item reveal" data-category="crm">
+                    <div class="portfolio-img grad-purple">
+                        <div class="pf-status-badge pf-live"><i class="ph ph-check-circle-fill"></i> Live Project</div>
+                        <div class="portfolio-mockup">
+                            <div class="pm-bar"></div>
+                            <div class="pm-row"></div><div class="pm-row short"></div>
+                            <div class="pm-cards"><div class="pm-card"></div><div class="pm-card"></div><div class="pm-card"></div></div>
+                        </div>
+                        <div class="portfolio-overlay">
+                            <a href="#contact" class="btn btn-white btn-sm">Discuss Similar Project <i class="ph ph-arrow-up-right"></i></a>
+                        </div>
+                    </div>
+                    <div class="portfolio-info">
+                        <div class="portfolio-tags"><span>CRM</span><span>React</span><span>Node.js</span></div>
+                        <h3>Client CRM System</h3>
+                        <p>Custom CRM with lead tracking, follow-up reminders, and team pipeline management — delivered and live.</p>
+                    </div>
+                </div>
+
+                <!-- REAL PROJECT 2 -->
+                <div class="portfolio-item reveal delay-1" data-category="web">
+                    <div class="portfolio-img grad-blue">
+                        <div class="pf-status-badge pf-live"><i class="ph ph-check-circle-fill"></i> Live Project</div>
+                        <div class="portfolio-mockup">
+                            <div class="pm-bar"></div>
+                            <div class="pm-hero"></div>
+                            <div class="pm-row"></div><div class="pm-row short"></div>
+                        </div>
+                        <div class="portfolio-overlay">
+                            <a href="#contact" class="btn btn-white btn-sm">Discuss Similar Project <i class="ph ph-arrow-up-right"></i></a>
+                        </div>
+                    </div>
+                    <div class="portfolio-info">
+                        <div class="portfolio-tags"><span>Landing Page</span><span>Next.js</span><span>App</span></div>
+                        <h3>App Launch Landing Page</h3>
+                        <p>High-converting landing page for a mobile app — designed to drive downloads and signups.</p>
+                    </div>
+                </div>
+
+                <!-- SAMPLE WORK -->
+                <div class="portfolio-item reveal delay-2" data-category="design">
+                    <div class="portfolio-img grad-pink">
+                        <div class="pf-status-badge pf-sample"><i class="ph ph-palette"></i> Sample Work</div>
+                        <div class="portfolio-mockup">
+                            <div class="pm-bar"></div>
+                            <div class="pm-row"></div>
+                            <div class="pm-cols"><div class="pm-col-card"></div><div class="pm-col-card"></div></div>
+                        </div>
+                        <div class="portfolio-overlay">
+                            <a href="#contact" class="btn btn-white btn-sm">Build Something Similar <i class="ph ph-arrow-up-right"></i></a>
+                        </div>
+                    </div>
+                    <div class="portfolio-info">
+                        <div class="portfolio-tags"><span>UI/UX</span><span>Figma</span><span>Mobile</span></div>
+                        <h3>Fintech App Design</h3>
+                        <p>Sample mobile app UI/UX concept — showing our design capability for fintech products.</p>
+                    </div>
+                </div>
+
+                <div class="portfolio-item reveal" data-category="crm">
+                    <div class="portfolio-img grad-green">
+                        <div class="pf-status-badge pf-sample"><i class="ph ph-palette"></i> Sample Work</div>
+                        <div class="portfolio-mockup">
+                            <div class="pm-bar"></div>
+                            <div class="pm-stats"><div class="pm-stat"></div><div class="pm-stat"></div><div class="pm-stat"></div></div>
+                            <div class="pm-row"></div>
+                        </div>
+                        <div class="portfolio-overlay">
+                            <a href="#contact" class="btn btn-white btn-sm">Build Something Similar <i class="ph ph-arrow-up-right"></i></a>
+                        </div>
+                    </div>
+                    <div class="portfolio-info">
+                        <div class="portfolio-tags"><span>ERP Concept</span><span>Vue.js</span></div>
+                        <h3>Healthcare ERP Concept</h3>
+                        <p>Sample ERP layout for clinics — appointment management, billing, and patient records.</p>
+                    </div>
+                </div>
+
+                <div class="portfolio-item reveal delay-1" data-category="web">
+                    <div class="portfolio-img grad-orange">
+                        <div class="pf-status-badge pf-sample"><i class="ph ph-palette"></i> Sample Work</div>
+                        <div class="portfolio-mockup">
+                            <div class="pm-bar"></div>
+                            <div class="pm-hero tall"></div>
+                            <div class="pm-row short"></div>
+                        </div>
+                        <div class="portfolio-overlay">
+                            <a href="#contact" class="btn btn-white btn-sm">Build Something Similar <i class="ph ph-arrow-up-right"></i></a>
+                        </div>
+                    </div>
+                    <div class="portfolio-info">
+                        <div class="portfolio-tags"><span>Brand Website</span><span>Next.js</span></div>
+                        <h3>Brand Website Concept</h3>
+                        <p>Sample brand website showcasing our design approach for retail and product businesses.</p>
+                    </div>
+                </div>
+
+                <div class="portfolio-item reveal delay-2" data-category="design">
+                    <div class="portfolio-img grad-teal">
+                        <div class="pf-status-badge pf-sample"><i class="ph ph-palette"></i> Sample Work</div>
+                        <div class="portfolio-mockup">
+                            <div class="pm-bar"></div>
+                            <div class="pm-row"></div>
+                            <div class="pm-cards"><div class="pm-card tall"></div><div class="pm-card tall"></div><div class="pm-card tall"></div></div>
+                        </div>
+                        <div class="portfolio-overlay">
+                            <a href="#contact" class="btn btn-white btn-sm">Build Something Similar <i class="ph ph-arrow-up-right"></i></a>
+                        </div>
+                    </div>
+                    <div class="portfolio-info">
+                        <div class="portfolio-tags"><span>Dashboard</span><span>React</span></div>
+                        <h3>Analytics Dashboard Concept</h3>
+                        <p>Sample analytics dashboard showing our capability for data-heavy business tools.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats / About Section -->
+    <section class="stats section" id="about">
+        <div class="stats-bg-pattern"></div>
+        <div class="container stats-container">
+            <div class="stats-content reveal">
+                <span class="section-tag">Why TriCore</span>
+                <h2>New Team.<br>Real Skills.<br><span class="gradient-text">Full Commitment.</span></h2>
+                <p>TriCore is freshly launched — and that's your advantage. You work directly with the founders. No middlemen, no tickets, no "we'll get back to you in 5 days." We're hungry to deliver great work and build a portfolio we're proud of — which means you get premium attention at startup-friendly prices.</p>
+                <ul class="features-list">
+                    <li><i class="ph ph-check-circle-fill"></i> Work directly with the founders</li>
+                    <li><i class="ph ph-check-circle-fill"></i> No ticket system — real WhatsApp support</li>
+                    <li><i class="ph ph-check-circle-fill"></i> UPI / Razorpay / GST integrations</li>
+                    <li><i class="ph ph-check-circle-fill"></i> React, Next.js, Node — modern stack</li>
+                    <li><i class="ph ph-check-circle-fill"></i> Transparent pricing, honest timelines</li>
+                    <li><i class="ph ph-check-circle-fill"></i> Long-term partnership, not one-off jobs</li>
+                </ul>
+                <a href="#contact" class="btn btn-gradient">Start Your Journey <i class="ph ph-arrow-right"></i></a>
+            </div>
+            <div class="stats-grid reveal delay-1">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="ph ph-check-fat"></i></div>
+                    <h3 class="counter gradient-text" data-suffix="+" data-target="2">0</h3>
+                    <p>Projects Delivered</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="ph ph-smiley"></i></div>
+                    <h3 class="counter gradient-text" data-suffix="%" data-target="100">0</h3>
+                    <p>Client Satisfaction</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="ph ph-user-circle-gear"></i></div>
+                    <h3 class="counter gradient-text" data-suffix="yrs" data-target="5">0</h3>
+                    <p>Combined Experience</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="ph ph-clock"></i></div>
+                    <h3 class="counter gradient-text" data-suffix="hr" data-target="24">0</h3>
+                    <p>Response Time</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials section" id="testimonials">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">Early Clients</span>
+                <h2>Our First Clients, <span class="gradient-text">Already Happy</span></h2>
+                <p>We're just getting started — and our first clients are proof that a small, committed team delivers exceptional results.</p>
+            </div>
+            <div class="testimonials-wrapper">
+                <div class="testimonials-track" id="testimonials-track">
+                    <!-- Real Client 1: CRM project -->
+                    <div class="testimonial-card reveal">
+                        <div class="testimonial-quote"><i class="ph ph-quotes"></i></div>
+                        <div class="testimonial-stars">
+                            <i class="ph ph-star-fill"></i><i class="ph ph-star-fill"></i><i class="ph ph-star-fill"></i><i class="ph ph-star-fill"></i><i class="ph ph-star-fill"></i>
+                        </div>
+                        <p class="testimonial-text">"TriCore built our CRM exactly as we needed it. The team was responsive on WhatsApp throughout, delivered on time, and even added features we didn't ask for but needed. Genuinely impressed for a first project."</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar av-purple">RK</div>
+                            <div>
+                                <strong>Rahul K.</strong>
+                                <span>Business Owner, India</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Real Client 2: App landing page -->
+                    <div class="testimonial-card featured reveal delay-1">
+                        <div class="testimonial-quote"><i class="ph ph-quotes"></i></div>
+                        <div class="testimonial-stars">
+                            <i class="ph ph-star-fill"></i><i class="ph ph-star-fill"></i><i class="ph ph-star-fill"></i><i class="ph ph-star-fill"></i><i class="ph ph-star-fill"></i>
+                        </div>
+                        <p class="testimonial-text">"We needed a landing page for our app launch urgently. TriCore delivered a beautiful, fast-loading page in under a week. The attention to design and detail was far beyond what we expected at this price point."</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar av-blue">AS</div>
+                            <div>
+                                <strong>Arjun S.</strong>
+                                <span>App Founder, India</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- "Be our next" card -->
+                    <div class="testimonial-card be-next reveal delay-2">
+                        <div class="be-next-icon"><i class="ph ph-trophy"></i></div>
+                        <h3>Be Our Next<br>Success Story</h3>
+                        <p class="testimonial-text">We're actively taking on new clients. Early clients get our undivided attention, competitive pricing, and the satisfaction of shaping a growing agency.</p>
+                        <a href="#contact" class="btn btn-gradient btn-sm" style="margin-top: 1rem;">
+                            Start Your Project <i class="ph ph-arrow-right"></i>
+                        </a>
+                        <a href="https://wa.me/919720311891" target="_blank" rel="noopener" class="be-next-wa">
+                            <i class="ph ph-whatsapp-logo"></i> Chat with us first
+                        </a>
+                    </div>
+                </div>
+                <div class="testimonial-nav">
+                    <button class="t-nav-btn" id="t-prev"><i class="ph ph-arrow-left"></i></button>
+                    <div class="testimonial-dots">
+                        <button class="t-dot active" data-index="0"></button>
+                        <button class="t-dot" data-index="1"></button>
+                        <button class="t-dot" data-index="2"></button>
+                    </div>
+                    <button class="t-nav-btn" id="t-next"><i class="ph ph-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing section" id="pricing">
+        <div class="pricing-bg-glow"></div>
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">Transparent Pricing</span>
+                <h2>Honest Prices for <span class="gradient-text">Indian Businesses</span></h2>
+                <p>No hidden charges. No surprises. Just clear, affordable pricing built for Indian SMBs and enterprises.</p>
+            </div>
+
+            <div class="pricing-trust-bar reveal">
+                <span><i class="ph ph-seal-check"></i> GST Invoice Provided</span>
+                <span><i class="ph ph-credit-card"></i> EMI Available</span>
+                <span><i class="ph ph-shield-check"></i> 100% Transparent</span>
+                <span><i class="ph ph-whatsapp-logo"></i> WhatsApp Support</span>
+                <span><i class="ph ph-currency-inr"></i> Indian Pricing</span>
+            </div>
+
+            <div class="pricing-carousel-wrap">
+            <div class="pricing-grid" id="pricing-track">
+
+                <!-- Basic Website -->
+                <div class="pricing-card reveal">
+                    <div class="plan-label"><i class="ph ph-shooting-star"></i> Starter</div>
+                    <div class="plan-icon-wrap"><i class="ph ph-globe"></i></div>
+                    <h3 class="plan-name">Basic Website</h3>
+                    <p class="plan-desc">For shops, clinics, and local businesses going online for the first time.</p>
+                    <div class="plan-for">
+                        <i class="ph ph-storefront"></i>
+                        <span>Shops &nbsp;·&nbsp; Clinics &nbsp;·&nbsp; Restaurants &nbsp;·&nbsp; Schools</span>
+                    </div>
+                    <div class="plan-price-block">
+                        <div class="plan-price-range">
+                            <span class="plan-price-num">₹12,000</span>
+                            <span class="plan-price-sep">–</span>
+                            <span class="plan-price-num">₹15,000</span>
+                        </div>
+                        <span class="plan-period">one-time &nbsp;·&nbsp; no recurring charges</span>
+                    </div>
+                    <div class="plan-bonus-box">
+                        <div class="plan-bonus-title"><i class="ph ph-gift"></i> Included FREE</div>
+                        <div class="plan-bonus-item"><i class="ph ph-check-circle-fill"></i> 1-year .in domain registration</div>
+                        <div class="plan-bonus-item"><i class="ph ph-check-circle-fill"></i> 2 months free maintenance</div>
+                    </div>
+                    <ul class="plan-features">
+                        <li><i class="ph ph-check-circle-fill"></i> Up to 5 pages</li>
+                        <li><i class="ph ph-check-circle-fill"></i> Mobile responsive design</li>
+                        <li><i class="ph ph-check-circle-fill"></i> WhatsApp button integration</li>
+                        <li><i class="ph ph-check-circle-fill"></i> Google Business setup</li>
+                        <li><i class="ph ph-check-circle-fill"></i> Basic SEO &amp; speed optimization</li>
+                        <li class="plan-no"><i class="ph ph-x-circle"></i> Pre-booking / appointment system</li>
+                        <li class="plan-no"><i class="ph ph-x-circle"></i> Custom animations</li>
+                    </ul>
+                    <a href="#contact" class="btn btn-glass btn-block">Get Free Quote <i class="ph ph-arrow-right"></i></a>
+                    <a href="https://wa.me/919720311891?text=Hi%2C%20I%20am%20interested%20in%20Basic%20Website%20plan" target="_blank" rel="noopener" class="plan-wa-link">
+                        <i class="ph ph-whatsapp-logo"></i> Quick enquiry on WhatsApp
+                    </a>
+                </div>
+
+                <!-- Advanced Website (Featured) -->
+                <div class="pricing-card featured reveal delay-1">
+                    <div class="plan-label"><i class="ph ph-star-fill"></i> Most Popular</div>
+                    <div class="plan-icon-wrap"><i class="ph ph-lightning"></i></div>
+                    <h3 class="plan-name">Advanced Website</h3>
+                    <p class="plan-desc">Feature-rich website for professionals and growing businesses.</p>
+                    <div class="plan-for">
+                        <i class="ph ph-first-aid"></i>
+                        <span>Doctors &nbsp;·&nbsp; Salons &nbsp;·&nbsp; Gyms &nbsp;·&nbsp; Real Estate &nbsp;·&nbsp; CA/Lawyers</span>
+                    </div>
+                    <div class="plan-price-block">
+                        <div class="plan-price-range">
+                            <span class="plan-price-num">₹15,000</span>
+                            <span class="plan-price-sep">–</span>
+                            <span class="plan-price-num">₹20,000</span>
+                        </div>
+                        <span class="plan-period">one-time &nbsp;·&nbsp; no recurring charges</span>
+                    </div>
+                    <div class="plan-bonus-box">
+                        <div class="plan-bonus-title"><i class="ph ph-gift"></i> Included FREE</div>
+                        <div class="plan-bonus-item"><i class="ph ph-check-circle-fill"></i> 1-year .in domain registration</div>
+                        <div class="plan-bonus-item"><i class="ph ph-check-circle-fill"></i> 2 months free maintenance</div>
+                        <div class="plan-bonus-item"><i class="ph ph-calendar-check"></i> Pre-booking / Appointment System</div>
+                    </div>
+                    <ul class="plan-features">
+                        <li><i class="ph ph-check-circle-fill"></i> Up to 10 pages</li>
+                        <li><i class="ph ph-check-circle-fill"></i> Premium animations &amp; transitions</li>
+                        <li><i class="ph ph-check-circle-fill"></i> Edit content yourself (CMS)</li>
+                        <li><i class="ph ph-check-circle-fill"></i> Advanced SEO optimization</li>
+                        <li><i class="ph ph-check-circle-fill"></i> Google Ads ready landing pages</li>
+                        <li><i class="ph ph-check-circle-fill"></i> Instagram / social media feed</li>
+                    </ul>
+                    <a href="#contact" class="btn btn-white btn-block">Get Free Quote <i class="ph ph-arrow-right"></i></a>
+                    <a href="https://wa.me/919720311891?text=Hi%2C%20I%20am%20interested%20in%20Advanced%20Website%20plan" target="_blank" rel="noopener" class="plan-wa-link">
+                        <i class="ph ph-whatsapp-logo"></i> Quick enquiry on WhatsApp
+                    </a>
+                </div>
+
+                <!-- Enterprise CRM -->
+                <div class="pricing-card enterprise reveal delay-2">
+                    <div class="plan-label"><i class="ph ph-trophy"></i> Enterprise</div>
+                    <div class="plan-icon-wrap"><i class="ph ph-buildings"></i></div>
+                    <h3 class="plan-name">Custom CRM / ERP</h3>
+                    <p class="plan-desc">End-to-end business management systems for serious Indian enterprises.</p>
+                    <div class="plan-for">
+                        <i class="ph ph-factory"></i>
+                        <span>Manufacturing &nbsp;·&nbsp; Trading &nbsp;·&nbsp; Law Firms &nbsp;·&nbsp; Clinics &nbsp;·&nbsp; Logistics</span>
+                    </div>
+                    <div class="plan-price-block">
+                        <div class="plan-price-range">
+                            <span class="plan-price-num">₹70,000</span>
+                            <span class="plan-price-sep">–</span>
+                            <span class="plan-price-num">₹85,000</span>
+                        </div>
+                        <span class="plan-period">complete project delivery</span>
+                    </div>
+                    <div class="plan-bonus-box">
+                        <div class="plan-bonus-title"><i class="ph ph-gift"></i> Included FREE</div>
+                        <div class="plan-bonus-item"><i class="ph ph-clock-countdown"></i> 2-month delivery guarantee</div>
+                        <div class="plan-bonus-item"><i class="ph ph-wrench"></i> 6 months free maintenance</div>
+                        <div class="plan-bonus-item"><i class="ph ph-rocket-launch"></i> Feature upgrades for 6 months</div>
+                    </div>
+                    <ul class="plan-features">
+                        <li><i class="ph ph-check-circle-fill"></i> Full custom CRM / ERP system</li>
+                        <li><i class="ph ph-check-circle-fill"></i> GST / Tally integration</li>
+                        <li><i class="ph ph-check-circle-fill"></i> UPI / Razorpay payment module</li>
+                        <li><i class="ph ph-check-circle-fill"></i> Dedicated project manager</li>
+                        <li><i class="ph ph-check-circle-fill"></i> Staff training &amp; onboarding</li>
+                        <li><i class="ph ph-check-circle-fill"></i> 24/7 priority WhatsApp support</li>
+                    </ul>
+                    <a href="#contact" class="btn btn-gradient btn-block">Book Free Consultation <i class="ph ph-arrow-right"></i></a>
+                    <p class="emi-text"><i class="ph ph-credit-card"></i> EMI options available on request</p>
+                </div>
+            </div><!-- /pricing-grid -->
+
+            <!-- Mobile carousel nav — hidden on desktop via CSS -->
+            <div class="pc-nav">
+                <button class="pc-arrow" id="pc-prev" aria-label="Previous plan"><i class="ph ph-arrow-left"></i></button>
+                <div class="pc-dots">
+                    <button class="pc-dot active" data-idx="0"></button>
+                    <button class="pc-dot" data-idx="1"></button>
+                    <button class="pc-dot" data-idx="2"></button>
+                </div>
+                <button class="pc-arrow" id="pc-next" aria-label="Next plan"><i class="ph ph-arrow-right"></i></button>
+            </div>
+            </div><!-- /pricing-carousel-wrap -->
+
+            <div class="pricing-note reveal">
+                <i class="ph ph-info"></i>
+                All prices are exclusive of GST (18%). Prices may vary based on complexity. Get a free detailed quote within 24 hours.
+                <a href="#contact">Contact us now →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Strip -->
+    <section class="cta-strip">
+        <div class="cta-orb cta-orb-1"></div>
+        <div class="cta-orb cta-orb-2"></div>
+        <div class="container cta-container">
+            <div class="reveal">
+                <h2>Be Among Our <span>First 10 Clients</span></h2>
+                <p>Early clients get priority attention, founder-level involvement, and pricing that won't last forever. Free consultation — no pressure, just an honest conversation.</p>
+            </div>
+            <div class="cta-actions reveal delay-1">
+                <a href="#contact" class="btn btn-white">Get Free Consultation <i class="ph ph-arrow-right"></i></a>
+                <a href="https://wa.me/919720311891?text=Hi%2C%20I%20want%20to%20know%20more%20about%20TriCore%20services" target="_blank" rel="noopener" class="btn btn-outline-white"><i class="ph ph-whatsapp-logo"></i> WhatsApp Us</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact section" id="contact">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">Get In Touch</span>
+                <h2>Let's Build Something <span class="gradient-text">Great Together</span></h2>
+                <p>Have a project in mind? Drop us a message and we'll get back within 24 hours.</p>
+            </div>
+            <div class="contact-wrapper">
+                <div class="contact-info reveal">
+                    <div class="info-card">
+                        <div class="info-icon"><i class="ph ph-envelope-simple"></i></div>
+                        <div><h4>Email Us</h4><p>itskanishka1202@gmail.com</p><p>ys021373@gmail.com</p></div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon"><i class="ph ph-phone"></i></div>
+                        <div>
+                            <h4>Call Us</h4>
+                            <p>+91 94108 91738</p>
+                            <p style="margin-top:0.3rem;font-size:0.85rem;color:var(--text-muted);">WhatsApp: <a href="https://wa.me/919720311891" target="_blank" rel="noopener" style="color:#25D366;font-weight:600;">+91 97203 11891</a></p>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon"><i class="ph ph-map-pin"></i></div>
+                        <div><h4>Location</h4><p>Remote-First Global Agency</p></div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon"><i class="ph ph-clock"></i></div>
+                        <div><h4>Response Time</h4><p>Within 24 hours</p></div>
+                    </div>
+                    <div class="social-connect">
+                        <h4>Follow Us</h4>
+                        <div class="social-links">
+                            <a href="#" aria-label="Twitter"><i class="ph ph-twitter-logo"></i></a>
+                            <a href="#" aria-label="LinkedIn"><i class="ph ph-linkedin-logo"></i></a>
+                            <a href="#" aria-label="GitHub"><i class="ph ph-github-logo"></i></a>
+                            <a href="#" aria-label="Dribbble"><i class="ph ph-dribbble-logo"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-form-container reveal delay-1">
+                    <form class="contact-form" id="contactForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="name">Full Name</label>
+                                <input type="text" id="name" placeholder="John Doe" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" placeholder="+91 98765 43210">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" placeholder="john@example.com" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="service">Interested Service</label>
+                                <select id="service">
+                                    <option value="">Select a service...</option>
+                                    <option value="crm">Custom CRM</option>
+                                    <option value="management">Management System</option>
+                                    <option value="law">Law Firm Website</option>
+                                    <option value="brand">Brand Website</option>
+                                    <option value="uiux">UI/UX Design</option>
+                                    <option value="seo">SEO & Growth</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="budget">Project Budget</label>
+                                <select id="budget">
+                                    <option value="">Select budget range...</option>
+                                    <option value="starter">Under ₹50,000</option>
+                                    <option value="mid">₹50,000 – ₹1,50,000</option>
+                                    <option value="pro">₹1,50,000 – ₹5,00,000</option>
+                                    <option value="enterprise">₹5,00,000+</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Tell Us About Your Project</label>
+                            <textarea id="message" rows="4" placeholder="Describe your project goals, timeline, and specific requirements..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-gradient btn-block">
+                            Send Message <i class="ph ph-paper-plane-right"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-glow"></div>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="#" class="logo">
+                        <svg class="logo-mark" width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="fT" x1="0.5" y1="0" x2="0.5" y2="1" gradientUnits="objectBoundingBox">
+                                    <stop offset="0%" stop-color="#c7d2fe"/><stop offset="100%" stop-color="#818cf8"/>
+                                </linearGradient>
+                                <linearGradient id="fL" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
+                                    <stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#3730a3"/>
+                                </linearGradient>
+                                <linearGradient id="fR" x1="1" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox">
+                                    <stop offset="0%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#6d28d9"/>
+                                </linearGradient>
+                            </defs>
+                            <polygon points="3,10.5 18,18 18,33 3,25.5"    fill="url(#fL)"/>
+                            <polygon points="18,18 33,10.5 33,25.5 18,33"  fill="url(#fR)"/>
+                            <polygon points="18,3 33,10.5 18,18 3,10.5"    fill="url(#fT)"/>
+                            <polyline points="18,3 33,10.5" stroke="rgba(255,255,255,0.65)" stroke-width="1"    stroke-linecap="round"/>
+                            <polyline points="18,3 3,10.5"  stroke="rgba(255,255,255,0.4)"  stroke-width="0.8" stroke-linecap="round"/>
+                        </svg>
+                        <span class="logo-text"><span class="logo-tri">Tri</span><span class="logo-core">Core</span></span>
+                    </a>
+                    <p>Empowering businesses with intelligent software and stunning web presences that drive real, lasting growth.</p>
+                    <div class="social-links">
+                        <a href="#" aria-label="Twitter"><i class="ph ph-twitter-logo"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="ph ph-linkedin-logo"></i></a>
+                        <a href="#" aria-label="GitHub"><i class="ph ph-github-logo"></i></a>
+                        <a href="#" aria-label="Dribbble"><i class="ph ph-dribbble-logo"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <h4>Services</h4>
+                    <a href="#services">Custom CRMs</a>
+                    <a href="#services">Management Systems</a>
+                    <a href="#services">Law Firm Websites</a>
+                    <a href="#services">Brand Websites</a>
+                    <a href="#services">UI/UX Design</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Company</h4>
+                    <a href="#about">About Us</a>
+                    <a href="#portfolio">Portfolio</a>
+                    <a href="#testimonials">Testimonials</a>
+                    <a href="#pricing">Pricing</a>
+                    <a href="#contact">Contact</a>
+                </div>
+                <div class="footer-newsletter">
+                    <h4>Stay Updated</h4>
+                    <p>Get digital insights and agency updates delivered to your inbox.</p>
+                    <form class="newsletter-form" onsubmit="return false;">
+                        <input type="email" placeholder="your@email.com" aria-label="Email for newsletter">
+                        <button type="submit" class="btn btn-gradient btn-sm" aria-label="Subscribe">
+                            <i class="ph ph-paper-plane-right"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 TriCore Technologies. All rights reserved. Made with <span class="heart">♥</span> in India 🇮🇳</p>
+                <div class="footer-bottom-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- WhatsApp Floating Button -->
+    <a href="https://wa.me/919720311891?text=Hi%2C%20I%20am%20interested%20in%20TriCore%20services" target="_blank" rel="noopener" class="whatsapp-fab" aria-label="Chat on WhatsApp">
+        <div class="wa-fab-ring"></div>
+        <i class="ph ph-whatsapp-logo"></i>
+        <span class="wa-tooltip">Chat with us!</span>
+    </a>
+
+    <script src="script.js"></script>
+</body>
+</html>
