@@ -281,8 +281,8 @@ img { max-width: 100%; }
     letter-spacing: -0.03em;
     line-height: 1;
 }
-.logo-tri  { color: var(--text); }
-.logo-core {
+.logo-tri, .logo-kar  { color: var(--text); }
+.logo-core, .logo-vix {
     background: var(--grad-main);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -2598,3 +2598,314 @@ img { max-width: 100%; }
     border-radius: 4px;
 }
 .pc-dot:hover { background: var(--primary); }
+
+/* ==========================================================================
+   Page Loader
+   ========================================================================== */
+.page-loader {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.6s cubic-bezier(0.4,0,0.2,1), visibility 0.6s;
+}
+.page-loader.loaded {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+.loader-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+}
+.loader-k {
+    animation: loaderPop 0.9s cubic-bezier(0.34,1.56,0.64,1) both;
+    filter: drop-shadow(0 0 24px rgba(99,102,241,0.7));
+}
+@keyframes loaderPop {
+    0%   { transform: scale(0.3) rotate(-30deg); opacity: 0; }
+    70%  { transform: scale(1.12) rotate(4deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+.loader-brand {
+    font-family: var(--font-h);
+    font-weight: 900;
+    font-size: 1.6rem;
+    letter-spacing: -0.03em;
+    animation: loaderFadeUp 0.6s ease 0.3s both;
+}
+.lk-white { color: var(--text); }
+.lk-grad {
+    background: var(--grad-main);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.loader-track {
+    width: 180px;
+    height: 2px;
+    background: rgba(99,102,241,0.15);
+    border-radius: 2px;
+    overflow: hidden;
+    animation: loaderFadeUp 0.6s ease 0.4s both;
+}
+.loader-fill {
+    height: 100%;
+    width: 0;
+    background: var(--grad-main);
+    border-radius: 2px;
+    animation: loaderBar 1.6s cubic-bezier(0.4,0,0.2,1) 0.5s forwards;
+}
+@keyframes loaderBar {
+    0%   { width: 0; }
+    40%  { width: 60%; }
+    100% { width: 100%; }
+}
+@keyframes loaderFadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   Hero — 3D Floating Shapes
+   ========================================================================== */
+.hero-3d-wrap {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+}
+.h3d {
+    position: absolute;
+    border-radius: 50%;
+    transform-style: preserve-3d;
+    will-change: transform;
+}
+
+/* Large outer ring */
+.h3d-ring-1 {
+    width: 480px; height: 480px;
+    top: -5%; right: -8%;
+    border: 1.5px solid rgba(99,102,241,0.18);
+    animation: h3dRing1 22s linear infinite;
+}
+.h3d-ring-1::after {
+    content: '';
+    position: absolute;
+    inset: 30px;
+    border-radius: 50%;
+    border: 1px solid rgba(139,92,246,0.1);
+}
+@keyframes h3dRing1 {
+    0%   { transform: rotateX(62deg) rotateZ(0deg); }
+    100% { transform: rotateX(62deg) rotateZ(360deg); }
+}
+
+/* Medium ring */
+.h3d-ring-2 {
+    width: 300px; height: 300px;
+    top: 15%; right: 5%;
+    border: 1px solid rgba(236,72,153,0.14);
+    animation: h3dRing2 16s linear infinite reverse;
+}
+@keyframes h3dRing2 {
+    0%   { transform: rotateX(70deg) rotateY(0deg); }
+    100% { transform: rotateX(70deg) rotateY(360deg); }
+}
+
+/* Small accent ring */
+.h3d-ring-3 {
+    width: 160px; height: 160px;
+    top: 55%; right: 20%;
+    border: 1px solid rgba(14,165,233,0.2);
+    animation: h3dRing3 11s linear infinite;
+    animation-delay: -4s;
+}
+@keyframes h3dRing3 {
+    0%   { transform: rotateX(50deg) rotateZ(0deg) rotateY(20deg); }
+    100% { transform: rotateX(50deg) rotateZ(-360deg) rotateY(20deg); }
+}
+
+/* Triangle / prism floating element */
+.h3d-tri {
+    width: 80px; height: 80px;
+    border-radius: 0;
+    top: 30%; right: 30%;
+    border: none;
+    background: none;
+    animation: h3dTri 14s ease-in-out infinite alternate;
+}
+.h3d-tri::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 1.5px solid rgba(99,102,241,0.25);
+    transform: rotate(45deg);
+    animation: h3dTriInner 7s linear infinite;
+}
+.h3d-tri::after {
+    content: '';
+    position: absolute;
+    inset: 15px;
+    border: 1px solid rgba(236,72,153,0.2);
+    transform: rotate(45deg);
+    animation: h3dTriInner 7s linear infinite reverse;
+}
+@keyframes h3dTri {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 0.6; }
+    100% { transform: translateY(-30px) rotate(20deg); opacity: 1; }
+}
+@keyframes h3dTriInner {
+    0%   { transform: rotate(45deg); }
+    100% { transform: rotate(405deg); }
+}
+
+/* ==========================================================================
+   3D Tilt Cards
+   ========================================================================== */
+.tilt-card {
+    transform-style: preserve-3d;
+    transition: transform 0.15s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    will-change: transform;
+}
+.tilt-card .tilt-shine {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.08) 0%, transparent 60%);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 10;
+}
+.tilt-card:hover .tilt-shine { opacity: 1; }
+
+/* ==========================================================================
+   Magnetic Button
+   ========================================================================== */
+.mag-btn {
+    transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.2s ease !important;
+}
+
+/* ==========================================================================
+   Hero Title Word Reveal
+   ========================================================================== */
+.htl {
+    display: inline-block;
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   GSAP Animated elements — initial hidden state
+   ========================================================================== */
+.gsap-fade-up {
+    opacity: 0;
+    transform: translateY(24px);
+}
+.gsap-slide-in {
+    opacity: 0;
+    transform: translateX(60px);
+}
+.hero-title .htl {
+    opacity: 0;
+    transform: translateY(70px);
+    filter: blur(8px);
+}
+
+/* ==========================================================================
+   Enhanced Service Card hover glow
+   ========================================================================== */
+.service-card:hover {
+    box-shadow: 0 20px 60px rgba(99,102,241,0.2), 0 0 0 1px rgba(99,102,241,0.25);
+}
+.service-icon {
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+.service-card:hover .service-icon {
+    transform: scale(1.12) translateZ(20px);
+    box-shadow: 0 8px 30px rgba(99,102,241,0.4);
+}
+
+/* ==========================================================================
+   Stat card enhanced
+   ========================================================================== */
+.stat-card {
+    position: relative;
+    overflow: hidden;
+}
+.stat-card::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: calc(var(--radius) + 2px);
+    background: var(--grad-main);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    z-index: -1;
+}
+.stat-card:hover::after { opacity: 0.5; }
+
+/* ==========================================================================
+   Enhanced process step glow on hover
+   ========================================================================== */
+.process-step:hover {
+    box-shadow: 0 0 0 1px var(--primary), 0 20px 50px rgba(99,102,241,0.2);
+}
+
+/* ==========================================================================
+   Hero visual enhanced 3D — no JS conflict
+   ========================================================================== */
+.hero-visual {
+    perspective: 1400px;
+}
+.dashboard-card {
+    transition: transform 0.08s linear, box-shadow 0.3s ease;
+}
+
+/* ==========================================================================
+   Floating card enhanced depth shadows
+   ========================================================================== */
+.float-1, .float-2, .float-3 {
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px var(--glass-border);
+}
+.float-card:hover {
+    box-shadow: 0 12px 48px rgba(99,102,241,0.35), 0 0 0 1px rgba(99,102,241,0.3);
+    transform: translateY(-18px) scale(1.04) !important;
+}
+
+/* ==========================================================================
+   Section header animated underline
+   ========================================================================== */
+.section-header h2 {
+    position: relative;
+    display: inline-block;
+}
+
+/* ==========================================================================
+   Scroll-reveal — override default for GSAP sections
+   ========================================================================== */
+.hero-content .reveal,
+.hero-visual .reveal {
+    opacity: 1;
+    transform: none;
+}
+
+/* ==========================================================================
+   Responsive updates for new elements
+   ========================================================================== */
+@media (max-width: 900px) {
+    .h3d-ring-1 { width: 300px; height: 300px; }
+    .h3d-ring-2 { display: none; }
+    .h3d-tri { display: none; }
+}
+@media (max-width: 768px) {
+    .h3d { display: none; }
+    .loader-track { width: 140px; }
+    .loader-brand { font-size: 1.3rem; }
+}

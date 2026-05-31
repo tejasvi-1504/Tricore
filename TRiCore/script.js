@@ -107,6 +107,182 @@ class ParticleNet {
     }
 }
 
+/* ==========================================================================
+   Page Loader
+   ========================================================================== */
+function initLoader() {
+    const loader = document.getElementById('pageLoader');
+    if (!loader) return;
+    window.addEventListener('load', () => {
+        setTimeout(() => loader.classList.add('loaded'), 1600);
+    });
+}
+initLoader();
+
+/* ==========================================================================
+   GSAP Hero Entrance (fires after loader hides)
+   — Only handles the hero so it doesn't conflict with CSS .reveal system
+   ========================================================================== */
+function initGSAP() {
+    if (typeof gsap === 'undefined') return;
+
+    const HERO_DELAY = 1.7;
+
+    /* — Hero title lines — */
+    gsap.to('.hero-title .htl', {
+        y: 0,
+        opacity: 1,
+        filter: 'blur(0px)',
+        duration: 0.9,
+        stagger: 0.18,
+        ease: 'power3.out',
+        delay: HERO_DELAY
+    });
+
+    /* — Hero badge — */
+    gsap.to('.hero-badge.gsap-fade-up', {
+        y: 0, opacity: 1,
+        duration: 0.7,
+        ease: 'power2.out',
+        delay: HERO_DELAY + 0.55
+    });
+
+    /* — Hero subtitle — */
+    gsap.to('.hero-subtitle.gsap-fade-up', {
+        y: 0, opacity: 1,
+        duration: 0.7,
+        ease: 'power2.out',
+        delay: HERO_DELAY + 0.72
+    });
+
+    /* — Hero CTAs — */
+    gsap.to('.hero-cta.gsap-fade-up', {
+        y: 0, opacity: 1,
+        duration: 0.6,
+        ease: 'back.out(1.5)',
+        delay: HERO_DELAY + 0.88
+    });
+
+    /* — Hero proof chips — */
+    gsap.to('.hero-proof.gsap-fade-up', {
+        y: 0, opacity: 1,
+        duration: 0.6,
+        ease: 'power2.out',
+        delay: HERO_DELAY + 1.0
+    });
+
+    /* — Hero visual slide in — */
+    gsap.to('.gsap-slide-in', {
+        x: 0, opacity: 1,
+        duration: 1.1,
+        ease: 'power3.out',
+        delay: HERO_DELAY + 0.3
+    });
+
+    /* — Float cards stagger after visual — */
+    gsap.fromTo('.float-card',
+        { opacity: 0, y: 20, scale: 0.85 },
+        {
+            opacity: 1, y: 0, scale: 1,
+            duration: 0.5,
+            stagger: 0.15,
+            ease: 'back.out(1.7)',
+            delay: HERO_DELAY + 1.1
+        }
+    );
+}
+
+/* ==========================================================================
+   3D Tilt Effect for Cards
+   ========================================================================== */
+function initTiltCards() {
+    const TILT_MAX = 14;
+
+    document.querySelectorAll('.tilt-card').forEach(card => {
+        /* inject shine overlay */
+        if (!card.querySelector('.tilt-shine')) {
+            const shine = document.createElement('div');
+            shine.className = 'tilt-shine';
+            card.appendChild(shine);
+        }
+        const shine = card.querySelector('.tilt-shine');
+
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width - 0.5;   /* -0.5 → 0.5 */
+            const y = (e.clientY - rect.top)  / rect.height - 0.5;
+
+            const rotX = -y * TILT_MAX;
+            const rotY =  x * TILT_MAX;
+
+            card.style.transform = `perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale3d(1.03,1.03,1.03)`;
+            shine.style.background = `radial-gradient(circle at ${(x + 0.5) * 100}% ${(y + 0.5) * 100}%, rgba(255,255,255,0.12) 0%, transparent 60%)`;
+        });
+
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = '';
+            shine.style.background = '';
+        });
+    });
+}
+
+/* ==========================================================================
+   Magnetic Button Effect
+   ========================================================================== */
+function initMagneticButtons() {
+    if (window.innerWidth <= 768) return;
+
+    document.querySelectorAll('.mag-btn').forEach(btn => {
+        btn.addEventListener('mousemove', (e) => {
+            const rect = btn.getBoundingClientRect();
+            const x = (e.clientX - rect.left - rect.width  / 2) * 0.28;
+            const y = (e.clientY - rect.top  - rect.height / 2) * 0.28;
+            btn.style.transform = `translate(${x}px, ${y}px) translateY(-2px)`;
+        });
+
+        btn.addEventListener('mouseleave', () => {
+            btn.style.transform = '';
+        });
+    });
+}
+
+/* ==========================================================================
+   Interactive 3D Hero Dashboard (mouse tracking)
+   ========================================================================== */
+function initHero3D() {
+    const dashCard   = document.getElementById('dashCard');
+    const heroVisual = document.getElementById('heroVisual');
+    if (!dashCard || !heroVisual || window.innerWidth <= 900) return;
+
+    let targetRotX = 4, targetRotY = -8;
+    let currentRotX = 4, currentRotY = -8;
+    let animFrame;
+
+    function lerp(a, b, t) { return a + (b - a) * t; }
+
+    function tick() {
+        currentRotX = lerp(currentRotX, targetRotX, 0.06);
+        currentRotY = lerp(currentRotY, targetRotY, 0.06);
+        dashCard.style.transform = `perspective(1200px) rotateY(${currentRotY}deg) rotateX(${currentRotX}deg)`;
+        animFrame = requestAnimationFrame(tick);
+    }
+    tick();
+
+    heroVisual.addEventListener('mousemove', (e) => {
+        const rect = heroVisual.getBoundingClientRect();
+        const nx = (e.clientX - rect.left) / rect.width;   /* 0 → 1 */
+        const ny = (e.clientY - rect.top)  / rect.height;
+
+        targetRotY = -14 + nx * 10;    /* -14 → -4 */
+        targetRotX =   7 - ny * 10;    /*   7 → -3 */
+    });
+
+    heroVisual.addEventListener('mouseleave', () => {
+        targetRotX =  4;
+        targetRotY = -8;
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 
     /* ==========================================================================
@@ -115,7 +291,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const pCanvas = document.getElementById('particle-canvas');
     if (pCanvas) {
         const pNet = new ParticleNet(pCanvas);
-        // Re-sync color when theme changes
         document.querySelectorAll('.theme-option').forEach(opt => {
             opt.addEventListener('click', () => setTimeout(() => pNet.syncColor(), 50));
         });
@@ -149,7 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
             glowX += (mouseX - glowX) * 0.08;
             glowY += (mouseY - glowY) * 0.08;
             cursorGlow.style.left = glowX + 'px';
-            cursorGlow.style.top = glowY + 'px';
+            cursorGlow.style.top  = glowY + 'px';
             requestAnimationFrame(animateGlow);
         }
         animateGlow();
@@ -161,11 +336,11 @@ document.addEventListener('DOMContentLoaded', () => {
        Theme Switcher
        ========================================================================== */
     const themeToggleBtn = document.getElementById('theme-toggle');
-    const themeDropdown = document.getElementById('theme-dropdown');
-    const themeOptions = document.querySelectorAll('.theme-option');
-    const htmlEl = document.documentElement;
+    const themeDropdown  = document.getElementById('theme-dropdown');
+    const themeOptions   = document.querySelectorAll('.theme-option');
+    const htmlEl         = document.documentElement;
 
-    const savedTheme = localStorage.getItem('tricore-theme') || 'default';
+    const savedTheme = localStorage.getItem('karvix-theme') || 'default';
     htmlEl.setAttribute('data-theme', savedTheme);
 
     themeToggleBtn.addEventListener('click', (e) => {
@@ -181,7 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
         option.addEventListener('click', () => {
             const theme = option.dataset.theme;
             htmlEl.setAttribute('data-theme', theme);
-            localStorage.setItem('tricore-theme', theme);
+            localStorage.setItem('karvix-theme', theme);
             themeDropdown.classList.remove('active');
         });
     });
@@ -190,7 +365,7 @@ document.addEventListener('DOMContentLoaded', () => {
        Mobile Navigation
        ========================================================================== */
     const mobileBtn = document.querySelector('.mobile-menu-btn');
-    const navLinks = document.querySelector('.nav-links');
+    const navLinks  = document.querySelector('.nav-links');
     mobileBtn.addEventListener('click', () => {
         navLinks.classList.toggle('active');
         const icon = mobileBtn.querySelector('i');
@@ -213,7 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { passive: true });
 
     /* ==========================================================================
-       Scroll Reveal
+       Scroll Reveal (CSS-based, for non-GSAP elements)
        ========================================================================== */
     const revealEls = document.querySelectorAll('.reveal');
     const revealObserver = new IntersectionObserver((entries, observer) => {
@@ -237,9 +412,7 @@ document.addEventListener('DOMContentLoaded', () => {
             countersStarted = true;
             counters.forEach(counter => {
                 const target = +counter.dataset.target;
-                const customSuffix = counter.dataset.suffix;
-                const parentText = counter.parentElement.textContent;
-                let suffix = customSuffix || (parentText.includes('Satisfaction') || parentText.includes('%') ? '%' : '+');
+                const suffix = counter.dataset.suffix || '+';
                 const duration = 2000;
                 const fps = 60;
                 const increment = target / (duration / (1000 / fps));
@@ -261,7 +434,7 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ==========================================================================
        Portfolio Filter
        ========================================================================== */
-    const filterBtns = document.querySelectorAll('.filter-btn');
+    const filterBtns     = document.querySelectorAll('.filter-btn');
     const portfolioItems = document.querySelectorAll('.portfolio-item');
 
     filterBtns.forEach(btn => {
@@ -291,22 +464,17 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ==========================================================================
        Testimonials Navigation
        ========================================================================== */
-    const track = document.getElementById('testimonials-track');
-    const dots = document.querySelectorAll('.t-dot');
-    const prevBtn = document.getElementById('t-prev');
-    const nextBtn = document.getElementById('t-next');
-    let currentTestimonial = 0;
-    const testimonialCards = document.querySelectorAll('.testimonial-card');
+    const dots             = document.querySelectorAll('.t-dot');
+    const prevBtn          = document.getElementById('t-prev');
+    const nextBtn          = document.getElementById('t-next');
+    let   currentTestimonial = 0;
+    const testimonialCards   = document.querySelectorAll('.testimonial-card');
 
-    function isMobileTestimonials() {
-        return window.innerWidth <= 900;
-    }
+    function isMobileTestimonials() { return window.innerWidth <= 900; }
 
     function showTestimonial(index) {
         if (!isMobileTestimonials()) return;
-        testimonialCards.forEach((card, i) => {
-            card.style.display = i === index ? 'block' : 'none';
-        });
+        testimonialCards.forEach((card, i) => { card.style.display = i === index ? 'block' : 'none'; });
         dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
     }
 
@@ -314,7 +482,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isMobileTestimonials()) {
             showTestimonial(currentTestimonial);
         } else {
-            testimonialCards.forEach(card => card.style.display = '');
+            testimonialCards.forEach(card => { card.style.display = ''; });
             dots.forEach((dot, i) => dot.classList.toggle('active', i === 1));
         }
     }
@@ -381,7 +549,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ==========================================================================
-       Scroll Indicator Hide on Scroll
+       Scroll Indicator
        ========================================================================== */
     const scrollIndicator = document.querySelector('.scroll-indicator');
     if (scrollIndicator) {
@@ -391,14 +559,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ==========================================================================
-       Chart Bar Hover Animation
+       Chart Bar Hover
        ========================================================================== */
     const chartBars = document.querySelectorAll('.chart-bar');
     chartBars.forEach(bar => {
         bar.addEventListener('mouseenter', () => { bar.style.opacity = '1'; });
-        bar.addEventListener('mouseleave', () => {
-            bar.style.opacity = bar.style.getPropertyValue('--is-active') || '0.7';
-        });
+        bar.addEventListener('mouseleave', () => { bar.style.opacity = '0.7'; });
     });
 
     /* ==========================================================================
@@ -412,13 +578,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let pcIndex = 0;
     const PC_COUNT = 3;
 
-    function isPricingMobile() {
-        return window.innerWidth <= 900;
-    }
+    function isPricingMobile() { return window.innerWidth <= 900; }
 
     function pcShow(idx) {
         pcIndex = (idx + PC_COUNT) % PC_COUNT;
-        /* translate by exact pixel width of the wrapper (one card = wrapper width) */
         const slideWidth = pricingTrack.parentElement.offsetWidth;
         pricingTrack.style.transform = `translateX(-${pcIndex * slideWidth}px)`;
         pcDots.forEach((d, i) => d.classList.toggle('active', i === pcIndex));
@@ -441,7 +604,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setupPricingCarousel();
     window.addEventListener('resize', setupPricingCarousel);
 
-    /* Touch/swipe support for pricing carousel */
     let pcTouchX = null;
     if (pricingTrack) {
         pricingTrack.addEventListener('touchstart', e => { pcTouchX = e.touches[0].clientX; }, { passive: true });
@@ -452,5 +614,15 @@ document.addEventListener('DOMContentLoaded', () => {
             pcTouchX = null;
         }, { passive: true });
     }
+
+    /* ==========================================================================
+       Init GSAP, 3D Tilt, Magnetic & Hero 3D (after a tick so GSAP is ready)
+       ========================================================================== */
+    setTimeout(() => {
+        initGSAP();
+        initTiltCards();
+        initMagneticButtons();
+        initHero3D();
+    }, 50);
 
 });
