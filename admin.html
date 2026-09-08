@@ -133,6 +133,7 @@ header.bar h1{font-size:19px;flex:1;min-width:160px}
 <!-- ── sign in ── -->
 <div class="gate" id="gate" hidden>
   <form id="loginForm">
+    <img class="gate-logo" src="assets/logo-256.png" alt="Kanishka Creates" width="76" height="76">
     <h1>Bookings</h1>
     <p id="gateHint">Sign in to confirm payments and release seats.</p>
     <div class="msg bad" id="loginMsg"></div>
@@ -147,6 +148,11 @@ header.bar h1{font-size:19px;flex:1;min-width:160px}
 <!-- ── panel ── -->
 <div class="wrap" id="panel" hidden>
   <header class="bar">
+    <a class="brand" href="/" title="Back to the site">
+      <img src="assets/logo-96.png" srcset="assets/logo-96.png 1x, assets/logo-256.png 2x"
+           alt="" aria-hidden="true" width="34" height="34" decoding="async">
+      <span class="brand-wm">Kanishka Creates</span>
+    </a>
     <h1>Bookings</h1>
     <span class="note" id="mailState"></span>
     <button class="btn btn-ghost" id="refreshBtn" type="button">Refresh</button>
