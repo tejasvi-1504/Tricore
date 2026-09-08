@@ -87,6 +87,13 @@ export async function removeCompany(db, rawName) {
 
   const res = await col.deleteOne({ name: { $regex: `^${escapeRe(name)}$`, $options: 'i' } });
   if (!res.deletedCount) return { ok: false, error: 'That company is not on the list.' };
+
+  // Deleting the last real row would leave an empty collection, which reads as
+  // "nothing stored yet" and would bring the defaults straight back. Park the
+  // marker so an emptied list stays empty.
+  if (!(await col.countDocuments({}))) {
+    await col.insertOne({ name: '​', order: 0, createdAt: new Date(), placeholder: true });
+  }
   return { ok: true, name };
 }
 

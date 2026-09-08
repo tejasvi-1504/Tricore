@@ -11,9 +11,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
 <style>
 :root{
-  --white:#fff; --soft:#fdf6f9; --tint:#fdeef4;
-  --ink:#1a1020; --body:#5c4e58; --muted:#7d6970; --line:#efe4ea;
-  --brand:#e11d63; --brand-600:#ad1250; --brand-100:#fde8f0;
+  --white:#fff; --soft:#fdf9fb; --tint:#faeff4;
+  --ink:#1a1020; --body:#5c4e58; --muted:#7d6970; --line:#f2e9ec;
+  --brand:#bd517b; --brand-600:#95375b; --brand-100:#f8e7ee;
   --accent:#f5a524; --accent-100:#fef4e3;
   --green:#16a34a; --green-100:#e7f7ed;
   --red:#dc2626; --red-100:#fdeaea;
@@ -126,6 +126,23 @@ header.bar h1{font-size:15px;font-weight:600;color:var(--muted);flex:1;min-width
 .msg.bad{background:var(--red-100);color:var(--red)}
 .msg.warn{background:var(--accent-100);color:#a86a00}
 
+.panel{background:#fff;border:1px solid var(--line);border-radius:var(--r);
+       box-shadow:var(--sh-sm);padding:16px 18px;margin-bottom:16px}
+.panel h2{font-size:15px;margin-bottom:3px}
+.panel .note{display:block;margin-bottom:12px}
+.co-list{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;padding:0;list-style:none}
+.co-list li{display:inline-flex;align-items:center;gap:7px;background:var(--soft);
+            border:1px solid var(--line);border-radius:999px;padding:6px 8px 6px 14px;
+            font-weight:600;font-size:13px}
+.co-list button{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;
+                color:var(--muted);font-size:15px;line-height:1;background:#fff;
+                border:1px solid var(--line)}
+.co-list button:hover{background:var(--red-100);border-color:var(--red);color:var(--red)}
+.co-list button:disabled{opacity:.4;cursor:not-allowed}
+.co-add{display:flex;gap:8px;flex-wrap:wrap}
+.co-add input{flex:1;min-width:170px;padding:9px 12px;border:1px solid var(--line);
+              border-radius:var(--r-sm);background:#fff;outline:none}
+.co-add input:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-100)}
 .more{display:block;margin:6px auto 0}
 .skel{height:88px;border-radius:var(--r);background:linear-gradient(90deg,#fff,var(--soft),#fff);
       background-size:200% 100%;animation:sh 1.2s infinite;margin-bottom:12px;
@@ -170,6 +187,16 @@ header.bar h1{font-size:15px;font-weight:600;color:var(--muted);flex:1;min-width
   </header>
 
   <div class="msg" id="msg"></div>
+
+  <section class="panel">
+    <h2>Interviewed at</h2>
+    <span class="note" id="coNote">Shown as chips on the site. Changes appear immediately.</span>
+    <ul class="co-list" id="coList"></ul>
+    <form class="co-add" id="coForm">
+      <input id="coInput" type="text" maxlength="60" placeholder="Add a company, e.g. CuddlyNest" autocomplete="off">
+      <button class="btn btn-primary" type="submit">Add</button>
+    </form>
+  </section>
 
   <div class="tabs" id="tabs"></div>
 
@@ -236,7 +263,7 @@ $('#loginForm').addEventListener('submit', async (e) => {
     await api('/api/admin/login', { method: 'POST', body: JSON.stringify({ password: $('#pw').value }) });
     $('#pw').value = '';
     showPanel();
-    await load(true);
+    await Promise.all([load(true), loadCompanies()]);
   } catch (err) {
     box.className = 'msg bad show';
     box.textContent = err.message;
@@ -399,6 +426,68 @@ $('#q').addEventListener('input', (e) => {
   t = setTimeout(() => { state.q = e.target.value.trim(); load(true); }, 300);
 });
 
+/* ── interviewed-at list ─────────────────────────────────────────────── */
+function renderCompanies(data) {
+  const list = $('#coList');
+  const names = (data.companies || []).map((c) => c.name);
+
+  $('#coNote').textContent = data.usingDefaults
+    ? 'These are the built-in defaults. Adding or removing one starts a saved list.'
+    : 'Shown as chips on the site. Changes appear immediately.';
+
+  list.innerHTML = names.length
+    ? names.map((n) => `<li>${esc(n)}<button type="button" data-name="${esc(n)}" title="Remove ${esc(n)}">&times;</button></li>`).join('')
+    : '<li style="background:none;border:0;color:var(--muted);font-weight:400">No companies listed.</li>';
+}
+
+async function loadCompanies() {
+  try {
+    renderCompanies(await api('/api/admin/companies'));
+  } catch (err) {
+    say(err.message, 'bad');
+  }
+}
+
+$('#coForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const input = $('#coInput');
+  const name = input.value.trim();
+  if (!name) return;
+
+  const btn = e.target.querySelector('button');
+  btn.disabled = true;
+  try {
+    renderCompanies(await api('/api/admin/companies', {
+      method: 'POST', body: JSON.stringify({ name }),
+    }));
+    input.value = '';
+    say(`${name} added.`, 'ok');
+  } catch (err) {
+    say(err.message, 'bad');
+  } finally {
+    btn.disabled = false;
+    input.focus();
+  }
+});
+
+$('#coList').addEventListener('click', async (e) => {
+  const btn = e.target.closest('button[data-name]');
+  if (!btn) return;
+  const name = btn.dataset.name;
+  if (!confirm(`Remove ${name} from the interviewed-at list?`)) return;
+
+  btn.disabled = true;
+  try {
+    renderCompanies(await api('/api/admin/companies', {
+      method: 'DELETE', body: JSON.stringify({ name }),
+    }));
+    say(`${name} removed.`, 'ok');
+  } catch (err) {
+    say(err.message, 'bad');
+    btn.disabled = false;
+  }
+});
+
 /* ── boot ────────────────────────────────────────────────────────────── */
 (async function init() {
   try {
@@ -411,7 +500,7 @@ $('#q').addEventListener('input', (e) => {
     if (!s.authenticated) return showGate();
 
     showPanel();
-    await load(true);
+    await Promise.all([load(true), loadCompanies()]);
   } catch {
     showGate('Could not reach the server.');
   }
