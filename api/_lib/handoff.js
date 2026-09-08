@@ -3,7 +3,7 @@
  *
  * While PAYMENT_MODE is 'manual' there is no gateway in the loop: the booking
  * is stored as `awaiting_confirmation`, and the student is handed a WhatsApp
- * link pre-filled with everything Krevol needs to confirm and collect payment
+ * link pre-filled with everything Kanishka Creates needs to confirm and collect payment
  * by hand. Flip PAYMENT_MODE to 'cashfree' once the volume justifies it and
  * the same booking goes down the gateway path instead.
  */
@@ -12,7 +12,7 @@ import { whatsappNumber } from './availability.js';
 /** Build the message the student sends to book. Plain text — WhatsApp has no markup. */
 export function bookingMessage(b) {
   const lines = [
-    `Hi Krevol, I'd like to book a session.`,
+    `Hi Kanishka Creates, I'd like to book a session.`,
     ``,
     `Plan: ${b.planLabel} — ₹${b.amount}`,
     `Attending: ${b.modeLabel}`,

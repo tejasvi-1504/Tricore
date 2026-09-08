@@ -10,7 +10,7 @@
  *   4. Hand it off for payment:
  *        PAYMENT_MODE=manual   (default) -> status `awaiting_confirmation`,
  *          return a WhatsApp link pre-filled with the booking details.
- *          Krevol confirms and collects payment by hand.
+ *          Kanishka Creates confirms and collects payment by hand.
  *        PAYMENT_MODE=cashfree -> status `pending`, return a payment link.
  *
  * If anything fails after the seat is taken, the seat is released again.
@@ -140,7 +140,7 @@ export default async function handler(req, res) {
 
   /* ── manual: hand the student to WhatsApp ──────────────────────────────── */
   if (manual) {
-    // Krevol gets the email immediately so a booking is never only in WhatsApp.
+    // Kanishka Creates gets the email immediately so a booking is never only in WhatsApp.
     sendBookingNotification(booking).catch(() => {});
     return json(res, 201, {
       bookingId,
@@ -182,7 +182,7 @@ export default async function handler(req, res) {
     const { linkId, linkUrl } = await cashfree.createPaymentLink({
       linkId: bookingId,
       amount,
-      purpose: `Krevol ${plan.label} (${mode.short}) from ${booking.dateLabel}`,
+      purpose: `Kanishka Creates ${plan.label} (${mode.short}) from ${booking.dateLabel}`,
       customer: { name, email, phone },
       returnUrl: `${origin}/booking-status.html?id=${encodeURIComponent(bookingId)}`,
       notifyUrl: `${origin}/api/payment-webhook`,

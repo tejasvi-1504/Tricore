@@ -7,9 +7,13 @@
  */
 import { MongoClient } from 'mongodb';
 
+// The physical database name, deliberately left as 'krevol' through the rename
+// to Kanishka Creates: it is invisible to users, and changing it would point a
+// deployment at a new, empty database rather than the one holding the bookings.
+// Renaming it is a data migration, not a find-and-replace.
 const DB_NAME = process.env.MONGODB_DB || 'krevol';
 
-const cache = (globalThis.__krevolMongo ??= { client: null, promise: null, indexed: false });
+const cache = (globalThis.__kcMongo ??= { client: null, promise: null, indexed: false });
 
 export class ConfigError extends Error {}
 

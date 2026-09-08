@@ -1,9 +1,9 @@
 {
-  "name": "krevol-website",
+  "name": "kanishka-creates-website",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Krevol agency website with consultation booking, MongoDB storage and Cashfree payments.",
+  "description": "Kanishka Creates website with consultation booking, MongoDB storage and Cashfree payments.",
   "engines": {
     "node": ">=20"
   },

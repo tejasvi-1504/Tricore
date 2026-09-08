@@ -1,5 +1,5 @@
 /**
- * Enrolment rules for the Krevol weekend programme.
+ * Enrolment rules for the Kanishka Creates weekend programme.
  *
  * The product is a ONE-MONTH programme, not a one-off call:
  *   · Saturday — group learning session
@@ -286,7 +286,7 @@ export function isEarlyBird(planKey) {
 
 /**
  * Payment handling. 'manual' means the student is sent to WhatsApp with their
- * booking details and Krevol confirms by hand — set PAYMENT_MODE=cashfree once
+ * booking details and Kanishka Creates confirms by hand — set PAYMENT_MODE=cashfree once
  * the volume justifies automating it.
  */
 export function paymentMode() {

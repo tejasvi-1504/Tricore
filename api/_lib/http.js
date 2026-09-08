@@ -43,12 +43,12 @@ export function normalisePhone(v) {
   return null;
 }
 
-/** Short, human-quotable id: KVX-8FQ2M4. */
+/** Short, human-quotable id: KC-8FQ2M4. */
 export function makeBookingId() {
   const alphabet = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
   let out = '';
   for (let i = 0; i < 6; i++) out += alphabet[Math.floor(Math.random() * alphabet.length)];
-  return 'KVX-' + out;
+  return 'KC-' + out;
 }
 
 /**
@@ -56,7 +56,7 @@ export function makeBookingId() {
  * blunts bursts from a single warm instance — it is a speed bump, not a
  * security control. Real abuse should be handled at the edge (Vercel WAF).
  */
-const hits = (globalThis.__krevolRate ??= new Map());
+const hits = (globalThis.__kcRate ??= new Map());
 export function rateLimited(req, { key = 'default', max = 12, windowMs = 60000 } = {}) {
   const ip =
     (req.headers['x-forwarded-for'] || '').split(',')[0].trim() ||

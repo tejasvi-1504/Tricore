@@ -20,7 +20,9 @@ export default async function handler(req, res) {
   }
 
   const bookingId = str(req.query?.id, 20).toUpperCase();
-  if (!/^KVX-[A-Z0-9]{6}$/.test(bookingId)) {
+  // KC- is the current prefix; KVX- was used before the rename, so references
+  // students were already given keep working.
+  if (!/^(KC|KVX)-[A-Z0-9]{6}$/.test(bookingId)) {
     return json(res, 400, { error: 'Invalid booking reference.' });
   }
 

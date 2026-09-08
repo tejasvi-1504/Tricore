@@ -1,4 +1,4 @@
-# Krevol
+# Kanishka Creates
 
 Agency website with a career-consulting booking system — MongoDB storage,
 Cashfree payments and email notifications, deployed on Vercel.

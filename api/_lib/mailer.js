@@ -40,7 +40,7 @@ async function send({ to, subject, html, replyTo }) {
   }
   try {
     await tx.sendMail({
-      from: process.env.SMTP_FROM || `Krevol <${process.env.SMTP_USER}>`,
+      from: process.env.SMTP_FROM || `Kanishka Creates <${process.env.SMTP_USER}>`,
       to,
       subject,
       html,
@@ -66,7 +66,7 @@ function shell(title, rows, footer = '') {
     <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:14px;overflow:hidden;
                 border:1px solid #e4e8f3">
       <div style="background:linear-gradient(135deg,#6366f1,#8b5cf6,#ec4899);padding:22px 26px">
-        <div style="color:#fff;font-size:19px;font-weight:700;letter-spacing:.3px">Krevol</div>
+        <div style="color:#fff;font-size:19px;font-weight:700;letter-spacing:.3px">Kanishka Creates</div>
         <div style="color:rgba(255,255,255,.86);font-size:13px;margin-top:3px">${esc(title)}</div>
       </div>
       <div style="padding:24px 26px">
@@ -89,7 +89,7 @@ const row = (k, v) => `
     <td style="padding:7px 0;font-weight:600">${esc(v)}</td>
   </tr>`;
 
-/** Notify Krevol that a slot was booked. */
+/** Notify Kanishka Creates that a slot was booked. */
 export function sendBookingNotification(booking) {
   const rows = [
     row('Reference', booking.bookingId),
@@ -123,34 +123,77 @@ export function sendBookingNotification(booking) {
   });
 }
 
-/** Confirm to the student that their slot is held. */
+/**
+ * Confirm to the student that their slot is booked.
+ *
+ * A trial is a single hour on one date; the monthly programme runs across four
+ * weekends. They need different wording, so branch on the plan kind rather than
+ * telling a trial student about their "four weekends".
+ */
 export function sendBookingConfirmation(booking) {
+  const trial = booking.kind === 'trial';
+  const online = booking.mode === 'online';
+
+  const joining = online
+    ? 'We will send the joining link on WhatsApp and email before the session.'
+    : 'We will send the Meerut venue details and directions on WhatsApp before the session.';
+
   const rows = [
-    row('Programme', booking.programme),
+    row(trial ? 'Session' : 'Programme', booking.planLabel || booking.programme),
     row('Attending', booking.modeLabel),
-    row('Starts', booking.dateLabel),
-    row('Ends', booking.endDateLabel),
+    row(trial ? 'Date' : 'Starts', booking.dateLabel),
+    trial ? row('Time', `${booking.timeLabel} IST`) : row('Ends', booking.endDateLabel),
+    !trial && booking.needsTime ? row('Time', `${booking.timeLabel} IST`) : '',
+    row('Amount paid', `₹${booking.payment?.amountPaid ?? booking.amount}`),
     row('Reference', booking.bookingId),
   ].join('');
 
-  const online = booking.mode === 'online';
-  const footer = `
-    <p style="font-size:13px;line-height:1.7;color:#4a5378;margin:18px 0 0">
-      You're enrolled. Every <strong>Saturday</strong> is the group learning session
-      and every <strong>Sunday</strong> is your 1:1 time, for four weekends.
-    </p>
+  const body = trial
+    ? `<p style="font-size:13px;line-height:1.7;color:#4a5378;margin:18px 0 0">
+         Your trial hour is booked and your payment is confirmed. Bring whatever
+         you're stuck on — a CV, a decision, a shortlist — and we'll work on it.
+       </p>`
+    : `<p style="font-size:13px;line-height:1.7;color:#4a5378;margin:18px 0 0">
+         You're enrolled and your payment is confirmed. Every <strong>Saturday</strong>
+         is the group learning session and every <strong>Sunday</strong> is your 1:1
+         time, for four weekends.
+       </p>`;
+
+  const footer = `${body}
     <p style="font-size:13px;line-height:1.7;color:#4a5378;margin:10px 0 0">
-      ${online
-        ? 'We will send the joining link on WhatsApp and email before the first session.'
-        : 'We will send the Meerut venue details and directions on WhatsApp before the first session.'}
-      Any questions, just reply to this email.
+      ${joining} Any questions, just reply to this email.
     </p>`;
 
   return send({
     to: booking.email,
     replyTo: BOOKING_EMAIL,
-    subject: `You're enrolled — Krevol weekend programme from ${booking.dateLabel}`,
-    html: shell('Enrolment confirmed', rows, footer),
+    subject: trial
+      ? `Confirmed — your trial hour on ${booking.dateLabel}`
+      : `You're enrolled — Kanishka Creates weekend programme from ${booking.dateLabel}`,
+    html: shell(trial ? 'Trial confirmed' : 'Enrolment confirmed', rows, footer),
+  });
+}
+
+/** Tell the student their booking was cancelled and their seat released. */
+export function sendBookingCancelled(booking) {
+  const rows = [
+    row(booking.kind === 'trial' ? 'Session' : 'Programme', booking.planLabel || booking.programme),
+    row('Attending', booking.modeLabel),
+    row(booking.kind === 'trial' ? 'Date' : 'Was starting', booking.dateLabel),
+    row('Reference', booking.bookingId),
+  ].join('');
+
+  const footer = `
+    <p style="font-size:13px;line-height:1.7;color:#4a5378;margin:18px 0 0">
+      This booking has been cancelled and the seat released. If this wasn't what
+      you expected, just reply to this email and we'll sort it out.
+    </p>`;
+
+  return send({
+    to: booking.email,
+    replyTo: BOOKING_EMAIL,
+    subject: `Booking cancelled — ${booking.bookingId}`,
+    html: shell('Booking cancelled', rows, footer),
   });
 }
 

@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════
-   KREVOL — light, modern business site
+   KANISHKA CREATES — light, modern business site
    White ground, soft shadows, rounded cards, one blue brand colour
    plus a warm accent. Conventional layout, carefully finished.
    ═══════════════════════════════════════════════════════════════════ */
@@ -935,28 +935,50 @@ img,svg { display: block; max-width: 100%; }
 .cred-block h4 .ic { width: 1.15em; height: 1.15em; color: var(--brand); }
 
 /* Career journey */
-.journey { display: grid; grid-template-columns: repeat(4,1fr); gap: .75rem; position: relative; }
+/* The path so far — a vertical route with numbered stops. Vertical at every
+   width: the block sits in a narrow column, and the old 4-across grid collapsed
+   into an unreadable 2x2 on phones with its connecting line switched off. */
+.journey { position: relative; display: block; }
 .journey::before {
-  content: ''; position: absolute; top: 7px; left: 8%; right: 8%; height: 2px;
-  background: repeating-linear-gradient(to right, var(--line) 0 6px, transparent 6px 12px);
+  content: ''; position: absolute; left: 13px; top: 16px; bottom: 16px; width: 2px;
+  background: repeating-linear-gradient(to bottom, var(--line) 0 5px, transparent 5px 11px);
 }
-.journey li { position: relative; text-align: center; }
-.jn-dot {
-  display: block; width: 16px; height: 16px; border-radius: 50%;
-  background: #fff; border: 3px solid var(--line);
-  margin: 0 auto .8rem; position: relative; z-index: 1;
-  transition: border-color .25s var(--e), transform .25s var(--e);
+/* The travelled stretch, drawn over the dashed road up to the current role. */
+.journey::after {
+  content: ''; position: absolute; left: 13px; top: 16px; width: 2px;
+  height: calc(100% - 32px);
+  background: linear-gradient(to bottom, var(--brand) 0%, var(--violet, #7b3fe4) 100%);
+  opacity: .22;
 }
-.journey li:hover .jn-dot { border-color: var(--brand); transform: scale(1.15); }
-.jn-now .jn-dot { border-color: var(--brand); background: var(--brand);
-  box-shadow: 0 0 0 4px var(--brand-100); }
+.journey li {
+  position: relative; z-index: 1;
+  display: flex; align-items: flex-start; gap: .85rem;
+  padding-bottom: 1.15rem;
+}
+.journey li:last-child { padding-bottom: 0; }
+
+.jn-pin {
+  flex: 0 0 28px; width: 28px; height: 28px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: #fff; border: 2px solid var(--line);
+  font-family: var(--f-h); font-weight: 700; font-size: .72rem; color: var(--muted);
+  transition: border-color .25s var(--e), color .25s var(--e), transform .25s var(--e);
+}
+.journey li:hover .jn-pin { border-color: var(--brand); color: var(--brand); transform: scale(1.1); }
+
+.jn-body { display: block; padding-top: .15rem; min-width: 0; }
 .journey b {
   display: block; font-family: var(--f-h); font-weight: 700;
-  font-size: .95rem; color: var(--ink); line-height: 1.2;
+  font-size: .95rem; color: var(--ink); line-height: 1.25;
 }
-.journey span { font-size: .72rem; color: var(--muted); }
+.journey span.jn-body > span { display: block; font-size: .78rem; color: var(--muted); margin-top: .1rem; }
+
+.jn-now .jn-pin {
+  background: var(--brand); border-color: var(--brand); color: #fff;
+  box-shadow: 0 0 0 4px var(--brand-100);
+}
 .jn-now b { color: var(--brand); }
-.jn-now span { color: var(--brand); font-weight: 600; }
+.jn-now .jn-body > span { color: var(--brand); font-weight: 600; }
 
 /* Interview chips */
 .co-chips { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 1.1rem; }
@@ -975,8 +997,6 @@ img,svg { display: block; max-width: 100%; }
 @media (max-width: 768px) {
   .mentor-stats { grid-template-columns: repeat(2,1fr); gap: 1.25rem .75rem; }
   .mentor-role { justify-content: center; }
-  .journey { grid-template-columns: repeat(2,1fr); row-gap: 1.5rem; }
-  .journey::before { display: none; }
   .cred-block { padding: 1.4rem; }
   .co-chips { justify-content: flex-start; }
 }
@@ -1318,10 +1338,12 @@ img,svg { display: block; max-width: 100%; }
 .mentor::before { display: none; }
 .mentor-quote .mq { fill: var(--brand-100); }
 
-/* ── Journey: current step in rose, past in violet ── */
-.jn-now .jn-dot { border-color: var(--brand); background: var(--brand);
+/* ── Journey: current stop in rose, earlier stops in violet ── */
+.jn-now .jn-pin { border-color: var(--brand); background: var(--brand);
   box-shadow: 0 0 0 4px rgba(225,29,99,.14); }
-.journey li:not(.jn-now):hover .jn-dot { border-color: var(--violet); }
+.journey li:not(.jn-now):hover .jn-pin {
+  border-color: var(--violet); color: var(--violet);
+}
 .co-chips li:hover { border-color: var(--violet); color: var(--violet); }
 
 /* ── Weekly rhythm: Saturday rose, Sunday violet ── */
@@ -1462,4 +1484,17 @@ img,svg { display: block; max-width: 100%; }
 @media (max-width: 480px) {
   .plan-pick { grid-template-columns: 1fr; border-radius: var(--r); }
   .pp-tab { border-radius: var(--r-sm); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   LOGO MARK — real badge artwork
+   The mark is now the Kanishka Creates badge PNG rather than an inline
+   SVG. Its ground is transparent, and its script lettering is navy, so
+   on the dark footer it needs a light disc behind it to stay legible.
+   ═══════════════════════════════════════════════════════════════════ */
+img.logo-mk { object-fit: contain; }
+.logo-ftr .logo-mk {
+  background: #fff;
+  border-radius: 50%;
+  padding: 2px;
 }

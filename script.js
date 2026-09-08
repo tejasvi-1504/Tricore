@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════
-   KREVOL — site behaviour
+   KANISHKA CREATES — site behaviour
    No animation libraries. Hero carousel, clients carousel, scroll
    reveals, counters, mobile nav, plus the booking + contact forms.
    ═══════════════════════════════════════════════════════════════════ */
@@ -967,7 +967,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const when = timed() && chosenTime
         ? ' at ' + toTimeLabel(chosenTime) + ' weekly'
         : '';
-      const msg = 'Hi Krevol, I want to enrol in the programme (' +
+      const msg = 'Hi Kanishka Creates, I want to enrol in the programme (' +
                   RULES.modes[modeKey].label + ') starting ' + fmt(startDate) + when + '.';
       waLink.href = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(msg);
     });

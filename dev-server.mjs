@@ -35,14 +35,26 @@ if (fs.existsSync(envFile)) {
 const apiDir = path.join(ROOT, 'api');
 const routes = new Map();
 
-for (const entry of fs.readdirSync(apiDir, { withFileTypes: true })) {
-  // Files and folders starting with _ are shared code, not routes — same rule
-  // Vercel applies.
-  if (!entry.isFile() || !entry.name.endsWith('.js') || entry.name.startsWith('_')) continue;
-  const route = '/api/' + entry.name.replace(/\.js$/, '');
-  const mod = await import(pathToFileURL(path.join(apiDir, entry.name)).href);
-  routes.set(route, mod.default);
+// Walk api/ the way Vercel does: every .js file becomes a route at its own
+// path, so api/admin/action.js serves /api/admin/action. Files and folders
+// starting with _ are shared code, not routes — same rule Vercel applies.
+async function mountRoutes(dir, prefix = '/api') {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (entry.name.startsWith('_') || entry.name.startsWith('.')) continue;
+
+    const full = path.join(dir, entry.name);
+
+    if (entry.isDirectory()) {
+      await mountRoutes(full, `${prefix}/${entry.name}`);
+      continue;
+    }
+    if (!entry.isFile() || !entry.name.endsWith('.js')) continue;
+
+    const mod = await import(pathToFileURL(full).href);
+    routes.set(`${prefix}/${entry.name.replace(/\.js$/, '')}`, mod.default);
+  }
 }
+await mountRoutes(apiDir);
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -125,7 +137,7 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   const ok = (v) => (v ? '✓' : '✗');
-  console.log(`\n  Krevol dev server  →  http://localhost:${PORT}\n`);
+  console.log(`\n  Kanishka Creates dev server  →  http://localhost:${PORT}\n`);
   console.log('  API routes:', [...routes.keys()].join('  '));
   console.log(`  ${ok(process.env.MONGODB_URI)} MongoDB   ` +
               `${ok(process.env.CASHFREE_APP_ID)} Cashfree   ` +

@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Bookings — Admin</title>
+<link rel="icon" type="image/png" sizes="96x96" href="assets/logo-96.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --white:#fff; --soft:#fdf6f9; --tint:#fdeef4;
+  --ink:#1a1020; --body:#5c4e58; --muted:#7d6970; --line:#efe4ea;
+  --brand:#e11d63; --brand-600:#ad1250; --brand-100:#fde8f0;
+  --accent:#f5a524; --accent-100:#fef4e3;
+  --green:#16a34a; --green-100:#e7f7ed;
+  --red:#dc2626; --red-100:#fdeaea;
+  --r-sm:10px; --r:16px;
+  --sh-sm:0 2px 8px rgba(60,20,40,.06);
+  --sh-md:0 8px 24px rgba(60,20,40,.08);
+  --f-h:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --f-b:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--soft);font-family:var(--f-b);color:var(--ink);
+     font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--f-h);margin:0}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,select,textarea{font:inherit;color:inherit}
+a{color:var(--brand)}
+
+/* ── login ────────────────────────────────────────────────────────────── */
+.gate{min-height:100vh;display:grid;place-items:center;padding:24px}
+.gate form{background:#fff;border:1px solid var(--line);border-radius:var(--r);
+           box-shadow:var(--sh-md);padding:30px;width:100%;max-width:360px}
+.gate h1{font-size:20px;margin-bottom:6px}
+.gate p{color:var(--muted);margin:0 0 20px;font-size:13px}
+
+.field{display:block;margin-bottom:14px}
+.field span{display:block;font-size:12px;font-weight:600;color:var(--muted);
+            margin-bottom:6px;letter-spacing:.02em}
+.field input,.field select,.field textarea{
+  width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r-sm);
+  background:#fff;outline:none}
+.field input:focus,.field select:focus,.field textarea:focus{
+  border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-100)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;
+     padding:10px 16px;border-radius:var(--r-sm);font-weight:600;font-size:13px;
+     white-space:nowrap;transition:filter .15s,opacity .15s}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn:not(:disabled):hover{filter:brightness(1.07)}
+.btn-primary{background:var(--brand);color:#fff}
+.btn-go{background:var(--green);color:#fff}
+.btn-ghost{background:#fff;border:1px solid var(--line);color:var(--body)}
+.btn-danger{background:#fff;border:1px solid var(--red);color:var(--red)}
+.btn-wide{width:100%}
+
+/* ── shell ────────────────────────────────────────────────────────────── */
+.wrap{max-width:1080px;margin:0 auto;padding:22px 18px 60px}
+header.bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+header.bar h1{font-size:19px;flex:1;min-width:160px}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);
+     margin-right:6px;vertical-align:middle}
+
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px}
+.tab{padding:8px 13px;border-radius:999px;font-size:13px;font-weight:600;
+     background:#fff;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.tab.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.tab b{font-weight:700;opacity:.75;margin-left:5px}
+
+.toolbar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.toolbar input{flex:1;min-width:180px;padding:9px 12px;border:1px solid var(--line);
+               border-radius:var(--r-sm);background:#fff;outline:none}
+.toolbar input:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-100)}
+
+/* ── cards ────────────────────────────────────────────────────────────── */
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r);
+      box-shadow:var(--sh-sm);padding:16px 18px;margin-bottom:12px}
+.card-top{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.who{flex:1;min-width:200px}
+.who h3{font-size:15px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ref{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--muted);
+     background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:1px 6px}
+.who .contact{color:var(--muted);font-size:13px;margin-top:3px;word-break:break-word}
+
+.pill{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;
+      letter-spacing:.03em;text-transform:uppercase;white-space:nowrap}
+.p-await{background:var(--accent-100);color:#a86a00}
+.p-pending{background:var(--brand-100);color:var(--brand-600)}
+.p-confirmed{background:var(--green-100);color:#12703a}
+.p-cancelled{background:var(--red-100);color:var(--red)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+      gap:10px 16px;margin:14px 0 0;padding-top:13px;border-top:1px solid var(--line)}
+.grid div span{display:block;font-size:11px;color:var(--muted);margin-bottom:2px}
+.grid div b{font-weight:600;font-size:13px}
+.topic{margin-top:12px;background:var(--soft);border:1px solid var(--line);
+       border-radius:var(--r-sm);padding:10px 12px;font-size:13px;color:var(--body);
+       white-space:pre-wrap}
+.actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;align-items:center}
+.amt{font-family:var(--f-h);font-weight:800;font-size:17px}
+.strike{color:var(--muted);font-weight:500;font-size:13px;text-decoration:line-through;
+        margin-left:5px}
+
+.note{color:var(--muted);font-size:12px}
+.empty{text-align:center;padding:56px 20px;color:var(--muted)}
+.empty h3{font-size:16px;color:var(--ink);margin-bottom:6px}
+
+.msg{padding:11px 14px;border-radius:var(--r-sm);font-size:13px;margin-bottom:14px;
+     font-weight:500;display:none}
+.msg.show{display:block}
+.msg.ok{background:var(--green-100);color:#12703a}
+.msg.bad{background:var(--red-100);color:var(--red)}
+.msg.warn{background:var(--accent-100);color:#a86a00}
+
+.more{display:block;margin:6px auto 0}
+.skel{height:88px;border-radius:var(--r);background:linear-gradient(90deg,#fff,var(--soft),#fff);
+      background-size:200% 100%;animation:sh 1.2s infinite;margin-bottom:12px;
+      border:1px solid var(--line)}
+@keyframes sh{to{background-position:-200% 0}}
+
+@media(max-width:560px){
+  .wrap{padding:16px 12px 48px}
+  .actions .btn{flex:1}
+}
+</style>
+</head>
+<body>
+
+<!-- ── sign in ── -->
+<div class="gate" id="gate" hidden>
+  <form id="loginForm">
+    <h1>Bookings</h1>
+    <p id="gateHint">Sign in to confirm payments and release seats.</p>
+    <div class="msg bad" id="loginMsg"></div>
+    <label class="field">
+      <span>Admin password</span>
+      <input type="password" id="pw" autocomplete="current-password" required>
+    </label>
+    <button class="btn btn-primary btn-wide" type="submit" id="loginBtn">Sign in</button>
+  </form>
+</div>
+
+<!-- ── panel ── -->
+<div class="wrap" id="panel" hidden>
+  <header class="bar">
+    <h1>Bookings</h1>
+    <span class="note" id="mailState"></span>
+    <button class="btn btn-ghost" id="refreshBtn" type="button">Refresh</button>
+    <button class="btn btn-ghost" id="logoutBtn" type="button">Sign out</button>
+  </header>
+
+  <div class="msg" id="msg"></div>
+
+  <div class="tabs" id="tabs"></div>
+
+  <div class="toolbar">
+    <input id="q" type="search" placeholder="Search name, email, phone or reference…" autocomplete="off">
+  </div>
+
+  <div id="list"></div>
+  <button class="btn btn-ghost more" id="moreBtn" type="button" hidden>Load more</button>
+</div>
+
+<script>
+const $  = (s) => document.querySelector(s);
+const gate = $('#gate'), panel = $('#panel');
+
+const STATUSES = [
+  ['awaiting_confirmation', 'To confirm'],
+  ['pending',               'Awaiting payment'],
+  ['confirmed',             'Confirmed'],
+  ['cancelled',             'Cancelled'],
+  ['all',                   'All'],
+];
+
+let state = { status: 'awaiting_confirmation', q: '', skip: 0, counts: {}, rows: [], busy: false };
+
+/* ── helpers ─────────────────────────────────────────────────────────── */
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) =>
+  ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+
+function say(text, kind = 'ok') {
+  const el = $('#msg');
+  el.className = 'msg show ' + kind;
+  el.textContent = text;
+  if (kind === 'ok') setTimeout(() => { el.className = 'msg'; }, 4000);
+}
+
+async function api(path, opts = {}) {
+  const res = await fetch(path, {
+    credentials: 'same-origin',
+    headers: opts.body ? { 'content-type': 'application/json' } : undefined,
+    ...opts,
+  });
+  let data = {};
+  try { data = await res.json(); } catch {}
+  if (res.status === 401) { showGate(); throw new Error('Session expired — sign in again.'); }
+  if (!res.ok) throw new Error(data.error || 'Something went wrong.');
+  return data;
+}
+
+/* ── auth ────────────────────────────────────────────────────────────── */
+function showGate(hint) {
+  panel.hidden = true; gate.hidden = false;
+  if (hint) $('#gateHint').textContent = hint;
+  $('#pw').focus();
+}
+function showPanel() { gate.hidden = true; panel.hidden = false; }
+
+$('#loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = $('#loginBtn'), box = $('#loginMsg');
+  box.className = 'msg bad';
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  try {
+    await api('/api/admin/login', { method: 'POST', body: JSON.stringify({ password: $('#pw').value }) });
+    $('#pw').value = '';
+    showPanel();
+    await load(true);
+  } catch (err) {
+    box.className = 'msg bad show';
+    box.textContent = err.message;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Sign in';
+  }
+});
+
+$('#logoutBtn').addEventListener('click', async () => {
+  try { await api('/api/admin/login', { method: 'DELETE' }); } catch {}
+  showGate('Signed out.');
+});
+
+/* ── list ────────────────────────────────────────────────────────────── */
+function renderTabs() {
+  $('#tabs').innerHTML = STATUSES.map(([key, label]) => {
+    const n = state.counts[key];
+    return `<button class="tab ${key === state.status ? 'on' : ''}" data-status="${key}">
+              ${esc(label)}${n ? `<b>${n}</b>` : ''}
+            </button>`;
+  }).join('');
+}
+
+const PILL = {
+  awaiting_confirmation: ['p-await', 'To confirm'],
+  pending:               ['p-pending', 'Awaiting payment'],
+  confirmed:             ['p-confirmed', 'Confirmed'],
+  cancelled:             ['p-cancelled', 'Cancelled'],
+};
+
+function card(b) {
+  const [cls, label] = PILL[b.status] || ['p-pending', b.status];
+  const when = b.kind === 'trial'
+    ? `${esc(b.dateLabel)} · ${esc(b.timeLabel)} IST`
+    : `${esc(b.dateLabel)} → ${esc(b.endDateLabel)}`;
+
+  const paid = b.payment?.amountPaid;
+  const cell = (k, v) => v ? `<div><span>${esc(k)}</span><b>${esc(v)}</b></div>` : '';
+
+  const canConfirm = b.status === 'awaiting_confirmation' || b.status === 'pending';
+  const canCancel  = b.status !== 'cancelled';
+
+  return `
+  <div class="card" data-id="${esc(b.bookingId)}">
+    <div class="card-top">
+      <div class="who">
+        <h3>${esc(b.name)} <span class="ref">${esc(b.bookingId)}</span></h3>
+        <div class="contact">${esc(b.email)} · ${esc(b.phone)}</div>
+      </div>
+      <span class="pill ${cls}">${esc(label)}</span>
+    </div>
+
+    <div class="grid">
+      ${cell('Plan', b.planLabel)}
+      ${cell('Attending', b.modeLabel)}
+      <div><span>${b.kind === 'trial' ? 'Date &amp; time' : 'Runs'}</span><b>${when}</b></div>
+      ${cell('College', b.college)}
+      ${cell('Year', b.year)}
+      <div><span>Amount</span><b class="amt">₹${esc(b.amount)}</b>${
+        b.listPrice && b.listPrice > b.amount ? `<span class="strike">₹${esc(b.listPrice)}</span>` : ''
+      }</div>
+      ${paid != null ? `<div><span>Paid</span><b>₹${esc(paid)}</b></div>` : ''}
+    </div>
+
+    ${b.topic ? `<div class="topic">${esc(b.topic)}</div>` : ''}
+    ${b.status === 'cancelled' && b.cancelReason
+        ? `<div class="topic">Cancelled: ${esc(b.cancelReason)}</div>` : ''}
+
+    <div class="actions">
+      ${canConfirm ? `<button class="btn btn-go" data-act="confirm">Confirm payment &amp; book slot</button>` : ''}
+      ${b.whatsappUrl ? `<a class="btn btn-ghost" href="${esc(b.whatsappUrl)}" target="_blank" rel="noopener">WhatsApp</a>` : ''}
+      ${canCancel ? `<button class="btn btn-danger" data-act="cancel">Cancel</button>` : ''}
+    </div>
+  </div>`;
+}
+
+async function load(reset = false) {
+  if (state.busy) return;
+  state.busy = true;
+  if (reset) { state.skip = 0; state.rows = []; $('#list').innerHTML = '<div class="skel"></div><div class="skel"></div>'; }
+
+  try {
+    const params = new URLSearchParams({ status: state.status, skip: state.skip, limit: 50 });
+    if (state.q) params.set('q', state.q);
+
+    const data = await api('/api/admin/bookings?' + params);
+    state.counts = data.counts || {};
+    state.rows = state.rows.concat(data.bookings);
+
+    renderTabs();
+    $('#list').innerHTML = state.rows.length
+      ? state.rows.map(card).join('')
+      : `<div class="empty"><h3>Nothing here</h3><p>No bookings match this view.</p></div>`;
+
+    $('#moreBtn').hidden = state.rows.length >= data.total;
+    state.skip = state.rows.length;
+  } catch (err) {
+    $('#list').innerHTML = '';
+    say(err.message, 'bad');
+  } finally {
+    state.busy = false;
+  }
+}
+
+/* ── actions ─────────────────────────────────────────────────────────── */
+$('#list').addEventListener('click', async (e) => {
+  const btn = e.target.closest('button[data-act]');
+  if (!btn) return;
+
+  const card = btn.closest('.card');
+  const id = card.dataset.id;
+  const act = btn.dataset.act;
+
+  if (act === 'confirm') {
+    if (!confirm(`Confirm payment for ${id}?\n\nThe slot is booked and a confirmation email goes to the student.`)) return;
+  } else {
+    if (!confirm(`Cancel ${id}?\n\nThe seat is released back to the batch.`)) return;
+  }
+
+  const all = card.querySelectorAll('button');
+  all.forEach((b) => (b.disabled = true));
+  btn.textContent = act === 'confirm' ? 'Confirming…' : 'Cancelling…';
+
+  try {
+    const out = await api('/api/admin/action', {
+      method: 'POST',
+      body: JSON.stringify({ bookingId: id, action: act }),
+    });
+
+    if (act === 'confirm') {
+      out.emailed
+        ? say(`${id} confirmed — email sent to the student.`, 'ok')
+        : say(`${id} confirmed, but the email did not send${
+            out.emailConfigured ? '' : ' (SMTP is not configured)'
+          }. Message them on WhatsApp.`, 'warn');
+    } else {
+      say(`${id} cancelled — seat released.`, 'ok');
+    }
+    await load(true);
+  } catch (err) {
+    say(err.message, 'bad');
+    all.forEach((b) => (b.disabled = false));
+    btn.textContent = act === 'confirm' ? 'Confirm payment & book slot' : 'Cancel';
+  }
+});
+
+$('#tabs').addEventListener('click', (e) => {
+  const tab = e.target.closest('.tab');
+  if (!tab) return;
+  state.status = tab.dataset.status;
+  load(true);
+});
+
+$('#refreshBtn').addEventListener('click', () => load(true));
+$('#moreBtn').addEventListener('click', () => load(false));
+
+let t;
+$('#q').addEventListener('input', (e) => {
+  clearTimeout(t);
+  t = setTimeout(() => { state.q = e.target.value.trim(); load(true); }, 300);
+});
+
+/* ── boot ────────────────────────────────────────────────────────────── */
+(async function init() {
+  try {
+    const s = await fetch('/api/admin/login', { credentials: 'same-origin' }).then((r) => r.json());
+    if (!s.configured) {
+      showGate('Set ADMIN_PASSWORD in your Vercel settings, then redeploy to use this page.');
+      $('#pw').disabled = true; $('#loginBtn').disabled = true;
+      return;
+    }
+    if (!s.authenticated) return showGate();
+
+    showPanel();
+    await load(true);
+  } catch {
+    showGate('Could not reach the server.');
+  }
+})();
+</script>
+</body>
+</html>
