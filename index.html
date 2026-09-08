@@ -306,12 +306,16 @@
 
       <div class="cred-block">
         <h4><svg class="ic"><use href="#i-mic"/></svg> Interviewed at</h4>
-        <ul class="co-chips">
+        <!-- Rendered server-side names are the fallback; script.js replaces them
+             with the admin-managed list when /api/companies answers. -->
+        <ul class="co-chips" id="coChips">
           <li>Google</li>
           <li>Uber</li>
           <li>ServiceNow</li>
+          <li>CuddlyNest</li>
+          <li class="co-more">+ many more</li>
         </ul>
-        <p class="cred-note">Every round, every question format — you get the real version, not a guess.</p>
+        <p class="cred-note">And many more product-based companies. Every round, every question format — you get the real version, not a guess.</p>
       </div>
     </div>
 

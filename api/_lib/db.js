@@ -52,6 +52,7 @@ async function ensureIndexes(db) {
       db.collection('bookings').createIndex({ createdAt: -1 }),
       db.collection('bookings').createIndex({ 'payment.orderId': 1 }, { sparse: true }),
       db.collection('contacts').createIndex({ createdAt: -1 }),
+      db.collection('companies').createIndex({ order: 1 }),
     ]);
   } catch (err) {
     cache.indexed = false;
@@ -64,4 +65,6 @@ export const collections = {
   /** One doc per reserved slot — the atomic gate that stops double-booking. */
   slots: (db) => db.collection('slots'),
   contacts: (db) => db.collection('contacts'),
+  /** Editable "interviewed at" list, managed from the admin panel. */
+  companies: (db) => db.collection('companies'),
 };

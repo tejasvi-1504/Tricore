@@ -981,3 +981,31 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 });
+
+/* ── Interviewed-at chips ──────────────────────────────────────────────────
+   The list is editable from the admin panel, so pull the current one and swap
+   it in. The HTML already carries a usable list, so this only ever upgrades
+   the page — a failed or empty response leaves the markup exactly as served. */
+(function loadCompanies() {
+  const list = document.getElementById('coChips');
+  if (!list) return;
+
+  fetch('/api/companies')
+    .then((r) => (r.ok ? r.json() : null))
+    .then((data) => {
+      const names = (data?.companies || []).map((c) => c.name).filter(Boolean);
+      if (!names.length) return;
+
+      const more = list.querySelector('.co-more');
+      list.querySelectorAll('li:not(.co-more)').forEach((li) => li.remove());
+
+      const frag = document.createDocumentFragment();
+      for (const name of names) {
+        const li = document.createElement('li');
+        li.textContent = name;
+        frag.appendChild(li);
+      }
+      list.insertBefore(frag, more);
+    })
+    .catch(() => {});
+})();
