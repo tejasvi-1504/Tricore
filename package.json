@@ -1,0 +1,19 @@
+{
+  "name": "krevol-website",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Krevol agency website with consultation booking, MongoDB storage and Cashfree payments.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "node dev-server.mjs",
+    "check": "node --check script.js",
+    "dev:vercel": "vercel dev"
+  },
+  "dependencies": {
+    "mongodb": "^6.12.0",
+    "nodemailer": "^10.0.0"
+  }
+}
