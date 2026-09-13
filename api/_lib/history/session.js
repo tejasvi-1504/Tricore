@@ -10,13 +10,13 @@
  * history. Saying "no bookings for that email" would turn this into a way to
  * test whether somebody is a customer.
  */
-import { json, methodGuard, readBody, str, isEmail, rateLimited } from '../_lib/http.js';
-import { getDb, collections, ConfigError } from '../_lib/db.js';
+import { json, methodGuard, readBody, str, isEmail, rateLimited } from '../http.js';
+import { getDb, collections, ConfigError } from '../db.js';
 import {
   isConfigured, issueCode, verifyCode,
   readSession, setSessionCookie, clearSessionCookie,
-} from '../_lib/userAuth.js';
-import * as mailer from '../_lib/mailer.js';
+} from '../userAuth.js';
+import * as mailer from '../mailer.js';
 
 export default async function handler(req, res) {
   if (methodGuard(req, res, ['GET', 'POST', 'PUT', 'DELETE'])) return;

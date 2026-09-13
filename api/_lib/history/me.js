@@ -5,9 +5,9 @@
  * enquiries sent by businesses. The email in the signed cookie is the only
  * thing that selects rows, so a visitor can never read another address.
  */
-import { json, methodGuard } from '../_lib/http.js';
-import { getDb, collections, ConfigError } from '../_lib/db.js';
-import { readSession } from '../_lib/userAuth.js';
+import { json, methodGuard } from '../http.js';
+import { getDb, collections, ConfigError } from '../db.js';
+import { readSession } from '../userAuth.js';
 
 export default async function handler(req, res) {
   if (methodGuard(req, res, ['GET'])) return;

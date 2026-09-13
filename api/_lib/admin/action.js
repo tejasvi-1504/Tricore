@@ -13,11 +13,11 @@
  * Both are idempotent — the status flip is the guard, so a double-click cannot
  * send two emails or release a seat twice.
  */
-import { json, methodGuard, readBody, str, rateLimited } from '../_lib/http.js';
-import { isConfigured, isAuthenticated } from '../_lib/adminAuth.js';
-import { getDb, ConfigError } from '../_lib/db.js';
-import { confirmManualBooking, cancelBooking } from '../_lib/confirm.js';
-import * as mailer from '../_lib/mailer.js';
+import { json, methodGuard, readBody, str, rateLimited } from '../http.js';
+import { isConfigured, isAuthenticated } from '../adminAuth.js';
+import { getDb, ConfigError } from '../db.js';
+import { confirmManualBooking, cancelBooking } from '../confirm.js';
+import * as mailer from '../mailer.js';
 
 export default async function handler(req, res) {
   if (methodGuard(req, res, ['POST'])) return;

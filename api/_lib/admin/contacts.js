@@ -9,9 +9,9 @@
  * queue: students arrive as bookings, businesses arrive here.
  */
 import { ObjectId } from 'mongodb';
-import { json, methodGuard, readBody, str, rateLimited } from '../_lib/http.js';
-import { isConfigured, isAuthenticated } from '../_lib/adminAuth.js';
-import { getDb, collections, ConfigError } from '../_lib/db.js';
+import { json, methodGuard, readBody, str, rateLimited } from '../http.js';
+import { isConfigured, isAuthenticated } from '../adminAuth.js';
+import { getDb, collections, ConfigError } from '../db.js';
 
 const STATUSES = ['new', 'replied', 'closed'];
 const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

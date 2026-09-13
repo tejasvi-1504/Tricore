@@ -8,10 +8,10 @@
  * `usingDefaults` tells the panel that nothing has been stored yet, so it can
  * say the list is the built-in one rather than implying someone typed it.
  */
-import { json, methodGuard, readBody, rateLimited } from '../_lib/http.js';
-import { isConfigured, isAuthenticated } from '../_lib/adminAuth.js';
-import { getDb, ConfigError } from '../_lib/db.js';
-import { listCompanies, addCompany, removeCompany } from '../_lib/companies.js';
+import { json, methodGuard, readBody, rateLimited } from '../http.js';
+import { isConfigured, isAuthenticated } from '../adminAuth.js';
+import { getDb, ConfigError } from '../db.js';
+import { listCompanies, addCompany, removeCompany } from '../companies.js';
 
 export default async function handler(req, res) {
   if (methodGuard(req, res, ['GET', 'POST', 'DELETE'])) return;

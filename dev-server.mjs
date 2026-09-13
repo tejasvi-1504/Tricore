@@ -34,6 +34,7 @@ if (fs.existsSync(envFile)) {
 /* ── routes ───────────────────────────────────────────────────────────────── */
 const apiDir = path.join(ROOT, 'api');
 const routes = new Map();
+const catchAlls = [];
 
 // Walk api/ the way Vercel does: every .js file becomes a route at its own
 // path, so api/admin/action.js serves /api/admin/action. Files and folders
@@ -51,7 +52,17 @@ async function mountRoutes(dir, prefix = '/api') {
     if (!entry.isFile() || !entry.name.endsWith('.js')) continue;
 
     const mod = await import(pathToFileURL(full).href);
-    routes.set(`${prefix}/${entry.name.replace(/\.js$/, '')}`, mod.default);
+    const base = entry.name.replace(/\.js$/, '');
+
+    // [...path].js is Vercel's catch-all: it serves everything below its own
+    // directory. Record it as a prefix match and hand the handler the trailing
+    // segments as req.query.path, the way Vercel does.
+    const catchAll = /^\[\.\.\.(.+)\]$/.exec(base);
+    if (catchAll) {
+      catchAlls.push({ prefix, param: catchAll[1], handler: mod.default });
+      continue;
+    }
+    routes.set(`${prefix}/${base}`, mod.default);
   }
 }
 await mountRoutes(apiDir);
@@ -80,12 +91,28 @@ const server = http.createServer(async (req, res) => {
   );
 
   /* ── API ── */
-  const handler = routes.get(url.pathname.replace(/\/$/, ''));
+  const clean = url.pathname.replace(/\/$/, '');
+  let handler = routes.get(clean);
+  let catchAllParam = null;
+  let catchAllRest = null;
+
+  if (!handler) {
+    for (const ca of catchAlls) {
+      if (clean === ca.prefix || clean.startsWith(ca.prefix + '/')) {
+        handler = ca.handler;
+        catchAllParam = ca.param;
+        catchAllRest = clean.slice(ca.prefix.length).replace(/^\//, '').split('/').filter(Boolean);
+        break;
+      }
+    }
+  }
+
   if (handler) {
     let raw = '';
     req.on('data', (c) => (raw += c));
     req.on('end', async () => {
       req.query = Object.fromEntries(url.searchParams);
+      if (catchAllParam) req.query[catchAllParam] = catchAllRest;
       try {
         req.body = raw ? JSON.parse(raw) : undefined;
       } catch {
@@ -139,6 +166,7 @@ server.listen(PORT, () => {
   const ok = (v) => (v ? '✓' : '✗');
   console.log(`\n  Kanishka Creates dev server  →  http://localhost:${PORT}\n`);
   console.log('  API routes:', [...routes.keys()].join('  '));
+  if (catchAlls.length) console.log('  Catch-all:  ' + catchAlls.map((c) => c.prefix + '/*').join('  '));
   console.log(`  ${ok(process.env.MONGODB_URI)} MongoDB   ` +
               `${ok(process.env.CASHFREE_APP_ID)} Cashfree   ` +
               `${ok(process.env.SMTP_PASS)} Email\n`);

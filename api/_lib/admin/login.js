@@ -8,11 +8,11 @@
  * Failed attempts are rate limited per IP, so the shared password cannot be
  * brute-forced from a single host at any useful speed.
  */
-import { json, methodGuard, readBody, rateLimited } from '../_lib/http.js';
+import { json, methodGuard, readBody, rateLimited } from '../http.js';
 import {
   isConfigured, passwordMatches, isAuthenticated,
   setSessionCookie, clearSessionCookie,
-} from '../_lib/adminAuth.js';
+} from '../adminAuth.js';
 
 export default async function handler(req, res) {
   if (methodGuard(req, res, ['GET', 'POST', 'DELETE'])) return;

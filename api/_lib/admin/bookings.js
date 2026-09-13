@@ -11,10 +11,10 @@
  * `publicView`, contact details are the entire point) plus per-status counts so
  * the panel can show its tabs without a second request.
  */
-import { json, methodGuard, str } from '../_lib/http.js';
-import { isConfigured, isAuthenticated } from '../_lib/adminAuth.js';
-import { getDb, collections, ConfigError } from '../_lib/db.js';
-import { bookingWhatsappUrl } from '../_lib/handoff.js';
+import { json, methodGuard, str } from '../http.js';
+import { isConfigured, isAuthenticated } from '../adminAuth.js';
+import { getDb, collections, ConfigError } from '../db.js';
+import { bookingWhatsappUrl } from '../handoff.js';
 
 const STATUSES = ['awaiting_confirmation', 'pending', 'confirmed', 'cancelled'];
 
