@@ -552,7 +552,15 @@ $('#coList').addEventListener('click', async (e) => {
 /* ── boot ────────────────────────────────────────────────────────────── */
 (async function init() {
   try {
-    const s = await fetch('/api/admin/login', { credentials: 'same-origin' }).then((r) => r.json());
+    // Check the response actually succeeded: a failing route returns JSON too,
+    // and treating that as {configured:false} reports a config problem when the
+    // real fault is the request never reaching the handler.
+    const r = await fetch('/api/admin/login', { credentials: 'same-origin' });
+    const s = await r.json().catch(() => ({}));
+    if (!r.ok) {
+      showGate(s.error ? `Server error: ${s.error}` : `The server returned ${r.status}. Try again shortly.`);
+      return;
+    }
     if (!s.configured) {
       const why = {
         too_short:  `ADMIN_PASSWORD is only ${s.length} characters — it needs at least 8. Update it in Vercel, then redeploy.`,
