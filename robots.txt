@@ -3,6 +3,7 @@ Allow: /
 
 # Private pages: the admin queue, and anything showing one person's bookings.
 Disallow: /admin.html
+Disallow: /teaching.html
 Disallow: /history.html
 Disallow: /booking-status.html
 Disallow: /api/

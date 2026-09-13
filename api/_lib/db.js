@@ -53,6 +53,7 @@ async function ensureIndexes(db) {
       db.collection('bookings').createIndex({ 'payment.orderId': 1 }, { sparse: true }),
       db.collection('contacts').createIndex({ createdAt: -1 }),
       db.collection('companies').createIndex({ order: 1 }),
+      db.collection('dsa').createIndex({ topic: 1, order: 1 }),
       // One live code per email, and Mongo expires them on its own.
       db.collection('otps').createIndex({ email: 1 }, { unique: true }),
       db.collection('otps').createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 }),
@@ -76,4 +77,6 @@ export const collections = {
   otps: (db) => db.collection('otps'),
   /** One document of editable site settings, e.g. the Google Meet room. */
   settings: (db) => db.collection('settings'),
+  /** The mentor's own DSA plan and question bank. */
+  dsa: (db) => db.collection('dsa'),
 };
