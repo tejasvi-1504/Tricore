@@ -22,12 +22,30 @@ const TTL_MS = 12 * 60 * 60 * 1000; // 12 hours
 /** The configured password, or null when the admin panel is switched off. */
 function secret() {
   const p = process.env.ADMIN_PASSWORD;
-  return typeof p === 'string' && p.length >= 8 ? p : null;
+  if (typeof p !== 'string') return null;
+  // Pasting into Vercel's form often carries a trailing space or newline, and
+  // it keeps them. Untrimmed, the panel would accept the value as configured
+  // and then reject the password the owner actually types.
+  const trimmed = p.trim();
+  return trimmed.length >= 8 ? trimmed : null;
 }
 
 /** False when ADMIN_PASSWORD is unset or too short — every route 503s then. */
 export function isConfigured() {
   return secret() !== null;
+}
+
+/**
+ * Why the panel is switched off, so the page can say something useful instead
+ * of "set ADMIN_PASSWORD" at someone who already has. Reports the length of a
+ * too-short value but never the value itself.
+ */
+export function configProblem() {
+  const p = process.env.ADMIN_PASSWORD;
+  if (typeof p !== 'string' || p.trim() === '') return { reason: 'missing' };
+  const trimmed = p.trim();
+  if (trimmed.length < 8) return { reason: 'too_short', length: trimmed.length };
+  return null;
 }
 
 const sha256 = (v) => crypto.createHash('sha256').update(String(v)).digest();

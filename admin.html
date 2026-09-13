@@ -554,7 +554,11 @@ $('#coList').addEventListener('click', async (e) => {
   try {
     const s = await fetch('/api/admin/login', { credentials: 'same-origin' }).then((r) => r.json());
     if (!s.configured) {
-      showGate('Set ADMIN_PASSWORD in your Vercel settings, then redeploy to use this page.');
+      const why = {
+        too_short:  `ADMIN_PASSWORD is only ${s.length} characters — it needs at least 8. Update it in Vercel, then redeploy.`,
+      }[s.reason] ||
+        'ADMIN_PASSWORD is not reaching this deployment. Add it in Vercel → Settings → Environment Variables with Production ticked, then redeploy — env vars only apply to a new build.';
+      showGate(why);
       $('#pw').disabled = true; $('#loginBtn').disabled = true;
       return;
     }

@@ -10,7 +10,7 @@
  */
 import { json, methodGuard, readBody, rateLimited } from '../http.js';
 import {
-  isConfigured, passwordMatches, isAuthenticated,
+  isConfigured, configProblem, passwordMatches, isAuthenticated,
   setSessionCookie, clearSessionCookie,
 } from '../adminAuth.js';
 
@@ -18,9 +18,11 @@ export default async function handler(req, res) {
   if (methodGuard(req, res, ['GET', 'POST', 'DELETE'])) return;
 
   if (req.method === 'GET') {
+    const problem = configProblem();
     return json(res, 200, {
       configured: isConfigured(),
       authenticated: isAuthenticated(req),
+      ...(problem || {}),
     });
   }
 
