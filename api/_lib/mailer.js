@@ -164,8 +164,8 @@ export function sendBookingConfirmation(booking) {
       ${joining} Any questions, just reply to this email.
     </p>
     <p style="font-size:13px;line-height:1.7;color:#7b86a8;margin:10px 0 0">
-      You can see this and everything else you've booked at any time on your
-      history page — we email you a one-time code, no password to remember.
+      You can open this and everything else you've booked at any time from
+      "My bookings" in the menu — we email you a code, no password to remember.
     </p>`;
 
   return send({
@@ -201,13 +201,13 @@ export function sendBookingCancelled(booking) {
   });
 }
 
-/** One-time code for signing in to the history page. */
+/** One-time code for opening your bookings. */
 export function sendLoginCode(to, code, minutes) {
   const rows = row('Your code', code);
   const footer = `
     <p style="font-size:13px;line-height:1.7;color:#4a5378;margin:18px 0 0">
-      Enter this code to see your bookings and enquiries. It expires in
-      ${esc(minutes)} minutes and can only be used once.
+      Enter this code to open your bookings. It expires in ${esc(minutes)}
+      minutes and can only be used once.
     </p>
     <p style="font-size:13px;line-height:1.7;color:#7b86a8;margin:10px 0 0">
       If you did not ask for this, you can ignore this email — nobody can see
@@ -217,8 +217,8 @@ export function sendLoginCode(to, code, minutes) {
   return send({
     to,
     replyTo: BOOKING_EMAIL,
-    subject: `${code} is your Kanishka Creates code`,
-    html: shell('Your sign-in code', rows, footer),
+    subject: `${code} — open your bookings`,
+    html: shell('Your booking code', rows, footer),
   });
 }
 

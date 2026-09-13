@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#faeff4">
 <meta name="robots" content="noindex">
-<title>Your history — Kanishka Creates</title>
+<title>Your bookings — Kanishka Creates</title>
 <link rel="icon" type="image/png" sizes="96x96" href="assets/logo-96.png">
 <link rel="apple-touch-icon" href="assets/logo-256.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,113 +20,174 @@
   --accent-100:#fef4e3; --accent-700:#a86a00;
   --green:#16a34a; --green-100:#e7f7ed; --green-700:#12703a;
   --red:#dc2626; --red-100:#fdeaea;
-  --r-sm:10px; --r:16px; --r-lg:22px;
-  --sh-sm:0 2px 8px rgba(60,20,40,.06);
-  --sh-md:0 8px 24px rgba(60,20,40,.08);
+  --r-sm:12px; --r:18px; --r-lg:24px;
+  --sh-sm:0 2px 10px rgba(60,20,40,.05);
+  --sh-md:0 14px 40px rgba(60,20,40,.10);
+  --e:cubic-bezier(.22,.9,.3,1);
   --f-h:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   --f-b:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   --f-script:'Great Vibes','Segoe Script',cursive;
 }
 *,*::before,*::after{box-sizing:border-box}
-/* Views are toggled with the `hidden` attribute and carry their own display
-   values, which would otherwise outrank the UA sheet's [hidden] rule. */
 [hidden]{display:none!important}
 body{margin:0;background:var(--soft);font-family:var(--f-b);color:var(--ink);
      font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
-h1,h2,h3{font-family:var(--f-h);margin:0}
+h1,h2,h3{font-family:var(--f-h);margin:0;letter-spacing:-.01em}
 button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 input{font:inherit;color:inherit}
-a{color:var(--brand)}
+a{color:var(--brand);text-decoration:none}
+a:hover{text-decoration:underline}
 
-.top{background:#fff;border-bottom:1px solid var(--line)}
-.top-in{max-width:860px;margin:0 auto;padding:14px 18px;display:flex;
-        align-items:center;gap:.6rem;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:.55rem;text-decoration:none;flex:1;min-width:0}
+.top{background:rgba(255,255,255,.9);backdrop-filter:blur(10px);
+     border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+.top-in{max-width:840px;margin:0 auto;padding:13px 18px;display:flex;
+        align-items:center;gap:.6rem}
+.brand{display:flex;align-items:center;gap:.55rem;flex:1;min-width:0}
+.brand:hover{text-decoration:none}
 .brand img{width:32px;height:32px;object-fit:contain;flex-shrink:0}
 .brand span{font-family:var(--f-script);font-size:22px;line-height:1;color:var(--ink);
             padding-bottom:.1em;white-space:nowrap}
-.wrap{max-width:860px;margin:0 auto;padding:26px 18px 70px}
+.wrap{max-width:840px;margin:0 auto;padding:28px 18px 80px}
 
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;
-     padding:11px 18px;border-radius:var(--r-sm);font-weight:600;font-size:14px;
-     text-decoration:none;white-space:nowrap;transition:filter .15s,opacity .15s}
-.btn:disabled{opacity:.55;cursor:not-allowed}
-.btn:not(:disabled):hover{filter:brightness(1.06)}
-.btn-pri{background:var(--brand);color:#fff}
+/* ── buttons: one size, real touch targets, no width jump while loading ── */
+.btn{
+  position:relative; display:inline-flex; align-items:center; justify-content:center;
+  gap:.5rem; min-height:50px; padding:0 22px; border-radius:var(--r-sm);
+  font-weight:600; font-size:15px; white-space:nowrap; text-decoration:none;
+  transition:background .18s var(--e), color .18s var(--e),
+             border-color .18s var(--e), transform .12s var(--e), box-shadow .18s var(--e);
+}
+.btn:hover{text-decoration:none}
+.btn:active:not(:disabled){transform:scale(.985)}
+.btn:focus-visible{outline:none;box-shadow:0 0 0 3px var(--brand-100),0 0 0 4px var(--brand)}
+.btn:disabled{cursor:not-allowed;opacity:.6}
+
+.btn-pri{background:var(--brand);color:#fff;box-shadow:0 6px 18px rgba(189,81,123,.28)}
+.btn-pri:hover:not(:disabled){background:var(--brand-600);box-shadow:0 8px 22px rgba(189,81,123,.34)}
 .btn-ghost{background:#fff;border:1px solid var(--line);color:var(--body)}
-.btn-sm{padding:8px 14px;font-size:13px}
+.btn-ghost:hover:not(:disabled){border-color:var(--brand);color:var(--brand)}
 .btn-wide{width:100%}
+.btn-sm{min-height:40px;padding:0 15px;font-size:14px;border-radius:10px}
 
-/* ── sign in ── */
-.gate{display:grid;place-items:center;padding:30px 0}
-.gate-card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);
-           box-shadow:var(--sh-md);padding:32px 28px;width:100%;max-width:410px;text-align:center}
-.gate-card img{width:72px;height:72px;object-fit:contain;margin-bottom:14px}
-.gate-card h1{font-size:21px;margin-bottom:7px}
-.gate-card p.lead{color:var(--muted);font-size:14px;margin:0 0 22px}
+/* Spinner replaces the label in place, so the button never resizes. */
+.btn[data-busy="1"]{color:transparent!important;pointer-events:none}
+.btn[data-busy="1"]::after{
+  content:'';position:absolute;width:18px;height:18px;border-radius:50%;
+  border:2px solid currentColor;border-top-color:transparent;
+  color:#fff;animation:spin .6s linear infinite;
+}
+.btn-ghost[data-busy="1"]::after{color:var(--brand)}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── the sign-in card ── */
+.gate{display:grid;place-items:center;padding:min(7vh,54px) 0}
+.card-auth{
+  background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);
+  box-shadow:var(--sh-md);padding:34px 30px;width:100%;max-width:420px;text-align:center;
+}
+.card-auth img.mk{width:66px;height:66px;object-fit:contain;margin-bottom:16px}
+.card-auth h1{font-size:23px;margin-bottom:8px}
+.card-auth .lead{color:var(--muted);font-size:14.5px;margin:0 0 24px;line-height:1.6}
+
+.step{animation:rise .34s var(--e) both}
+@keyframes rise{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .step{animation:none}
+  .btn:active:not(:disabled){transform:none}
+}
+
 .field{display:block;text-align:left;margin-bottom:14px}
-.field span{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px}
-.field input{width:100%;padding:12px 14px;border:1px solid var(--line);
-             border-radius:var(--r-sm);background:#fff;outline:none}
+.field > span{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin-bottom:7px}
+.field input{
+  width:100%;min-height:50px;padding:0 15px;border:1px solid var(--line);
+  border-radius:var(--r-sm);background:#fff;outline:none;
+  transition:border-color .18s var(--e),box-shadow .18s var(--e);
+}
 .field input:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-100)}
-#code{letter-spacing:.42em;text-align:center;font-size:21px;font-weight:600;
-      font-family:ui-monospace,Menlo,monospace;padding-left:.42em}
-.sent-to{background:var(--brand-100);color:var(--brand-600);border-radius:var(--r-sm);
-         padding:9px 12px;font-size:13px;font-weight:500;margin-bottom:16px;word-break:break-word}
-.gate-alt{margin-top:16px;font-size:13px;color:var(--muted)}
-.gate-alt button{color:var(--brand);font-weight:600;text-decoration:underline}
+.field input::placeholder{color:#c5b3bb}
 
-/* ── history ── */
-.head{display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:22px}
-.head h1{font-size:23px}
-.head p{color:var(--muted);font-size:14px;margin:3px 0 0;word-break:break-word}
+#code{
+  letter-spacing:.5em; text-align:center; font-size:24px; font-weight:600;
+  font-family:ui-monospace,Menlo,monospace; padding-left:.5em; min-height:60px;
+}
+#code.is-bad{border-color:var(--red);animation:shake .34s}
+@keyframes shake{
+  0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)}
+  40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)}
+}
+
+.mailto{
+  display:inline-flex;align-items:center;gap:.45rem;background:var(--brand-100);
+  color:var(--brand-600);border-radius:999px;padding:7px 14px;font-size:13.5px;
+  font-weight:600;margin-bottom:20px;max-width:100%;
+}
+.mailto b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.alt{margin:16px 0 0;font-size:13.5px;color:var(--muted)}
+.alt button{color:var(--brand);font-weight:600;padding:4px 2px}
+.alt button:hover{text-decoration:underline}
+.alt button:disabled{color:var(--muted);cursor:not-allowed;text-decoration:none}
+.dot-sep{opacity:.45;margin:0 .3rem}
+
+/* ── bookings ── */
+.head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:24px}
+.head h1{font-size:24px}
+.head p{color:var(--muted);font-size:14px;margin:2px 0 0;word-break:break-word}
 .head .btn{margin-left:auto}
 
-.sec{margin-bottom:30px}
-.sec h2{font-size:15px;color:var(--muted);font-weight:600;margin-bottom:12px;
-        display:flex;align-items:center;gap:8px}
-.sec h2 b{background:var(--brand-100);color:var(--brand-600);border-radius:999px;
-          padding:1px 9px;font-size:12px}
+.sec{margin-bottom:32px}
+.sec h2{font-size:13px;color:var(--muted);font-weight:700;margin-bottom:13px;
+        text-transform:uppercase;letter-spacing:.06em}
 
 .card{background:#fff;border:1px solid var(--line);border-radius:var(--r);
-      box-shadow:var(--sh-sm);padding:17px 19px;margin-bottom:12px}
-.card-top{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:4px}
-.card h3{font-size:16px;flex:1;min-width:150px}
-.ref{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--muted);
-     background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:2px 7px}
-.pill{font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;
-      letter-spacing:.03em;text-transform:uppercase;white-space:nowrap}
+      box-shadow:var(--sh-sm);padding:18px 20px;margin-bottom:12px;
+      transition:box-shadow .2s var(--e),transform .2s var(--e)}
+.card:hover{box-shadow:var(--sh-md);transform:translateY(-2px)}
+.card-top{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.card h3{font-size:16.5px;flex:1;min-width:150px}
+.ref{display:inline-block;font-family:ui-monospace,Menlo,monospace;font-size:11px;
+     color:var(--muted);background:var(--soft);border:1px solid var(--line);
+     border-radius:6px;padding:2px 8px;margin-top:6px}
+.pill{font-size:11px;font-weight:700;padding:4px 11px;border-radius:999px;
+      letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
 .p-await{background:var(--accent-100);color:var(--accent-700)}
 .p-pending{background:var(--violet-100);color:var(--violet)}
 .p-confirmed{background:var(--green-100);color:var(--green-700)}
 .p-cancelled{background:var(--red-100);color:var(--red)}
 .p-new{background:var(--brand-100);color:var(--brand-600)}
 
-.rows{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));
-      gap:11px 18px;margin-top:13px;padding-top:13px;border-top:1px solid var(--line)}
-.rows div span{display:block;font-size:11px;color:var(--muted);margin-bottom:2px}
-.rows div b{font-weight:600;font-size:14px}
-.quote{margin-top:12px;background:var(--soft);border:1px solid var(--line);
-       border-radius:var(--r-sm);padding:11px 13px;font-size:14px;color:var(--body);
+.rows{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+      gap:12px 18px;margin-top:15px;padding-top:15px;border-top:1px solid var(--line)}
+.rows div span{display:block;font-size:11.5px;color:var(--muted);margin-bottom:2px}
+.rows div b{font-weight:600;font-size:14.5px}
+.quote{margin-top:13px;background:var(--soft);border:1px solid var(--line);
+       border-radius:var(--r-sm);padding:12px 14px;font-size:14px;color:var(--body);
        white-space:pre-wrap;word-break:break-word}
-.hint{font-size:13px;color:var(--muted);margin-top:11px}
+.hint{font-size:13.5px;color:var(--muted);margin:12px 0 0}
 
-.msg{padding:11px 14px;border-radius:var(--r-sm);font-size:13.5px;margin-bottom:14px;
-     font-weight:500;text-align:left;display:none}
+.msg{padding:12px 15px;border-radius:var(--r-sm);font-size:14px;margin-bottom:16px;
+     font-weight:500;text-align:left;display:none;animation:rise .26s var(--e) both}
 .msg.show{display:block}
 .msg.bad{background:var(--red-100);color:var(--red)}
 .msg.ok{background:var(--green-100);color:var(--green-700)}
 
-.empty{background:#fff;border:1px dashed var(--line);border-radius:var(--r);
-       padding:30px 22px;text-align:center;color:var(--muted);font-size:14px}
-.empty a{font-weight:600}
-.skel{height:92px;border-radius:var(--r);border:1px solid var(--line);margin-bottom:12px;
+/* ── nothing booked yet ── */
+.blank{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);
+       box-shadow:var(--sh-sm);padding:46px 28px;text-align:center}
+.blank .emo{font-size:40px;line-height:1;margin-bottom:14px}
+.blank h2{font-size:20px;margin-bottom:8px}
+.blank p{color:var(--muted);font-size:15px;margin:0 auto 24px;max-width:38ch;line-height:1.65}
+.blank .acts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+.skel{height:104px;border-radius:var(--r);border:1px solid var(--line);margin-bottom:12px;
       background:linear-gradient(90deg,#fff,var(--soft),#fff);background-size:200% 100%;
-      animation:sh 1.2s infinite}
+      animation:sh 1.25s infinite}
 @keyframes sh{to{background-position:-200% 0}}
+
 @media(max-width:560px){
-  .wrap{padding:20px 13px 56px}
+  .wrap{padding:20px 14px 60px}
+  .card-auth{padding:28px 22px}
   .head .btn{margin-left:0}
+  .blank .acts .btn{width:100%}
 }
 </style>
 </head>
@@ -145,48 +206,49 @@ a{color:var(--brand)}
 
 <div class="wrap">
 
-  <!-- ── step 1: email ── -->
+  <!-- ── email ── -->
   <section class="gate" id="stepEmail" hidden>
-    <form class="gate-card" id="emailForm">
-      <img src="assets/logo-256.png" alt="Kanishka Creates" width="72" height="72">
-      <h1>Your history</h1>
-      <p class="lead">See every session you've booked and every enquiry you've sent.
-         Enter your email and we'll send a one-time code.</p>
+    <form class="card-auth step" id="emailForm" novalidate>
+      <img class="mk" src="assets/logo-256.png" alt="Kanishka Creates" width="66" height="66">
+      <h1>Your bookings</h1>
+      <p class="lead">Enter the email you booked with and we'll send you a code.</p>
       <div class="msg bad" id="emailMsg"></div>
       <label class="field">
         <span>Email address</span>
-        <input type="email" id="email" autocomplete="email" required placeholder="you@example.com">
+        <input type="email" id="email" autocomplete="email" inputmode="email"
+               required placeholder="you@example.com">
       </label>
-      <button class="btn btn-pri btn-wide" type="submit" id="emailBtn">Send me a code</button>
+      <button class="btn btn-pri btn-wide" type="submit" id="emailBtn">Continue</button>
     </form>
   </section>
 
-  <!-- ── step 2: code ── -->
+  <!-- ── code ── -->
   <section class="gate" id="stepCode" hidden>
-    <form class="gate-card" id="codeForm">
-      <img src="assets/logo-256.png" alt="Kanishka Creates" width="72" height="72">
-      <h1>Check your email</h1>
-      <p class="lead">We sent a 6-digit code. It expires in 10 minutes.</p>
-      <div class="sent-to" id="sentTo"></div>
+    <form class="card-auth step" id="codeForm" novalidate>
+      <img class="mk" src="assets/logo-256.png" alt="Kanishka Creates" width="66" height="66">
+      <h1>Enter your code</h1>
+      <p class="lead">We sent a 6-digit code. It opens your bookings straight away.</p>
+      <div class="mailto"><span>✉</span><b id="sentTo"></b></div>
       <div class="msg bad" id="codeMsg"></div>
       <label class="field">
         <span>6-digit code</span>
         <input type="text" id="code" inputmode="numeric" autocomplete="one-time-code"
-               maxlength="6" pattern="[0-9]*" required placeholder="000000">
+               maxlength="6" pattern="[0-9]*" required placeholder="······" aria-describedby="codeMsg">
       </label>
-      <button class="btn btn-pri btn-wide" type="submit" id="codeBtn">See my history</button>
-      <p class="gate-alt">
-        Didn't get it? <button type="button" id="resendBtn">Send again</button>
-        · <button type="button" id="changeBtn">Use another email</button>
+      <button class="btn btn-pri btn-wide" type="submit" id="codeBtn">Open my bookings</button>
+      <p class="alt">
+        <button type="button" id="resendBtn">Resend code</button>
+        <span class="dot-sep">·</span>
+        <button type="button" id="changeBtn">Change email</button>
       </p>
     </form>
   </section>
 
-  <!-- ── history ── -->
+  <!-- ── bookings ── -->
   <section id="view" hidden>
     <div class="head">
       <div>
-        <h1 id="hi">Your history</h1>
+        <h1 id="hi">Your bookings</h1>
         <p id="who"></p>
       </div>
       <button class="btn btn-ghost btn-sm" type="button" id="outBtn">Sign out</button>
@@ -203,14 +265,32 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) =>
   ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
 
 let pendingEmail = '';
+let verifying = false;
 
 function show(which) {
-  for (const id of ['stepEmail', 'stepCode', 'view']) $('#' + id).hidden = id !== which;
+  for (const id of ['stepEmail', 'stepCode', 'view']) {
+    const el = $('#' + id);
+    const on = id === which;
+    // Re-trigger the entrance animation each time a step becomes visible.
+    if (on && el.hidden) {
+      const inner = el.querySelector('.step');
+      if (inner) { inner.style.animation = 'none'; void inner.offsetWidth; inner.style.animation = ''; }
+    }
+    el.hidden = !on;
+  }
 }
+
 function note(sel, text, kind) {
   const el = $(sel);
   el.className = 'msg ' + kind + (text ? ' show' : '');
   el.textContent = text || '';
+}
+
+/** Swap a button into its spinner state without letting it change width. */
+function busy(sel, on) {
+  const b = $(sel);
+  if (on) { b.dataset.busy = '1'; b.disabled = true; }
+  else { delete b.dataset.busy; b.disabled = false; }
 }
 
 async function api(path, opts = {}) {
@@ -221,69 +301,107 @@ async function api(path, opts = {}) {
   });
   let data = {};
   try { data = await res.json(); } catch {}
-  if (!res.ok) throw new Error(data.error || 'Something went wrong.');
+  if (!res.ok) throw new Error(data.error || 'Something went wrong. Please try again.');
   return data;
 }
 
-/* ── step 1 ── */
+/* ── email step ── */
 $('#emailForm').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const btn = $('#emailBtn');
   const email = $('#email').value.trim().toLowerCase();
+  if (!email || !email.includes('@')) {
+    return note('#emailMsg', 'Please enter a valid email address.', 'bad');
+  }
   note('#emailMsg', '', 'bad');
-  btn.disabled = true; btn.textContent = 'Sending…';
+  busy('#emailBtn', true);
   try {
     await api('/api/history/session', { method: 'POST', body: JSON.stringify({ email }) });
     pendingEmail = email;
-    $('#sentTo').textContent = 'Code sent to ' + email;
+    $('#sentTo').textContent = email;
+    $('#code').value = '';
     show('stepCode');
-    $('#code').focus();
+    setTimeout(() => $('#code').focus(), 220);
   } catch (err) {
     note('#emailMsg', err.message, 'bad');
   } finally {
-    btn.disabled = false; btn.textContent = 'Send me a code';
+    busy('#emailBtn', false);
   }
 });
 
-/* ── step 2 ── */
-$('#codeForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const btn = $('#codeBtn');
+/* ── code step ── */
+async function submitCode() {
+  if (verifying) return;
+  const code = $('#code').value.replace(/\D/g, '');
+  if (code.length !== 6) return note('#codeMsg', 'Enter all 6 digits.', 'bad');
+
+  verifying = true;
   note('#codeMsg', '', 'bad');
-  btn.disabled = true; btn.textContent = 'Checking…';
+  busy('#codeBtn', true);
   try {
     await api('/api/history/session', {
-      method: 'PUT',
-      body: JSON.stringify({ email: pendingEmail, code: $('#code').value }),
+      method: 'PUT', body: JSON.stringify({ email: pendingEmail, code }),
     });
     $('#code').value = '';
     await load();
   } catch (err) {
+    const el = $('#code');
+    el.classList.add('is-bad');
+    setTimeout(() => el.classList.remove('is-bad'), 400);
+    el.value = '';
+    el.focus();
     note('#codeMsg', err.message, 'bad');
   } finally {
-    btn.disabled = false; btn.textContent = 'See my history';
+    verifying = false;
+    busy('#codeBtn', false);
   }
+}
+
+$('#codeForm').addEventListener('submit', (e) => { e.preventDefault(); submitCode(); });
+
+// Digits only, and submit the moment all six are in — nobody should have to
+// read a code, type it, then go hunting for a button.
+$('#code').addEventListener('input', (e) => {
+  const cleaned = e.target.value.replace(/\D/g, '').slice(0, 6);
+  if (cleaned !== e.target.value) e.target.value = cleaned;
+  if (cleaned.length === 6) submitCode();
 });
 
 $('#resendBtn').addEventListener('click', async () => {
+  const btn = $('#resendBtn');
+  btn.disabled = true;
   note('#codeMsg', '', 'bad');
   try {
     await api('/api/history/session', { method: 'POST', body: JSON.stringify({ email: pendingEmail }) });
-    note('#codeMsg', 'Sent again — check your inbox.', 'ok');
+    note('#codeMsg', 'New code sent. Check your inbox.', 'ok');
   } catch (err) {
     note('#codeMsg', err.message, 'bad');
   }
+  // The server throttles resends to once a minute; mirror that here so the
+  // button cannot be hammered into an error message.
+  let left = 60;
+  btn.textContent = `Resend in ${left}s`;
+  const tick = setInterval(() => {
+    left -= 1;
+    if (left <= 0) {
+      clearInterval(tick);
+      btn.textContent = 'Resend code';
+      btn.disabled = false;
+    } else {
+      btn.textContent = `Resend in ${left}s`;
+    }
+  }, 1000);
 });
 
 $('#changeBtn').addEventListener('click', () => {
   note('#emailMsg', '', 'bad');
   show('stepEmail');
-  $('#email').focus();
+  setTimeout(() => $('#email').focus(), 220);
 });
 
 $('#outBtn').addEventListener('click', async () => {
   try { await api('/api/history/session', { method: 'DELETE' }); } catch {}
   pendingEmail = '';
+  $('#email').value = '';
   show('stepEmail');
 });
 
@@ -310,10 +428,12 @@ function bookingCard(b) {
   return `
   <article class="card">
     <div class="card-top">
-      <h3>${esc(b.planLabel)}</h3>
+      <div>
+        <h3>${esc(b.planLabel)}</h3>
+        <span class="ref">${esc(b.bookingId)}</span>
+      </div>
       <span class="pill ${cls}">${esc(label)}</span>
     </div>
-    <span class="ref">${esc(b.bookingId)}</span>
     <div class="rows">
       <div><span>Attending</span><b>${esc(b.modeLabel)}</b></div>
       <div><span>${b.kind === 'trial' ? 'Date &amp; time' : 'Runs'}</span><b>${when}</b></div>
@@ -322,7 +442,7 @@ function bookingCard(b) {
     </div>
     ${b.topic ? `<div class="quote">${esc(b.topic)}</div>` : ''}
     ${b.status === 'awaiting_confirmation'
-      ? `<p class="hint">We'll confirm this on WhatsApp once your payment is received.</p>` : ''}
+      ? `<p class="hint">We'll confirm on WhatsApp once your payment reaches us.</p>` : ''}
   </article>`;
 }
 
@@ -343,22 +463,27 @@ function enquiryCard(c) {
 
 function render(data) {
   const first = String(data.name || '').split(' ')[0];
-  $('#hi').textContent = first ? `Hello, ${first}` : 'Your history';
+  $('#hi').textContent = first ? `Hi, ${first}` : 'Your bookings';
   $('#who').textContent = data.email;
 
   const parts = [];
   if (data.bookings.length) {
-    parts.push(`<section class="sec"><h2>Sessions <b>${data.bookings.length}</b></h2>
-                ${data.bookings.map(bookingCard).join('')}</section>`);
+    parts.push(`<section class="sec"><h2>Sessions</h2>${data.bookings.map(bookingCard).join('')}</section>`);
   }
   if (data.enquiries.length) {
-    parts.push(`<section class="sec"><h2>Project enquiries <b>${data.enquiries.length}</b></h2>
-                ${data.enquiries.map(enquiryCard).join('')}</section>`);
+    parts.push(`<section class="sec"><h2>Project enquiries</h2>${data.enquiries.map(enquiryCard).join('')}</section>`);
   }
+
   $('#body').innerHTML = parts.length ? parts.join('') : `
-    <div class="empty">
-      <p>Nothing on file for this email yet.</p>
-      <p><a href="/#booking">Book a session</a> or <a href="/#contact">send an enquiry</a> to get started.</p>
+    <div class="blank">
+      <div class="emo">📅</div>
+      <h2>No bookings yet</h2>
+      <p>Nothing booked on this email. Start with a one-hour trial for ₹200 and
+         see whether it's worth your time.</p>
+      <div class="acts">
+        <a class="btn btn-pri" href="/#booking">Book a consultation</a>
+        <a class="btn btn-ghost" href="/#contact">Send a project enquiry</a>
+      </div>
     </div>`;
 }
 
@@ -370,7 +495,7 @@ async function load() {
     render(await api('/api/history/me'));
   } catch (err) {
     $('#body').innerHTML = '';
-    note('#msg', err.message, 'bad');
+    note('#emailMsg', err.message, 'bad');
     show('stepEmail');
   }
 }
@@ -382,6 +507,7 @@ async function load() {
     if (s.signedIn) return load();
   } catch {}
   show('stepEmail');
+  setTimeout(() => $('#email').focus(), 120);
 })();
 </script>
 </body>
