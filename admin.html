@@ -223,6 +223,7 @@ const STATUSES = [
   ['confirmed',             'Confirmed'],
   ['cancelled',             'Cancelled'],
   ['all',                   'All'],
+  ['enquiries',             'Enquiries'],
 ];
 
 let state = { status: 'awaiting_confirmation', q: '', skip: 0, counts: {}, rows: [], busy: false };
@@ -345,23 +346,61 @@ function card(b) {
   </div>`;
 }
 
+const E_PILL = { new: ['p-pending', 'New'], replied: ['p-confirmed', 'Replied'],
+                 closed: ['p-cancelled', 'Closed'] };
+
+function enquiryCard(c) {
+  const [cls, label] = E_PILL[c.status] || ['p-pending', c.status];
+  const when = c.createdAt
+    ? new Date(c.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+    : '';
+  const wa = c.phone ? c.phone.replace(/\D/g, '') : '';
+
+  return `
+  <div class="card" data-cid="${esc(c.id)}">
+    <div class="card-top">
+      <div class="who">
+        <h3>${esc(c.name)}</h3>
+        <div class="contact">${esc(c.email)}${c.phone ? ' · ' + esc(c.phone) : ''}</div>
+      </div>
+      <span class="pill ${cls}">${esc(label)}</span>
+    </div>
+    <div class="grid">
+      ${c.service ? `<div><span>Service</span><b>${esc(c.service)}</b></div>` : ''}
+      ${c.budget ? `<div><span>Budget</span><b>${esc(c.budget)}</b></div>` : ''}
+      ${when ? `<div><span>Sent</span><b>${esc(when)}</b></div>` : ''}
+    </div>
+    ${c.message ? `<div class="topic">${esc(c.message)}</div>` : ''}
+    <div class="actions">
+      <a class="btn btn-ghost" href="mailto:${esc(c.email)}">Reply by email</a>
+      ${wa ? `<a class="btn btn-ghost" href="https://wa.me/${esc(wa)}" target="_blank" rel="noopener">WhatsApp</a>` : ''}
+      ${c.status !== 'replied' ? `<button class="btn btn-go" data-cstatus="replied">Mark replied</button>` : ''}
+      ${c.status !== 'closed' ? `<button class="btn btn-danger" data-cstatus="closed">Close</button>` : ''}
+    </div>
+  </div>`;
+}
+
 async function load(reset = false) {
   if (state.busy) return;
   state.busy = true;
   if (reset) { state.skip = 0; state.rows = []; $('#list').innerHTML = '<div class="skel"></div><div class="skel"></div>'; }
 
   try {
-    const params = new URLSearchParams({ status: state.status, skip: state.skip, limit: 50 });
+    const enquiries = state.status === 'enquiries';
+    const params = new URLSearchParams({ skip: state.skip, limit: 50 });
+    if (!enquiries) params.set('status', state.status);
     if (state.q) params.set('q', state.q);
 
-    const data = await api('/api/admin/bookings?' + params);
-    state.counts = data.counts || {};
-    state.rows = state.rows.concat(data.bookings);
+    const data = await api(`/api/admin/${enquiries ? 'contacts' : 'bookings'}?` + params);
+    // Enquiry counts are their own statuses, so only bookings drive the tabs.
+    if (!enquiries) state.counts = { ...state.counts, ...(data.counts || {}) };
+    else state.counts = { ...state.counts, enquiries: data.counts?.all ?? 0 };
+    state.rows = state.rows.concat(enquiries ? data.enquiries : data.bookings);
 
     renderTabs();
     $('#list').innerHTML = state.rows.length
-      ? state.rows.map(card).join('')
-      : `<div class="empty"><h3>Nothing here</h3><p>No bookings match this view.</p></div>`;
+      ? state.rows.map(enquiries ? enquiryCard : card).join('')
+      : `<div class="empty"><h3>Nothing here</h3><p>No ${enquiries ? 'enquiries' : 'bookings'} match this view.</p></div>`;
 
     $('#moreBtn').hidden = state.rows.length >= data.total;
     state.skip = state.rows.length;
@@ -375,6 +414,23 @@ async function load(reset = false) {
 
 /* ── actions ─────────────────────────────────────────────────────────── */
 $('#list').addEventListener('click', async (e) => {
+  const cBtn = e.target.closest('button[data-cstatus]');
+  if (cBtn) {
+    const id = cBtn.closest('.card').dataset.cid;
+    cBtn.disabled = true;
+    try {
+      await api('/api/admin/contacts', {
+        method: 'POST', body: JSON.stringify({ id, status: cBtn.dataset.cstatus }),
+      });
+      say(`Enquiry marked ${cBtn.dataset.cstatus}.`, 'ok');
+      await load(true);
+    } catch (err) {
+      say(err.message, 'bad');
+      cBtn.disabled = false;
+    }
+    return;
+  }
+
   const btn = e.target.closest('button[data-act]');
   if (!btn) return;
 

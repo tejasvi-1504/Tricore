@@ -53,6 +53,11 @@ async function ensureIndexes(db) {
       db.collection('bookings').createIndex({ 'payment.orderId': 1 }, { sparse: true }),
       db.collection('contacts').createIndex({ createdAt: -1 }),
       db.collection('companies').createIndex({ order: 1 }),
+      // One live code per email, and Mongo expires them on its own.
+      db.collection('otps').createIndex({ email: 1 }, { unique: true }),
+      db.collection('otps').createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 }),
+      db.collection('bookings').createIndex({ email: 1, createdAt: -1 }),
+      db.collection('contacts').createIndex({ email: 1, createdAt: -1 }),
     ]);
   } catch (err) {
     cache.indexed = false;
@@ -67,4 +72,6 @@ export const collections = {
   contacts: (db) => db.collection('contacts'),
   /** Editable "interviewed at" list, managed from the admin panel. */
   companies: (db) => db.collection('companies'),
+  /** Short-lived one-time codes for the history page sign-in. */
+  otps: (db) => db.collection('otps'),
 };
