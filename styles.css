@@ -1549,3 +1549,8 @@ img.logo-mk { object-fit: contain; }
   .acct { width: 100%; max-width: none; justify-content: center; padding: .55rem 1rem; }
   .acct-nm { font-size: 1rem; }
 }
+
+/* Footer bottom row: LinkedIn and the visitor's own bookings. */
+.ftr-social { display: flex; gap: 1.25rem; }
+.ftr-social a { font-size: .9375rem; transition: color .2s var(--e); }
+.ftr-social a:hover { color: #fff; }

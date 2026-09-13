@@ -6,3 +6,5 @@ Disallow: /admin.html
 Disallow: /history.html
 Disallow: /booking-status.html
 Disallow: /api/
+
+Sitemap: https://kanishkacreates.vercel.app/sitemap.xml
