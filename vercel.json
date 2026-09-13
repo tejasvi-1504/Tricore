@@ -34,7 +34,7 @@
       ]
     },
     {
-      "source": "/(.*)\\.(css|js)",
+      "source": "/styles.css",
       "headers": [
         {
           "key": "Cache-Control",
@@ -43,7 +43,42 @@
       ]
     },
     {
-      "source": "/(admin|history|booking-status)\\.html",
+      "source": "/script.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, stale-while-revalidate=86400"
+        }
+      ]
+    },
+    {
+      "source": "/admin.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/history.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/booking-status.html",
       "headers": [
         {
           "key": "Cache-Control",
