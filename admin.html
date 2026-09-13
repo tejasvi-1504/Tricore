@@ -25,6 +25,11 @@
   --f-script:'Great Vibes','Segoe Script',cursive;
 }
 *{box-sizing:border-box}
+/* The sign-in and panel views are toggled with the `hidden` attribute, and both
+   carry a display value of their own. An author `display` rule outranks the UA
+   sheet's [hidden]{display:none}, so without this the hidden view stays on
+   screen — logging in just stacked the panel under the still-visible form. */
+[hidden]{display:none!important}
 body{margin:0;background:var(--soft);font-family:var(--f-b);color:var(--ink);
      font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
 h1,h2,h3{font-family:var(--f-h);margin:0}
