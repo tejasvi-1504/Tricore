@@ -48,13 +48,19 @@ function sign(payload) {
   return crypto.createHmac('sha256', signingKey()).update(payload).digest('hex');
 }
 
-export function issueSession(email) {
+/**
+ * The display name rides inside the signed payload rather than being looked up
+ * per request — the navbar needs it on every page load, and a database round
+ * trip for a greeting is not worth it. Signed, so it cannot be edited.
+ */
+export function issueSession(email, name = '') {
   const exp = Date.now() + SESSION_TTL_MS;
-  const payload = `${Buffer.from(email).toString('base64url')}.${exp}`;
+  const body = JSON.stringify({ e: email, n: String(name || '').slice(0, 80) });
+  const payload = `${Buffer.from(body).toString('base64url')}.${exp}`;
   return `${payload}.${sign(payload)}`;
 }
 
-/** Returns the verified email, or null. */
+/** Returns { email, name } for a valid session, or null. */
 export function readSession(req) {
   if (!signingKey()) return null;
   const token = readCookie(req, COOKIE_NAME);
@@ -71,8 +77,10 @@ export function readSession(req) {
   if (!sameBuf(Buffer.from(sig, 'utf8'), Buffer.from(sign(payload), 'utf8'))) return null;
 
   try {
-    const email = Buffer.from(b64, 'base64url').toString('utf8');
-    return email.includes('@') ? email : null;
+    const raw = Buffer.from(b64, 'base64url').toString('utf8');
+    const { e, n } = JSON.parse(raw);
+    if (typeof e !== 'string' || !e.includes('@')) return null;
+    return { email: e, name: typeof n === 'string' ? n : '' };
   } catch {
     return null;
   }
@@ -102,9 +110,9 @@ function cookieAttrs(req, maxAgeSeconds) {
   ].filter(Boolean).join('; ');
 }
 
-export function setSessionCookie(req, res, email) {
+export function setSessionCookie(req, res, email, name = '') {
   res.setHeader('set-cookie',
-    `${COOKIE_NAME}=${encodeURIComponent(issueSession(email))}; ${cookieAttrs(req, SESSION_TTL_MS / 1000)}`);
+    `${COOKIE_NAME}=${encodeURIComponent(issueSession(email, name))}; ${cookieAttrs(req, SESSION_TTL_MS / 1000)}`);
 }
 
 export function clearSessionCookie(req, res) {

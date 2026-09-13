@@ -1009,3 +1009,28 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .catch(() => {});
 })();
+
+/* ── Account chip ──────────────────────────────────────────────────────────
+   The navbar ships signed-out. If the visitor already has a session we swap
+   in their initial and first name, so the page never flashes the wrong state
+   for people who are not signed in (the common case). */
+(function accountChip() {
+  const chip = document.getElementById('acct');
+  if (!chip) return;
+
+  fetch('/api/history/session', { credentials: 'same-origin' })
+    .then((r) => (r.ok ? r.json() : null))
+    .then((s) => {
+      if (!s || !s.signedIn) return;
+
+      const label = (s.name || s.email || '').trim();
+      const first = label.includes('@') ? label.split('@')[0] : label.split(' ')[0];
+      if (!first) return;
+
+      chip.classList.add('is-in');
+      chip.title = `Signed in as ${s.email} — see your bookings`;
+      document.getElementById('acctAv').textContent = first[0];
+      document.getElementById('acctNm').textContent = first;
+    })
+    .catch(() => {});
+})();

@@ -11,7 +11,7 @@
  * test whether somebody is a customer.
  */
 import { json, methodGuard, readBody, str, isEmail, rateLimited } from '../_lib/http.js';
-import { getDb, ConfigError } from '../_lib/db.js';
+import { getDb, collections, ConfigError } from '../_lib/db.js';
 import {
   isConfigured, issueCode, verifyCode,
   readSession, setSessionCookie, clearSessionCookie,
@@ -22,8 +22,12 @@ export default async function handler(req, res) {
   if (methodGuard(req, res, ['GET', 'POST', 'PUT', 'DELETE'])) return;
 
   if (req.method === 'GET') {
-    const email = readSession(req);
-    return json(res, 200, { signedIn: Boolean(email), email: email || undefined });
+    const me = readSession(req);
+    return json(res, 200, {
+      signedIn: Boolean(me),
+      email: me?.email,
+      name: me?.name || undefined,
+    });
   }
 
   if (req.method === 'DELETE') {
@@ -87,8 +91,13 @@ export default async function handler(req, res) {
     const out = await verifyCode(db, email, body.code);
     if (!out.ok) return json(res, 401, { error: out.error });
 
-    setSessionCookie(req, res, email);
-    return json(res, 200, { ok: true, signedIn: true, email });
+    // Greet them by the name they gave when booking or enquiring.
+    const known = await collections.bookings(db).findOne({ email }, { projection: { name: 1 } })
+      ?? await collections.contacts(db).findOne({ email }, { projection: { name: 1 } });
+    const name = known?.name || '';
+
+    setSessionCookie(req, res, email, name);
+    return json(res, 200, { ok: true, signedIn: true, email, name });
   } catch (err) {
     console.error('[history/session] verify failed:', err.message);
     return json(res, 500, { error: 'Something went wrong. Please try again.' });

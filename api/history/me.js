@@ -12,8 +12,9 @@ import { readSession } from '../_lib/userAuth.js';
 export default async function handler(req, res) {
   if (methodGuard(req, res, ['GET'])) return;
 
-  const email = readSession(req);
-  if (!email) return json(res, 401, { error: 'Not signed in.' });
+  const me = readSession(req);
+  if (!me) return json(res, 401, { error: 'Not signed in.' });
+  const { email } = me;
 
   let db;
   try {
@@ -32,7 +33,7 @@ export default async function handler(req, res) {
 
     return json(res, 200, {
       email,
-      name: bookings[0]?.name || enquiries[0]?.name || '',
+      name: me.name || bookings[0]?.name || enquiries[0]?.name || '',
       bookings: bookings.map(bookingView),
       enquiries: enquiries.map(enquiryView),
     });
