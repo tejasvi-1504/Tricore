@@ -199,14 +199,18 @@ document.addEventListener('DOMContentLoaded', () => {
   if (mentorImg && mentorFb) {
     // Try the common extensions before falling back, so dropping in a .jpg
     // when the markup says .jpeg (or vice versa) still works.
-    const CANDIDATES = ['assets/mentor.jpeg', 'assets/mentor.jpg',
-                        'assets/mentor.png', 'assets/mentor.webp'];
+    const CANDIDATES = ['assets/mentor-420.jpg', 'assets/mentor.jpeg',
+                        'assets/mentor.jpg', 'assets/mentor.png', 'assets/mentor.webp'];
     let attempt = CANDIDATES.indexOf(mentorImg.getAttribute('src'));
     if (attempt < 0) attempt = 0;
 
     function nextSource() {
       attempt += 1;
       if (attempt < CANDIDATES.length) {
+        // srcset outranks src, so it has to go or the browser keeps picking
+        // the file we are trying to move away from.
+        mentorImg.removeAttribute('srcset');
+        mentorImg.removeAttribute('sizes');
         mentorImg.src = CANDIDATES[attempt];
         return;
       }

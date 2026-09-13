@@ -18,6 +18,35 @@
 <meta property="og:image" content="assets/logo-512.png">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="assets/logo-512.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "Kanishka Creates",
+  "description": "Career consulting for B.Tech students, plus custom CRMs, e-commerce stores and websites for Indian businesses.",
+  "areaServed": "IN",
+  "priceRange": "₹₹",
+  "founder": {
+    "@type": "Person",
+    "name": "Kanishka Sharma",
+    "jobTitle": "Software Development Engineer",
+    "worksFor": { "@type": "Organization", "name": "BharatPe" }
+  },
+  "address": { "@type": "PostalAddress", "addressLocality": "Meerut", "addressRegion": "Uttar Pradesh", "addressCountry": "IN" },
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "customer service",
+    "telephone": "+91-9410891738",
+    "availableLanguage": ["en", "hi"]
+  },
+  "makesOffer": [
+    { "@type": "Offer", "name": "1-Day Trial", "price": "200", "priceCurrency": "INR",
+      "itemOffered": { "@type": "Service", "name": "Career consulting trial session" } },
+    { "@type": "Offer", "name": "Monthly Programme", "price": "2000", "priceCurrency": "INR",
+      "itemOffered": { "@type": "Service", "name": "Weekend career mentoring programme" } }
+  ]
+}
+</script>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -243,7 +272,11 @@
     <div class="mentor reveal">
       <div class="mentor-photo">
         <!-- Photo: assets/mentor.jpeg — .jpg/.png/.webp are tried too, see assets/README.md -->
-        <img id="mentorImg" src="assets/mentor.jpeg" alt="Kanishka Sharma, SDE at BharatPe and career mentor at Kanishka Creates" width="420" height="420">
+        <img id="mentorImg" src="assets/mentor-420.jpg"
+             srcset="assets/mentor-420.jpg 420w, assets/mentor-840.jpg 840w"
+             sizes="(max-width: 900px) 90vw, 420px"
+             alt="Kanishka Sharma, SDE at BharatPe and career mentor at Kanishka Creates"
+             width="420" height="560" loading="lazy" decoding="async">
         <div class="mentor-fallback" id="mentorFallback" hidden>
           <span class="mf-initials">KS</span>
           <span class="mf-hint">Add your photo →<br><code>assets/mentor.jpeg</code></span>

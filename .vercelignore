@@ -1,0 +1,9 @@
+# Kept in git as the master artwork, but never served — the site uses the
+# resized logo-96/256/512 files. Shipping it costs 1.1 MB per deploy.
+assets/logo.png
+
+# Local development only.
+dev-server.mjs
+.env.example
+README.md
+assets/README.md
