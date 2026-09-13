@@ -288,10 +288,9 @@ function sessionHtml(s) {
 }
 
 /* ── overview ── */
-function overviewHtml() {
-  const t = DATA.track;
+function trackHtml(t) {
   return `
-  <div class="mod-head">
+  <div class="mod-head" style="margin-top:26px">
     <h2>${esc(t.title)}</h2>
     <p>${esc(t.note)}</p>
   </div>
@@ -308,9 +307,26 @@ function overviewHtml() {
           }).join('')}</div>
         </div>
       </div>`).join('')}
-  </div>
+  </div>`;
+}
 
-  <div class="mod-head" style="margin-top:28px"><h2>How to teach it</h2>
+function overviewHtml() {
+  const totals = DATA.modules.reduce((a, m) => {
+    a.s += m.sessions.length;
+    a.t += m.sessions.reduce((n, s) => n + s.topics.length, 0);
+    a.m += m.sessions.reduce((n, s) => n + s.mins, 0);
+    return a;
+  }, { s: 0, t: 0, m: 0 });
+
+  return `
+  <div class="mod-head">
+    <h2>The plan</h2>
+    <p>${totals.s} sessions, ${totals.t} topics, about ${Math.round(totals.m / 60)} hours of material.
+       More than four weekends holds — the tracks below are two ways through it.</p>
+  </div>
+  ${DATA.tracks.map(trackHtml).join('')}
+
+  <div class="mod-head" style="margin-top:30px"><h2>How to teach it</h2>
     <p>Habits that apply to every session.</p></div>
   <div class="prin">
     ${DATA.principles.map(([a, b]) => `<div><b>${esc(a)}</b><span>${esc(b)}</span></div>`).join('')}

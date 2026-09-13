@@ -38,7 +38,7 @@ export default async function handler(req, res) {
         console.error('[admin/curriculum] dsa read failed:', err.message);
       }
     }
-    return json(res, 200, { modules: MODULES, track: TRACKS[0], principles: PRINCIPLES, dsa });
+    return json(res, 200, { modules: MODULES, tracks: TRACKS, principles: PRINCIPLES, dsa });
   }
 
   if (rateLimited(req, { key: 'admin-curriculum', max: 60, windowMs: 60000 })) {
