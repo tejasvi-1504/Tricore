@@ -7,6 +7,7 @@
  */
 import nodemailer from 'nodemailer';
 import { scheduleSummary } from './availability.js';
+import { googleCalendarUrl, icsFile } from './calendar.js';
 
 export const BOOKING_EMAIL = process.env.BOOKING_EMAIL || 'itskanishka1202@gmail.com';
 
@@ -32,7 +33,7 @@ export function isConfigured() {
   return Boolean(process.env.SMTP_USER && process.env.SMTP_PASS);
 }
 
-async function send({ to, subject, html, replyTo }) {
+async function send({ to, subject, html, replyTo, attachments }) {
   const tx = getTransporter();
   if (!tx) {
     console.warn('[mailer] SMTP not configured — skipping email:', subject);
@@ -45,6 +46,7 @@ async function send({ to, subject, html, replyTo }) {
       subject,
       html,
       ...(replyTo ? { replyTo } : {}),
+      ...(attachments?.length ? { attachments } : {}),
     });
     return true;
   } catch (err) {
@@ -82,6 +84,16 @@ function shell(title, rows, footer = '') {
     </div>
   </div>`;
 }
+
+/**
+ * Buttons for an email: inline-block anchors with padding, because flexbox and
+ * modern CSS are unreliable across Outlook, Gmail and Apple Mail.
+ */
+const button = (href, label, bg, fg = '#ffffff') => `
+  <a href="${esc(href)}" target="_blank" rel="noopener"
+     style="display:inline-block;background:${bg};color:${fg};text-decoration:none;
+            font-size:14px;font-weight:600;padding:11px 18px;border-radius:10px;
+            margin:0 8px 8px 0;border:1px solid ${bg}">${esc(label)}</a>`;
 
 const row = (k, v) => `
   <tr>
@@ -130,7 +142,7 @@ export function sendBookingNotification(booking) {
  * weekends. They need different wording, so branch on the plan kind rather than
  * telling a trial student about their "four weekends".
  */
-export function sendBookingConfirmation(booking) {
+export function sendBookingConfirmation(booking, meetLink = '') {
   const trial = booking.kind === 'trial';
   const online = booking.mode === 'online';
 
@@ -159,8 +171,24 @@ export function sendBookingConfirmation(booking) {
          time, for four weekends.
        </p>`;
 
+  // Actionable bits first: saving the date and joining the call are the two
+  // things anyone actually wants from this email.
+  const calUrl = googleCalendarUrl(booking, meetLink);
+  const actions = (meetLink || calUrl)
+    ? `<div style="margin:22px 0 4px">
+         ${meetLink ? button(meetLink, 'Join with Google Meet', '#bd517b') : ''}
+         ${calUrl ? button(calUrl, 'Add to Google Calendar', '#ffffff', '#95375b') : ''}
+       </div>
+       <p style="font-size:12px;color:#7b86a8;margin:4px 0 0">
+         ${meetLink
+            ? 'The same link works for every session — save it.'
+            : 'A calendar invite is attached too, for Apple Calendar and Outlook.'}
+       </p>`
+    : '';
+
   const footer = `${body}
-    <p style="font-size:13px;line-height:1.7;color:#4a5378;margin:10px 0 0">
+    ${actions}
+    <p style="font-size:13px;line-height:1.7;color:#4a5378;margin:14px 0 0">
       ${joining} Any questions, just reply to this email.
     </p>
     <p style="font-size:13px;line-height:1.7;color:#7b86a8;margin:10px 0 0">
@@ -175,6 +203,8 @@ export function sendBookingConfirmation(booking) {
       ? `Confirmed — your trial hour on ${booking.dateLabel}`
       : `You're enrolled — Kanishka Creates weekend programme from ${booking.dateLabel}`,
     html: shell(trial ? 'Trial confirmed' : 'Enrolment confirmed', rows, footer),
+    // Apple Calendar and Outlook open this directly; Google users get the button.
+    attachments: [icsFile(booking, meetLink)].filter(Boolean),
   });
 }
 

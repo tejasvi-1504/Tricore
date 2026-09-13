@@ -27,6 +27,7 @@ import {
 } from './_lib/availability.js';
 import { reserveSeat, releaseSeat } from './_lib/reservations.js';
 import { bookingWhatsappUrl } from './_lib/handoff.js';
+import { getSettings, meetLinkFor } from './_lib/settings.js';
 import * as cashfree from './_lib/cashfree.js';
 import { sendBookingNotification, sendBookingConfirmation } from './_lib/mailer.js';
 
@@ -155,9 +156,10 @@ export default async function handler(req, res) {
 
   /* ── free ──────────────────────────────────────────────────────────────── */
   if (amount <= 0) {
+    const meetLink = meetLinkFor(booking, await getSettings(db));
     await Promise.allSettled([
       sendBookingNotification(booking),
-      sendBookingConfirmation(booking),
+      sendBookingConfirmation(booking, meetLink),
     ]);
     return json(res, 201, {
       bookingId, status: 'confirmed', requiresPayment: false, booking: publicView(booking),

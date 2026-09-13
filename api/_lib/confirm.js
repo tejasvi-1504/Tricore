@@ -13,6 +13,7 @@ import { collections } from './db.js';
 import { releaseSeat } from './reservations.js';
 import * as cashfree from './cashfree.js';
 import { sendBookingConfirmation, sendBookingNotification, sendBookingCancelled } from './mailer.js';
+import { getSettings, meetLinkFor } from './settings.js';
 
 export async function settleBooking(db, bookingId) {
   const bookings = collections.bookings(db);
@@ -57,8 +58,9 @@ export async function settleBooking(db, bookingId) {
 
     const updated = result?.value ?? result;
     if (updated) {
+      const meetLink = meetLinkFor(updated, await getSettings(db));
       await Promise.allSettled([
-        sendBookingConfirmation(updated),
+        sendBookingConfirmation(updated, meetLink),
         sendBookingNotification(updated),
       ]);
       return { found: true, booking: updated, changed: true };
@@ -151,7 +153,8 @@ export async function confirmManualBooking(db, bookingId, opts = {}) {
     };
   }
 
-  const emailed = await sendBookingConfirmation(updated);
+  const meetLink = meetLinkFor(updated, await getSettings(db));
+  const emailed = await sendBookingConfirmation(updated, meetLink);
   return { found: true, booking: updated, changed: true, emailed };
 }
 

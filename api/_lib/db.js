@@ -74,4 +74,6 @@ export const collections = {
   companies: (db) => db.collection('companies'),
   /** Short-lived one-time codes for the history page sign-in. */
   otps: (db) => db.collection('otps'),
+  /** One document of editable site settings, e.g. the Google Meet room. */
+  settings: (db) => db.collection('settings'),
 };

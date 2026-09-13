@@ -194,6 +194,16 @@ header.bar h1{font-size:15px;font-weight:600;color:var(--muted);flex:1;min-width
   <div class="msg" id="msg"></div>
 
   <section class="panel">
+    <h2>Google Meet room</h2>
+    <span class="note">Sent as a "Join with Google Meet" button in every confirmation email for online sessions.</span>
+    <form class="co-add" id="meetForm">
+      <input id="meetInput" type="url" placeholder="https://meet.google.com/abc-defg-hij" autocomplete="off">
+      <button class="btn btn-primary" type="submit">Save</button>
+    </form>
+    <span class="note" id="meetState" style="margin:10px 0 0"></span>
+  </section>
+
+  <section class="panel">
     <h2>Interviewed at</h2>
     <span class="note" id="coNote">Shown as chips on the site. Changes appear immediately.</span>
     <ul class="co-list" id="coList"></ul>
@@ -269,7 +279,7 @@ $('#loginForm').addEventListener('submit', async (e) => {
     await api('/api/admin/login', { method: 'POST', body: JSON.stringify({ password: $('#pw').value }) });
     $('#pw').value = '';
     showPanel();
-    await Promise.all([load(true), loadCompanies()]);
+    await Promise.all([load(true), loadCompanies(), loadMeet()]);
   } catch (err) {
     box.className = 'msg bad show';
     box.textContent = err.message;
@@ -487,6 +497,36 @@ $('#q').addEventListener('input', (e) => {
   t = setTimeout(() => { state.q = e.target.value.trim(); load(true); }, 300);
 });
 
+/* ── Google Meet room ────────────────────────────────────────────────── */
+function renderMeet(d) {
+  $('#meetInput').value = d.meetLink || '';
+  $('#meetState').textContent = d.meetLink
+    ? (d.fromEnv ? 'Currently taken from the MEET_LINK environment variable.'
+                 : 'Saved. Confirmation emails for online sessions carry this link.')
+    : 'No link set — confirmation emails will attach a calendar invite only.';
+}
+
+async function loadMeet() {
+  try { renderMeet(await api('/api/admin/settings')); }
+  catch (err) { $('#meetState').textContent = err.message; }
+}
+
+$('#meetForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = e.target.querySelector('button');
+  btn.disabled = true;
+  try {
+    renderMeet(await api('/api/admin/settings', {
+      method: 'POST', body: JSON.stringify({ meetLink: $('#meetInput').value.trim() }),
+    }));
+    say('Meet link saved.', 'ok');
+  } catch (err) {
+    say(err.message, 'bad');
+  } finally {
+    btn.disabled = false;
+  }
+});
+
 /* ── interviewed-at list ─────────────────────────────────────────────── */
 function renderCompanies(data) {
   const list = $('#coList');
@@ -573,7 +613,7 @@ $('#coList').addEventListener('click', async (e) => {
     if (!s.authenticated) return showGate();
 
     showPanel();
-    await Promise.all([load(true), loadCompanies()]);
+    await Promise.all([load(true), loadCompanies(), loadMeet()]);
   } catch {
     showGate('Could not reach the server.');
   }

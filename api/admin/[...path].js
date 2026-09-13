@@ -5,5 +5,6 @@ import bookings from '../_lib/admin/bookings.js';
 import companies from '../_lib/admin/companies.js';
 import contacts from '../_lib/admin/contacts.js';
 import login from '../_lib/admin/login.js';
+import settings from '../_lib/admin/settings.js';
 
-export default makeDispatcher('admin', { action, bookings, companies, contacts, login }, 'admin');
+export default makeDispatcher('admin', { action, bookings, companies, contacts, login, settings }, 'admin');
