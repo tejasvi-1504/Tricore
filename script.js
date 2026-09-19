@@ -997,6 +997,13 @@ document.addEventListener('DOMContentLoaded', () => {
   fetch('/api/companies')
     .then((r) => (r.ok ? r.json() : null))
     .then((data) => {
+      // Same request carries the site flags the panel can switch.
+      if (data?.site?.showMentorPhoto === false) {
+        const img = document.getElementById('mentorImg');
+        const fb = document.getElementById('mentorFallback');
+        if (img && fb) { img.hidden = true; fb.hidden = false; }
+      }
+
       const names = (data?.companies || []).map((c) => c.name).filter(Boolean);
       if (!names.length) return;
 

@@ -8,17 +8,19 @@
 import { json, methodGuard } from './_lib/http.js';
 import { getDb } from './_lib/db.js';
 import { listCompanies, DEFAULTS } from './_lib/companies.js';
+import { getSettings } from './_lib/settings.js';
 
 export default async function handler(req, res) {
   if (methodGuard(req, res, ['GET'])) return;
 
   try {
     const db = await getDb();
-    const { companies } = await listCompanies(db);
+    const [{ companies }, settings] = await Promise.all([listCompanies(db), getSettings(db)]);
     res.setHeader('cache-control', 'public, max-age=60, stale-while-revalidate=300');
-    return json(res, 200, { companies });
+    // Also the public bootstrap for anything the panel can switch on the site.
+    return json(res, 200, { companies, site: { showMentorPhoto: settings.showMentorPhoto } });
   } catch (err) {
     console.error('[companies] falling back to defaults:', err.message);
-    return json(res, 200, { companies: DEFAULTS.map((name) => ({ name })), fallback: true });
+    return json(res, 200, { companies: DEFAULTS.map((name) => ({ name })), site: { showMentorPhoto: true }, fallback: true });
   }
 }

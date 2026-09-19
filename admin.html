@@ -9,20 +9,81 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
+<script>
+/* Set the theme on <html> before the stylesheet paints, so a non-default
+   choice never flashes the default palette first. */
+try { document.documentElement.dataset.theme = localStorage.getItem('kc-theme') || 'slate'; }
+catch { document.documentElement.dataset.theme = 'slate'; }
+</script>
 <style>
+/* ── themes ───────────────────────────────────────────────────────────────
+   Eight palettes, all generated so white-on-brand clears WCAG AA (4.55+).
+   Switching only swaps these variables; nothing else in the sheet knows
+   which theme is on. The choice is kept in localStorage per browser.        */
 :root{
-  --white:#fff; --soft:#fdf9fb; --tint:#faeff4;
-  --ink:#1a1020; --body:#5c4e58; --muted:#7d6970; --line:#f2e9ec;
-  --brand:#bd517b; --brand-600:#95375b; --brand-100:#f8e7ee;
-  --accent:#f5a524; --accent-100:#fef4e3;
-  --green:#16a34a; --green-100:#e7f7ed;
+  --white:#fff;
+  --accent:#f5a524; --accent-100:#fef4e3; --accent-700:#a86a00;
+  --green:#16a34a; --green-100:#e7f7ed; --green-700:#12703a;
   --red:#dc2626; --red-100:#fdeaea;
-  --r-sm:10px; --r:16px;
-  --sh-sm:0 2px 8px rgba(60,20,40,.06);
-  --sh-md:0 8px 24px rgba(60,20,40,.08);
+  --r-sm:10px; --r:16px; --r-lg:22px;
+  --sh-xs:0 1px 2px rgba(20,20,30,.05);
+  --sh-sm:0 2px 8px rgba(20,20,30,.06);
+  --sh-md:0 10px 28px rgba(20,20,30,.09);
+  --sh-lg:0 20px 50px rgba(20,20,30,.13);
+  --e:cubic-bezier(.22,.9,.3,1);
+  --e-out:cubic-bezier(.16,1,.3,1);
   --f-h:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   --f-b:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   --f-script:'Great Vibes','Segoe Script',cursive;
+
+  /* slate is the default — neutral, and the easiest to read all day */
+  --ink:#151a21; --body:#454f5c; --muted:#6b7684;
+  --brand:#5a77a0; --brand-600:#3e5779; --brand-100:#eaeff6;
+  --soft:#fbfbfc; --tint:#f3f4f7; --line:#eaecee;
+}
+[data-theme="lavender"]{
+  --ink:#191524; --body:#4c4560; --muted:#736c88;
+  --brand:#8763bf; --brand-600:#643da4; --brand-100:#eee7f8;
+  --soft:#fbfbfc; --tint:#f4f1f8; --line:#ebe8f0;
+}
+[data-theme="emerald"]{
+  --ink:#0f1f1a; --body:#3d5149; --muted:#63786f;
+  --brand:#2a8469; --brand-600:#185442; --brand-100:#e6f9f4;
+  --soft:#fafdfc; --tint:#f0f9f7; --line:#e6f2ee;
+}
+[data-theme="pistachio"]{
+  --ink:#1a2013; --body:#4a5440; --muted:#6f7a64;
+  --brand:#567f39; --brand-600:#375322; --brand-100:#eef7e8;
+  --soft:#fbfcfb; --tint:#f4f8f2; --line:#ebefe9;
+}
+[data-theme="teal"]{
+  --ink:#0e1c1f; --body:#3c4f53; --muted:#63767a;
+  --brand:#287d8a; --brand-600:#175059; --brand-100:#e5f7fa;
+  --soft:#fafcfd; --tint:#f0f8fa; --line:#e6f1f2;
+}
+[data-theme="indigo"]{
+  --ink:#16161f; --body:#464660; --muted:#6d6d85;
+  --brand:#6d69bf; --brand-600:#4540a5; --brand-100:#e9e8f8;
+  --soft:#fbfbfc; --tint:#f2f2f8; --line:#e9e8ef;
+}
+[data-theme="amber"]{
+  --ink:#201a12; --body:#54483a; --muted:#7a6d5e;
+  --brand:#9f6728; --brand-600:#6d4518; --brand-100:#faf0e5;
+  --soft:#fdfcfa; --tint:#faf5ef; --line:#f3ece5;
+}
+[data-theme="rose"]{
+  --ink:#1a1020; --body:#5c4e58; --muted:#7d6970;
+  --brand:#bc4e78; --brand-600:#943358; --brand-100:#f8e7ee;
+  --soft:#fcfafb; --tint:#f9f1f4; --line:#f0e7eb;
+}
+/* Colours ease across a theme change instead of snapping. */
+body,.card,.panel,.tab,.btn,.co-list li,header.bar h1,.gate form,
+.toolbar input,.field input,.field select,.co-add input{
+  transition:background-color .3s var(--e),border-color .3s var(--e),color .3s var(--e);
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;
+                       transition-duration:.01ms!important;scroll-behavior:auto!important}
 }
 *{box-sizing:border-box}
 /* The sign-in and panel views are toggled with the `hidden` attribute, and both
@@ -56,20 +117,87 @@ a{color:var(--brand)}
 .field input:focus,.field select:focus,.field textarea:focus{
   border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-100)}
 
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;
-     padding:10px 16px;border-radius:var(--r-sm);font-weight:600;font-size:13px;
-     white-space:nowrap;transition:filter .15s,opacity .15s}
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:7px;
+     min-height:40px;padding:0 17px;border-radius:var(--r-sm);font-weight:600;font-size:13px;
+     white-space:nowrap;text-decoration:none;
+     transition:background .18s var(--e),border-color .18s var(--e),color .18s var(--e),
+                transform .12s var(--e),box-shadow .18s var(--e)}
 .btn:disabled{opacity:.55;cursor:not-allowed}
-.btn:not(:disabled):hover{filter:brightness(1.07)}
-.btn-primary{background:var(--brand);color:#fff}
-.btn-go{background:var(--green);color:#fff}
+.btn:active:not(:disabled){transform:scale(.97)}
+.btn:focus-visible{outline:none;box-shadow:0 0 0 3px var(--brand-100),0 0 0 4px var(--brand)}
+.btn-primary{background:var(--brand);color:#fff;box-shadow:0 4px 14px -4px var(--brand)}
+.btn-primary:hover:not(:disabled){background:var(--brand-600);box-shadow:0 7px 20px -5px var(--brand)}
+.btn-go{background:var(--green);color:#fff;box-shadow:0 4px 14px -4px var(--green)}
+.btn-go:hover:not(:disabled){filter:brightness(1.06)}
 .btn-ghost{background:#fff;border:1px solid var(--line);color:var(--body)}
-.btn-danger{background:#fff;border:1px solid var(--red);color:var(--red)}
+.btn-ghost:hover:not(:disabled){border-color:var(--brand);color:var(--brand)}
+.btn-danger{background:#fff;border:1px solid var(--line);color:var(--muted)}
+.btn-danger:hover:not(:disabled){border-color:var(--red);color:var(--red);background:var(--red-100)}
 .btn-wide{width:100%}
+.btn-sm{min-height:32px;padding:0 12px;font-size:12.5px;border-radius:8px}
+/* A spinner takes the label's place so the button never resizes mid-click. */
+.btn[data-busy]{color:transparent!important;pointer-events:none}
+.btn[data-busy]::after{content:'';position:absolute;width:15px;height:15px;border-radius:50%;
+  border:2px solid #fff;border-top-color:transparent;animation:spin .6s linear infinite}
+.btn-ghost[data-busy]::after,.btn-danger[data-busy]::after{border-color:var(--brand);border-top-color:transparent}
+@keyframes spin{to{transform:rotate(360deg)}}
 
 /* ── shell ────────────────────────────────────────────────────────────── */
 .wrap{max-width:1080px;margin:0 auto;padding:22px 18px 60px}
-header.bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+header.bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px;
+           position:sticky;top:0;z-index:30;padding:12px 0;
+           background:color-mix(in srgb,var(--soft) 88%,transparent);
+           backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+           margin-inline:-18px;padding-inline:18px;
+           border-bottom:1px solid transparent;transition:border-color .25s var(--e)}
+header.bar.stuck{border-bottom-color:var(--line)}
+
+/* ── theme picker ── */
+.theme{position:relative}
+.theme-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);
+  background:#fff;display:grid;place-items:center;transition:all .2s var(--e)}
+.theme-btn:hover{border-color:var(--brand);transform:rotate(15deg) scale(1.06)}
+.theme-btn:focus-visible{outline:none;box-shadow:0 0 0 3px var(--brand-100)}
+.theme-btn i{display:block;width:17px;height:17px;border-radius:50%;
+  background:conic-gradient(var(--brand),var(--accent),var(--green),var(--brand))}
+.theme-menu{position:absolute;right:0;top:calc(100% + 9px);background:#fff;
+  border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh-lg);
+  padding:12px;width:216px;z-index:40;
+  animation:popIn .22s var(--e-out) both;transform-origin:top right}
+@keyframes popIn{from{opacity:0;transform:scale(.94) translateY(-5px)}to{opacity:1;transform:none}}
+.theme-menu h4{font-size:11px;text-transform:uppercase;letter-spacing:.07em;
+  color:var(--muted);margin-bottom:10px}
+.swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.sw{aspect-ratio:1;border-radius:11px;border:2px solid transparent;position:relative;
+    transition:transform .18s var(--e),border-color .18s var(--e)}
+.sw:hover{transform:scale(1.12)}
+.sw:focus-visible{outline:none;box-shadow:0 0 0 3px var(--brand-100)}
+.sw.on{border-color:var(--ink)}
+.sw.on::after{content:'';position:absolute;inset:0;margin:auto;width:7px;height:7px;
+  border-radius:50%;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.18)}
+.sw span{position:absolute;inset:-22px 0 auto;text-align:center;font-size:10px;
+  color:var(--muted);opacity:0;transition:opacity .15s}
+.sw:hover span{opacity:1}
+
+/* ── toggle ── */
+.row-toggle{display:flex;align-items:center;gap:14px;padding-top:14px;
+  margin-top:14px;border-top:1px solid var(--line)}
+.row-toggle div{flex:1;min-width:0}
+.row-toggle b{display:block;font-family:var(--f-h);font-size:14px}
+.row-toggle span{font-size:12.5px;color:var(--muted)}
+.switch{width:46px;height:27px;border-radius:999px;background:var(--line);
+  position:relative;flex-shrink:0;transition:background .25s var(--e)}
+.switch::after{content:'';position:absolute;top:3px;left:3px;width:21px;height:21px;
+  border-radius:50%;background:#fff;box-shadow:var(--sh-sm);
+  transition:transform .25s var(--e)}
+.switch[aria-checked="true"]{background:var(--brand)}
+.switch[aria-checked="true"]::after{transform:translateX(19px)}
+.switch:focus-visible{outline:none;box-shadow:0 0 0 3px var(--brand-100)}
+.switch:disabled{opacity:.5;cursor:not-allowed}
+
+.kbd{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;background:var(--tint);
+  border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 5px;
+  color:var(--muted)}
 .brand{display:flex;align-items:center;gap:.5rem;text-decoration:none}
 .brand img{object-fit:contain;flex-shrink:0}
 .brand-wm{font-family:var(--f-script);font-size:22px;line-height:1;color:var(--ink);
@@ -81,9 +209,12 @@ header.bar h1{font-size:15px;font-weight:600;color:var(--muted);flex:1;min-width
      margin-right:6px;vertical-align:middle}
 
 .tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px}
-.tab{padding:8px 13px;border-radius:999px;font-size:13px;font-weight:600;
-     background:#fff;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
-.tab.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.tab{padding:8px 14px;border-radius:999px;font-size:13px;font-weight:600;
+     background:#fff;border:1px solid var(--line);color:var(--muted);white-space:nowrap;
+     transition:all .2s var(--e)}
+.tab:hover:not(.on){border-color:var(--brand);color:var(--brand);transform:translateY(-1px)}
+.tab:focus-visible{outline:none;box-shadow:0 0 0 3px var(--brand-100)}
+.tab.on{background:var(--ink);border-color:var(--ink);color:#fff;box-shadow:var(--sh-sm)}
 .tab b{font-weight:700;opacity:.75;margin-left:5px}
 
 .toolbar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
@@ -93,7 +224,19 @@ header.bar h1{font-size:15px;font-weight:600;color:var(--muted);flex:1;min-width
 
 /* ── cards ────────────────────────────────────────────────────────────── */
 .card{background:#fff;border:1px solid var(--line);border-radius:var(--r);
-      box-shadow:var(--sh-sm);padding:16px 18px;margin-bottom:12px}
+      box-shadow:var(--sh-sm);padding:16px 18px;margin-bottom:12px;
+      transition:box-shadow .22s var(--e),transform .22s var(--e),border-color .22s var(--e);
+      animation:cardIn .4s var(--e-out) both}
+.card:hover{box-shadow:var(--sh-md);transform:translateY(-2px);border-color:var(--brand-100)}
+/* Cards arrive in sequence rather than all at once — reads as considered
+   rather than as a page that flashed into existence. */
+@keyframes cardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.card:nth-child(1){animation-delay:.02s}
+.card:nth-child(2){animation-delay:.06s}
+.card:nth-child(3){animation-delay:.10s}
+.card:nth-child(4){animation-delay:.14s}
+.card:nth-child(5){animation-delay:.18s}
+.card:nth-child(n+6){animation-delay:.2s}
 .card-top{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}
 .who{flex:1;min-width:200px}
 .who h3{font-size:15px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -101,8 +244,10 @@ header.bar h1{font-size:15px;font-weight:600;color:var(--muted);flex:1;min-width
      background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:1px 6px}
 .who .contact{color:var(--muted);font-size:13px;margin-top:3px;word-break:break-word}
 
-.pill{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;
-      letter-spacing:.03em;text-transform:uppercase;white-space:nowrap}
+.pill{font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;
+      letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;
+      display:inline-flex;align-items:center;gap:5px}
+.pill::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.75}
 .p-await{background:var(--accent-100);color:#a86a00}
 .p-pending{background:var(--brand-100);color:var(--brand-600)}
 .p-confirmed{background:var(--green-100);color:#12703a}
@@ -124,15 +269,17 @@ header.bar h1{font-size:15px;font-weight:600;color:var(--muted);flex:1;min-width
 .empty{text-align:center;padding:56px 20px;color:var(--muted)}
 .empty h3{font-size:16px;color:var(--ink);margin-bottom:6px}
 
-.msg{padding:11px 14px;border-radius:var(--r-sm);font-size:13px;margin-bottom:14px;
+.msg{padding:12px 15px;border-radius:var(--r-sm);font-size:13.5px;margin-bottom:14px;
      font-weight:500;display:none}
-.msg.show{display:block}
+.msg.show{display:block;animation:msgIn .3s var(--e-out) both}
+@keyframes msgIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 .msg.ok{background:var(--green-100);color:#12703a}
 .msg.bad{background:var(--red-100);color:var(--red)}
 .msg.warn{background:var(--accent-100);color:#a86a00}
 
 .panel{background:#fff;border:1px solid var(--line);border-radius:var(--r);
-       box-shadow:var(--sh-sm);padding:16px 18px;margin-bottom:16px}
+       box-shadow:var(--sh-sm);padding:17px 19px;margin-bottom:16px;
+       animation:cardIn .4s var(--e-out) both}
 .panel h2{font-size:15px;margin-bottom:3px}
 .panel .note{display:block;margin-bottom:12px}
 .co-list{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;padding:0;list-style:none}
@@ -187,6 +334,14 @@ header.bar h1{font-size:15px;font-weight:600;color:var(--muted);flex:1;min-width
     </a>
     <h1>Bookings</h1>
     <span class="note" id="mailState"></span>
+    <div class="theme">
+      <button class="theme-btn" id="themeBtn" type="button" aria-label="Change theme"
+              aria-haspopup="true" aria-expanded="false"><i></i></button>
+      <div class="theme-menu" id="themeMenu" hidden>
+        <h4>Theme</h4>
+        <div class="swatches" id="swatches"></div>
+      </div>
+    </div>
     <a class="btn btn-ghost" href="/teaching.html">Teaching plan</a>
     <button class="btn btn-ghost" id="refreshBtn" type="button">Refresh</button>
     <button class="btn btn-ghost" id="logoutBtn" type="button">Sign out</button>
@@ -202,6 +357,15 @@ header.bar h1{font-size:15px;font-weight:600;color:var(--muted);flex:1;min-width
       <button class="btn btn-primary" type="submit">Save</button>
     </form>
     <span class="note" id="meetState" style="margin:10px 0 0"></span>
+
+    <div class="row-toggle">
+      <div>
+        <b>Show my photo on the site</b>
+        <span id="photoState">Loading…</span>
+      </div>
+      <button class="switch" id="photoBtn" type="button" role="switch"
+              aria-checked="false" aria-label="Show my photo on the site"></button>
+    </div>
   </section>
 
   <section class="panel">
@@ -217,7 +381,7 @@ header.bar h1{font-size:15px;font-weight:600;color:var(--muted);flex:1;min-width
   <div class="tabs" id="tabs"></div>
 
   <div class="toolbar">
-    <input id="q" type="search" placeholder="Search name, email, phone or reference…" autocomplete="off">
+    <input id="q" type="search" placeholder="Search name, email, phone or reference…   /" autocomplete="off">
   </div>
 
   <div id="list"></div>
@@ -262,6 +426,67 @@ async function api(path, opts = {}) {
   if (!res.ok) throw new Error(data.error || 'Something went wrong.');
   return data;
 }
+
+/* ── theme ───────────────────────────────────────────────────────────────
+   Applied before first paint (see the inline script in <head>) so the page
+   never flashes the default palette on the way to the chosen one. */
+const THEMES = [
+  ['slate', '#5a77a0'], ['lavender', '#8763bf'], ['emerald', '#2a8469'], ['pistachio', '#567f39'],
+  ['teal', '#287d8a'], ['indigo', '#6d69bf'], ['amber', '#9f6728'], ['rose', '#bc4e78'],
+];
+
+function currentTheme() {
+  try { return localStorage.getItem('kc-theme') || 'slate'; } catch { return 'slate'; }
+}
+
+function applyTheme(name) {
+  document.documentElement.dataset.theme = name;
+  try { localStorage.setItem('kc-theme', name); } catch { /* private mode */ }
+  document.querySelectorAll('.sw').forEach((b) => b.classList.toggle('on', b.dataset.theme === name));
+}
+
+function buildSwatches() {
+  $('#swatches').innerHTML = THEMES.map(([name, colour]) =>
+    `<button class="sw" type="button" data-theme="${name}" title="${name}"
+             style="background:${colour}"><span>${name}</span></button>`).join('');
+  applyTheme(currentTheme());
+}
+
+$('#themeBtn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  const menu = $('#themeMenu');
+  menu.hidden = !menu.hidden;
+  $('#themeBtn').setAttribute('aria-expanded', String(!menu.hidden));
+});
+
+$('#swatches').addEventListener('click', (e) => {
+  const sw = e.target.closest('.sw');
+  if (sw) applyTheme(sw.dataset.theme);
+});
+
+// Click-away and Escape both close it, as a menu should.
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.theme')) {
+    $('#themeMenu').hidden = true;
+    $('#themeBtn').setAttribute('aria-expanded', 'false');
+  }
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    $('#themeMenu').hidden = true;
+    $('#themeBtn').setAttribute('aria-expanded', 'false');
+  }
+  // "/" focuses search, the way every developer tool does it.
+  if (e.key === '/' && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName)) {
+    const q = $('#q');
+    if (q && !$('#panel').hidden) { e.preventDefault(); q.focus(); q.select(); }
+  }
+});
+
+// The header gains its border only once the page has scrolled under it.
+addEventListener('scroll', () => {
+  document.querySelector('header.bar')?.classList.toggle('stuck', window.scrollY > 4);
+}, { passive: true });
 
 /* ── auth ────────────────────────────────────────────────────────────── */
 function showGate(hint) {
@@ -500,6 +725,14 @@ $('#q').addEventListener('input', (e) => {
 
 /* ── Google Meet room ────────────────────────────────────────────────── */
 function renderMeet(d) {
+  const on = d.showMentorPhoto !== false;
+  const sw = $('#photoBtn');
+  sw.setAttribute('aria-checked', String(on));
+  sw.disabled = false;
+  $('#photoState').textContent = on
+    ? 'Visible on the consulting section.'
+    : 'Hidden — visitors see your initials instead.';
+
   $('#meetInput').value = d.meetLink || '';
   $('#meetState').textContent = d.meetLink
     ? (d.fromEnv ? 'Currently taken from the MEET_LINK environment variable.'
@@ -511,6 +744,24 @@ async function loadMeet() {
   try { renderMeet(await api('/api/admin/settings')); }
   catch (err) { $('#meetState').textContent = err.message; }
 }
+
+$('#photoBtn').addEventListener('click', async () => {
+  const sw = $('#photoBtn');
+  const next = sw.getAttribute('aria-checked') !== 'true';
+  sw.disabled = true;
+  // Move immediately — waiting on the round trip makes a switch feel broken.
+  sw.setAttribute('aria-checked', String(next));
+  try {
+    renderMeet(await api('/api/admin/settings', {
+      method: 'POST', body: JSON.stringify({ showMentorPhoto: next }),
+    }));
+    say(next ? 'Photo is visible on the site.' : 'Photo hidden from the site.', 'ok');
+  } catch (err) {
+    sw.setAttribute('aria-checked', String(!next));   // put it back
+    sw.disabled = false;
+    say(err.message, 'bad');
+  }
+});
 
 $('#meetForm').addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -591,6 +842,8 @@ $('#coList').addEventListener('click', async (e) => {
 });
 
 /* ── boot ────────────────────────────────────────────────────────────── */
+buildSwatches();
+
 (async function init() {
   try {
     // Check the response actually succeeded: a failing route returns JSON too,

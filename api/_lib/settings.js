@@ -33,7 +33,20 @@ export async function getSettings(db) {
   return {
     meetLink: doc?.meetLink || process.env.MEET_LINK || '',
     fromEnv: !doc?.meetLink && Boolean(process.env.MEET_LINK),
+    // Shown unless explicitly switched off, so an empty database behaves as
+    // the site always has.
+    showMentorPhoto: doc?.showMentorPhoto !== false,
   };
+}
+
+/** Toggle the mentor photo on the public site. */
+export async function setPhotoVisible(db, visible) {
+  await collections.settings(db).updateOne(
+    { _id: DOC_ID },
+    { $set: { showMentorPhoto: visible === true, updatedAt: new Date() } },
+    { upsert: true }
+  );
+  return { ok: true };
 }
 
 export async function setMeetLink(db, value) {
