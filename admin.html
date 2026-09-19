@@ -219,6 +219,55 @@ header.bar.stuck{border-bottom-color:var(--line)}
 .lead-row code{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--brand-600)}
 .lead-row b{margin-left:auto;font-weight:700}
 
+/* ── stat tiles ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.stat{position:relative;overflow:hidden;background:#fff;border:1px solid var(--line);
+  border-radius:var(--r);padding:16px 17px;animation:cardIn .45s var(--e-out) both;
+  transition:transform .22s var(--e),box-shadow .22s var(--e),border-color .22s var(--e)}
+.stat:hover{transform:translateY(-3px);box-shadow:var(--sh-md);border-color:var(--brand-100)}
+.stat:nth-child(2){animation-delay:.05s}
+.stat:nth-child(3){animation-delay:.1s}
+.stat:nth-child(4){animation-delay:.15s}
+/* A soft brand glow bleeds in from the corner - colour without a coloured box. */
+.stat::before{content:'';position:absolute;right:-30%;top:-70%;width:150px;height:150px;
+  border-radius:50%;background:var(--brand);opacity:.07;filter:blur(18px);
+  transition:opacity .3s var(--e),transform .5s var(--e)}
+.stat:hover::before{opacity:.15;transform:scale(1.25)}
+.stat .k{display:block;font-size:11.5px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px}
+.stat .v{font-family:var(--f-h);font-weight:800;font-size:27px;line-height:1;
+  color:var(--ink);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat .s{display:block;font-size:12px;color:var(--muted);margin-top:6px}
+.stat.hot .v{color:var(--brand)}
+.stat.hot::before{opacity:.16}
+@media(max-width:860px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+/* ── toasts ── */
+.toasts{position:fixed;right:18px;bottom:18px;z-index:80;display:flex;
+  flex-direction:column;gap:9px;pointer-events:none;max-width:min(360px,calc(100vw - 36px))}
+.toast{pointer-events:auto;cursor:pointer;background:var(--ink);color:#fff;
+  border-radius:var(--r-sm);padding:12px 15px;font-size:13.5px;font-weight:500;
+  box-shadow:var(--sh-lg);display:flex;align-items:flex-start;gap:9px;
+  animation:toastIn .32s var(--e-out) both}
+.toast.out{animation:toastOut .26s var(--e) both}
+.toast i{font-style:normal;flex-shrink:0;font-weight:800}
+.toast.ok i{color:#6ee7b7}
+.toast.bad{background:#7f1d1d}
+.toast.warn{background:#7c4a03}
+@keyframes toastIn{from{opacity:0;transform:translateX(24px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes toastOut{to{opacity:0;transform:translateX(24px) scale(.96)}}
+
+/* ── ambient wash behind the panel ── */
+body::before{content:'';position:fixed;inset:0 0 auto;height:340px;z-index:-1;
+  background:
+    radial-gradient(ellipse 70% 100% at 12% 0%, var(--brand-100), transparent 62%),
+    radial-gradient(ellipse 60% 90% at 92% 8%, var(--brand-100), transparent 58%);
+  pointer-events:none}
+
+.empty .ico{font-size:34px;line-height:1;margin-bottom:10px;display:block;
+  animation:bob 3.2s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
 .kbd{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;background:var(--tint);
   border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 5px;
   color:var(--muted)}
@@ -373,6 +422,17 @@ header.bar h1{font-size:15px;font-weight:600;color:var(--muted);flex:1;min-width
 
   <div class="msg" id="msg"></div>
 
+  <div class="stats" id="stats" hidden>
+    <div class="stat hot"><span class="k">To confirm</span><div class="v" data-n="0">0</div>
+      <span class="s">waiting on you</span></div>
+    <div class="stat"><span class="k">Confirmed</span><div class="v" data-n="0">0</div>
+      <span class="s">seats taken</span></div>
+    <div class="stat"><span class="k">This month</span><div class="v" data-n="0">0</div>
+      <span class="s">new bookings</span></div>
+    <div class="stat"><span class="k">Collected</span><div class="v" data-n="0" data-rupee="1">0</div>
+      <span class="s">confirmed payments</span></div>
+  </div>
+
   <section class="panel">
     <h2>Offers</h2>
     <span class="note">Early bird sets the monthly price. Referrals give the friend a discount and credit the referrer.</span>
@@ -476,11 +536,70 @@ let state = { status: 'awaiting_confirmation', q: '', skip: 0, counts: {}, rows:
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) =>
   ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 
+/**
+ * Toast — transient feedback on an action, rather than page state.
+ */
+function toast(text, kind = 'ok', ms = 3600) {
+  const box = document.getElementById('toasts');
+  if (!box) return;
+
+  const el = document.createElement('div');
+  el.className = 'toast ' + kind;
+  const mark = document.createElement('i');
+  mark.textContent = kind === 'ok' ? '✓' : '!';
+  const body = document.createElement('span');
+  body.textContent = text;
+  el.append(mark, body);
+  box.appendChild(el);
+
+  const close = () => {
+    el.classList.add('out');
+    el.addEventListener('animationend', () => el.remove(), { once: true });
+  };
+  el.addEventListener('click', close);
+  setTimeout(close, ms);
+}
+
+/**
+ * Count a number up to its value. Skipped under reduced motion, and whenever
+ * the value has not actually changed.
+ */
+function countTo(el, value, rupee) {
+  const fmt = (n) => (rupee ? '₹' : '') + Math.round(n).toLocaleString('en-IN');
+  const from = Number(el.dataset.n || 0);
+  el.dataset.n = String(value);
+
+  if (from === value || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    el.textContent = fmt(value);
+    return;
+  }
+
+  const start = performance.now();
+  const tick = (now) => {
+    const t = Math.min(1, (now - start) / 620);
+    // ease-out cubic: quick off the mark, settles gently on the real number
+    el.textContent = fmt(from + (value - from) * (1 - Math.pow(1 - t, 3)));
+    if (t < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+function renderStats(st) {
+  if (!st) return;
+  const box = $('#stats');
+  box.hidden = false;
+  const vals = [st.awaiting, st.confirmed, st.thisMonth, st.revenue];
+  box.querySelectorAll('.v').forEach((el, i) => countTo(el, vals[i] || 0, el.dataset.rupee === '1'));
+  box.querySelector('.stat').classList.toggle('hot', (st.awaiting || 0) > 0);
+}
+
 function say(text, kind = 'ok') {
+  // Successes and warnings are transient - they belong in a toast. Errors
+  // stay pinned in the bar so they cannot scroll away unseen.
+  if (kind !== 'bad') return toast(text, kind);
   const el = $('#msg');
-  el.className = 'msg show ' + kind;
+  el.className = 'msg show bad';
   el.textContent = text;
-  if (kind === 'ok') setTimeout(() => { el.className = 'msg'; }, 4000);
 }
 
 async function api(path, opts = {}) {
@@ -508,10 +627,18 @@ function currentTheme() {
   try { return localStorage.getItem('kc-theme') || 'slate'; } catch { return 'slate'; }
 }
 
-function applyTheme(name) {
+/** Paint immediately; localStorage is only a cache so the next load does not
+ *  flash the default before the server answers. */
+function applyTheme(name, { save = true } = {}) {
   document.documentElement.dataset.theme = name;
   try { localStorage.setItem('kc-theme', name); } catch { /* private mode */ }
   document.querySelectorAll('.sw').forEach((b) => b.classList.toggle('on', b.dataset.theme === name));
+
+  if (!save) return;
+  // Saved against the account, so every device and admin page matches.
+  api('/api/admin/settings', { method: 'POST', body: JSON.stringify({ theme: name }) })
+    .then(() => toast('Theme saved - ' + name + ' on every device.'))
+    .catch(() => toast('Saved on this device only - could not reach the server.', 'warn'));
 }
 
 function buildSwatches() {
@@ -702,6 +829,7 @@ async function load(reset = false) {
     else state.counts = { ...state.counts, enquiries: data.counts?.all ?? 0 };
     state.rows = state.rows.concat(enquiries ? data.enquiries : data.bookings);
 
+    renderStats(data.stats);
     renderTabs();
     $('#list').innerHTML = state.rows.length
       ? state.rows.map(enquiries ? enquiryCard : card).join('')
@@ -924,6 +1052,11 @@ $('#cpnList').addEventListener('click', async (e) => {
 
 /* ── Google Meet room ────────────────────────────────────────────────── */
 function renderMeet(d) {
+  // The server is the source of truth; adopt it if this browser disagrees.
+  if (d.theme && d.theme !== document.documentElement.dataset.theme) {
+    applyTheme(d.theme, { save: false });
+  }
+
   const on = d.showMentorPhoto !== false;
   const sw = $('#photoBtn');
   sw.setAttribute('aria-checked', String(on));
@@ -1072,5 +1205,6 @@ buildSwatches();
   }
 })();
 </script>
+<div class="toasts" id="toasts" aria-live="polite"></div>
 </body>
 </html>

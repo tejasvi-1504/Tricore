@@ -9,6 +9,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
+<script>
+/* Adopt the saved admin theme before paint. The value is cached from the
+   server by the admin panel; this page only reads it. */
+try { const t = localStorage.getItem('kc-theme'); if (t) document.documentElement.dataset.theme = t; } catch {}
+</script>
 <style>
 :root{
   --white:#fff; --soft:#fdf9fb; --ink:#1a1020; --body:#4a3f46; --muted:#7d6970;
@@ -23,6 +28,75 @@
   --f-h:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   --f-b:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   --f-script:'Great Vibes','Segoe Script',cursive;
+}
+/* ── themes ───────────────────────────────────────────────────────────────
+   Eight palettes, all generated so white-on-brand clears WCAG AA (4.55+).
+   Switching only swaps these variables; nothing else in the sheet knows
+   which theme is on. The choice is kept in localStorage per browser.        */
+:root{
+  --white:#fff;
+  --accent:#f5a524; --accent-100:#fef4e3; --accent-700:#a86a00;
+  --green:#16a34a; --green-100:#e7f7ed; --green-700:#12703a;
+  --red:#dc2626; --red-100:#fdeaea;
+  --r-sm:10px; --r:16px; --r-lg:22px;
+  --sh-xs:0 1px 2px rgba(20,20,30,.05);
+  --sh-sm:0 2px 8px rgba(20,20,30,.06);
+  --sh-md:0 10px 28px rgba(20,20,30,.09);
+  --sh-lg:0 20px 50px rgba(20,20,30,.13);
+  --e:cubic-bezier(.22,.9,.3,1);
+  --e-out:cubic-bezier(.16,1,.3,1);
+  --f-h:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --f-b:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --f-script:'Great Vibes','Segoe Script',cursive;
+
+  /* slate is the default — neutral, and the easiest to read all day */
+  --ink:#151a21; --body:#454f5c; --muted:#6b7684;
+  --brand:#5a77a0; --brand-600:#3e5779; --brand-100:#eaeff6;
+  --soft:#fbfbfc; --tint:#f3f4f7; --line:#eaecee;
+}
+[data-theme="lavender"]{
+  --ink:#191524; --body:#4c4560; --muted:#736c88;
+  --brand:#8763bf; --brand-600:#643da4; --brand-100:#eee7f8;
+  --soft:#fbfbfc; --tint:#f4f1f8; --line:#ebe8f0;
+}
+[data-theme="emerald"]{
+  --ink:#0f1f1a; --body:#3d5149; --muted:#63786f;
+  --brand:#2a8469; --brand-600:#185442; --brand-100:#e6f9f4;
+  --soft:#fafdfc; --tint:#f0f9f7; --line:#e6f2ee;
+}
+[data-theme="pistachio"]{
+  --ink:#1a2013; --body:#4a5440; --muted:#6f7a64;
+  --brand:#567f39; --brand-600:#375322; --brand-100:#eef7e8;
+  --soft:#fbfcfb; --tint:#f4f8f2; --line:#ebefe9;
+}
+[data-theme="teal"]{
+  --ink:#0e1c1f; --body:#3c4f53; --muted:#63767a;
+  --brand:#287d8a; --brand-600:#175059; --brand-100:#e5f7fa;
+  --soft:#fafcfd; --tint:#f0f8fa; --line:#e6f1f2;
+}
+[data-theme="indigo"]{
+  --ink:#16161f; --body:#464660; --muted:#6d6d85;
+  --brand:#6d69bf; --brand-600:#4540a5; --brand-100:#e9e8f8;
+  --soft:#fbfbfc; --tint:#f2f2f8; --line:#e9e8ef;
+}
+[data-theme="amber"]{
+  --ink:#201a12; --body:#54483a; --muted:#7a6d5e;
+  --brand:#9f6728; --brand-600:#6d4518; --brand-100:#faf0e5;
+  --soft:#fdfcfa; --tint:#faf5ef; --line:#f3ece5;
+}
+[data-theme="rose"]{
+  --ink:#1a1020; --body:#5c4e58; --muted:#7d6970;
+  --brand:#bc4e78; --brand-600:#943358; --brand-100:#f8e7ee;
+  --soft:#fcfafb; --tint:#f9f1f4; --line:#f0e7eb;
+}
+/* Colours ease across a theme change instead of snapping. */
+body,.card,.panel,.tab,.btn,.co-list li,header.bar h1,.gate form,
+.toolbar input,.field input,.field select,.co-add input{
+  transition:background-color .3s var(--e),border-color .3s var(--e),color .3s var(--e);
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;
+                       transition-duration:.01ms!important;scroll-behavior:auto!important}
 }
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}

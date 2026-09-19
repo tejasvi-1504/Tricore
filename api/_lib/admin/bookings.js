@@ -59,10 +59,21 @@ export default async function handler(req, res) {
   const bookings = collections.bookings(db);
 
   try {
-    const [rows, total, counts] = await Promise.all([
+    // Start of the current month in IST, so "this month" matches the calendar
+    // the mentor actually looks at rather than the server's UTC month.
+    const nowIst = new Date(Date.now() + 330 * 60000);
+    const monthStart = new Date(Date.UTC(nowIst.getUTCFullYear(), nowIst.getUTCMonth(), 1) - 330 * 60000);
+
+    const [rows, total, counts, earned, thisMonth] = await Promise.all([
       bookings.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).toArray(),
       bookings.countDocuments(filter),
       bookings.aggregate([{ $group: { _id: '$status', n: { $sum: 1 } } }]).toArray(),
+      // Only confirmed money counts as revenue.
+      bookings.aggregate([
+        { $match: { status: 'confirmed' } },
+        { $group: { _id: null, total: { $sum: { $ifNull: ['$payment.amountPaid', '$amount'] } } } },
+      ]).toArray(),
+      bookings.countDocuments({ createdAt: { $gte: monthStart } }),
     ]);
 
     const byStatus = Object.fromEntries(STATUSES.map((s) => [s, 0]));
@@ -78,6 +89,12 @@ export default async function handler(req, res) {
       skip,
       limit,
       counts: { ...byStatus, all },
+      stats: {
+        revenue: earned[0]?.total || 0,
+        thisMonth,
+        awaiting: byStatus.awaiting_confirmation || 0,
+        confirmed: byStatus.confirmed || 0,
+      },
     });
   } catch (err) {
     console.error('[admin/bookings] query failed:', err.message);

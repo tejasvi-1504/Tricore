@@ -9,6 +9,8 @@ import { collections } from './db.js';
 
 const DOC_ID = 'site';
 
+export const THEMES = ['slate', 'lavender', 'emerald', 'pistachio', 'teal', 'indigo', 'amber', 'rose'];
+
 /** Only accept a real Google Meet / Zoom style https link. */
 export function cleanMeetLink(value) {
   const raw = String(value ?? '').trim();
@@ -36,7 +38,19 @@ export async function getSettings(db) {
     // Shown unless explicitly switched off, so an empty database behaves as
     // the site always has.
     showMentorPhoto: doc?.showMentorPhoto !== false,
+    // Stored rather than kept in localStorage, so the choice follows you to
+    // every device and every admin page instead of being per-browser.
+    theme: THEMES.includes(doc?.theme) ? doc.theme : 'slate',
   };
+}
+
+/** Save the admin colour theme for every device. */
+export async function setTheme(db, name) {
+  if (!THEMES.includes(name)) return { ok: false, error: 'Unknown theme.' };
+  await collections.settings(db).updateOne(
+    { _id: DOC_ID }, { $set: { theme: name, updatedAt: new Date() } }, { upsert: true }
+  );
+  return { ok: true, theme: name };
 }
 
 /** Toggle the mentor photo on the public site. */

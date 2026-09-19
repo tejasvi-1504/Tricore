@@ -7,7 +7,7 @@
 import { json, methodGuard, readBody, rateLimited } from '../http.js';
 import { isConfigured, isAuthenticated } from '../adminAuth.js';
 import { getDb, ConfigError } from '../db.js';
-import { getSettings, setMeetLink, setPhotoVisible } from '../settings.js';
+import { getSettings, setMeetLink, setPhotoVisible, setTheme } from '../settings.js';
 
 export default async function handler(req, res) {
   if (methodGuard(req, res, ['GET', 'POST'])) return;
@@ -33,6 +33,12 @@ export default async function handler(req, res) {
   }
 
   const body = readBody(req);
+
+  if (typeof body.theme === 'string') {
+    const out = await setTheme(db, body.theme);
+    if (!out.ok) return json(res, 400, { error: out.error });
+    return json(res, 200, { ok: true, ...(await getSettings(db)) });
+  }
 
   if (typeof body.showMentorPhoto === 'boolean') {
     await setPhotoVisible(db, body.showMentorPhoto);
