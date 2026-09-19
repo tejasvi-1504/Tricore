@@ -29,7 +29,7 @@ export default async function handler(req, res) {
     // Also the public bootstrap for anything the panel can switch on the site.
     return json(res, 200, {
       companies,
-      site: { showMentorPhoto: settings.showMentorPhoto },
+      site: { showMentorPhoto: settings.showMentorPhoto, theme: settings.siteTheme },
       offers: {
         earlyBird: {
           active: offers.earlyBird.active === true,

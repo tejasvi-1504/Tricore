@@ -11,6 +11,10 @@ const DOC_ID = 'site';
 
 export const THEMES = ['slate', 'lavender', 'emerald', 'pistachio', 'teal', 'indigo', 'amber', 'rose'];
 
+/** Public-site palettes. Separate list: the site has no neutral "slate", and
+ *  the panel has no "plum" — they are different surfaces. */
+export const SITE_THEMES = ['rose', 'emerald', 'lavender', 'indigo', 'teal', 'pistachio', 'amber', 'plum'];
+
 /** Only accept a real Google Meet / Zoom style https link. */
 export function cleanMeetLink(value) {
   const raw = String(value ?? '').trim();
@@ -41,6 +45,7 @@ export async function getSettings(db) {
     // Stored rather than kept in localStorage, so the choice follows you to
     // every device and every admin page instead of being per-browser.
     theme: THEMES.includes(doc?.theme) ? doc.theme : 'slate',
+    siteTheme: SITE_THEMES.includes(doc?.siteTheme) ? doc.siteTheme : 'rose',
   };
 }
 
@@ -51,6 +56,15 @@ export async function setTheme(db, name) {
     { _id: DOC_ID }, { $set: { theme: name, updatedAt: new Date() } }, { upsert: true }
   );
   return { ok: true, theme: name };
+}
+
+/** The palette visitors see on the public site. */
+export async function setSiteTheme(db, name) {
+  if (!SITE_THEMES.includes(name)) return { ok: false, error: 'Unknown site theme.' };
+  await collections.settings(db).updateOne(
+    { _id: DOC_ID }, { $set: { siteTheme: name, updatedAt: new Date() } }, { upsert: true }
+  );
+  return { ok: true, siteTheme: name };
 }
 
 /** Toggle the mentor photo on the public site. */

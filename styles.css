@@ -1619,3 +1619,96 @@ img.logo-mk { object-fit: contain; }
 /* Discount lines sit between the details and the total. */
 .sum .disc dt, .sum .disc dd { color: var(--green); font-weight: 600; }
 .sum .disc dd { white-space: nowrap; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   SITE THEMES
+   Set from the admin panel and applied to <html data-theme>. Only the
+   accent pair and its tints change; ink, body text and neutrals stay
+   put, so contrast never depends on the chosen colour. Every brand and
+   partner colour here clears WCAG AA on white.
+   ═══════════════════════════════════════════════════════════════════ */
+[data-theme="emerald"] {
+  --brand:#2a8469; --brand-600:#1d5f4c; --brand-100:#e3f5ef;
+  --violet:#2f7d9e; --violet-600:#235f78; --violet-100:#e6f2f8;
+  --soft:#fafdfc; --tint:#eef8f4; --line:#e4f0ec;
+  --sh-br:0 12px 32px rgba(42,132,105,.26);
+}
+[data-theme="lavender"] {
+  --brand:#8763bf; --brand-600:#67479a; --brand-100:#efe9f8;
+  --violet:#a1497f; --violet-600:#7d3762; --violet-100:#f8e9f2;
+  --soft:#fbfafd; --tint:#f3eefa; --line:#ece6f3;
+  --sh-br:0 12px 32px rgba(135,99,191,.26);
+}
+[data-theme="indigo"] {
+  --brand:#6d69bf; --brand-600:#4f4b99; --brand-100:#eae9f8;
+  --violet:#3d72ad; --violet-600:#2e5784; --violet-100:#e7f0f9;
+  --soft:#fbfbfd; --tint:#eff0fa; --line:#e7e8f2;
+  --sh-br:0 12px 32px rgba(109,105,191,.26);
+}
+[data-theme="teal"] {
+  --brand:#287d8a; --brand-600:#1c5c66; --brand-100:#e2f4f7;
+  --violet:#35785a; --violet-600:#275a43; --violet-100:#e6f4ed;
+  --soft:#fafdfd; --tint:#edf7f9; --line:#e2eff1;
+  --sh-br:0 12px 32px rgba(40,125,138,.26);
+}
+[data-theme="pistachio"] {
+  --brand:#567f39; --brand-600:#3f5e29; --brand-100:#eaf5e2;
+  --violet:#6b6a2e; --violet-600:#4f4e21; --violet-100:#f2f1e0;
+  --soft:#fbfcfa; --tint:#f1f7ec; --line:#e8efe2;
+  --sh-br:0 12px 32px rgba(86,127,57,.26);
+}
+[data-theme="amber"] {
+  --brand:#9f6728; --brand-600:#784d1d; --brand-100:#f8eedf;
+  --violet:#ab5145; --violet-600:#823d33; --violet-100:#f9eae7;
+  --soft:#fdfcfa; --tint:#faf3e9; --line:#f2e9dd;
+  --sh-br:0 12px 32px rgba(159,103,40,.26);
+}
+[data-theme="plum"] {
+  --brand:#8a4a7d; --brand-600:#693961; --brand-100:#f4e8f1;
+  --violet:#5f5bb0; --violet-600:#46438a; --violet-100:#eae9f7;
+  --soft:#fcfafc; --tint:#f6eef4; --line:#eee5ec;
+  --sh-br:0 12px 32px rgba(138,74,125,.26);
+}
+/* Colours ease between themes instead of snapping. */
+body, .hdr, .card, .btn, .ftr, .sec, section {
+  transition: background-color .35s var(--e), border-color .35s var(--e), color .35s var(--e);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SCROLL PROGRESS — how far down the page you are
+   ═══════════════════════════════════════════════════════════════════ */
+.progress {
+  position: fixed; top: 0; left: 0; height: 3px; width: 100%;
+  transform: scaleX(0); transform-origin: 0 50%; z-index: 200;
+  background: linear-gradient(90deg, var(--brand), var(--violet));
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   CONFETTI — one canvas, drawn only while a burst is running
+   ═══════════════════════════════════════════════════════════════════ */
+.confetti {
+  position: fixed; inset: 0; z-index: 9999; pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   INTERACTION POLISH
+   ═══════════════════════════════════════════════════════════════════ */
+/* A light sweep crosses primary buttons on hover. */
+.btn-pri { position: relative; overflow: hidden; }
+.btn-pri::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.34) 50%, transparent 62%);
+  transform: translateX(-120%);
+}
+.btn-pri:hover::after { transform: translateX(120%); transition: transform .7s var(--e); }
+
+/* Cards lift toward the pointer rather than just scaling. */
+.tilt { transition: transform .28s var(--e), box-shadow .28s var(--e); transform-style: preserve-3d; }
+.tilt:hover { box-shadow: var(--sh-lg); }
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-pri::after { display: none; }
+  .tilt { transform: none !important; }
+  .progress { transition: none; }
+}

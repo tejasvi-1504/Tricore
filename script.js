@@ -963,6 +963,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Manual mode: open WhatsApp with the booking pre-filled, then show
         // the confirmation panel so the student keeps their reference.
         if (data.whatsappUrl) {
+          window.kcConfetti?.({ count: 90 });
           confirmBtn.innerHTML = 'Opening WhatsApp…';
           window.open(data.whatsappUrl, '_blank', 'noopener');
           showSuccess(data.booking || {}, data.whatsappUrl);
@@ -979,6 +980,7 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
         showSuccess(data.booking || {});
+        window.kcConfetti?.();
       } catch (err) {
         showError(err.message || 'Something went wrong. Please try again or message us on WhatsApp.');
         confirmBtn.innerHTML = original;
@@ -1061,6 +1063,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (out.status === 'confirmed') {
           showSuccess(out);
+          window.kcConfetti?.();
           return;
         }
         // Captured but not yet settled our side: the webhook will finish it.
@@ -1153,6 +1156,16 @@ document.addEventListener('DOMContentLoaded', () => {
   fetch('/api/companies')
     .then((r) => (r.ok ? r.json() : null))
     .then((data) => {
+      // Adopt the palette the panel chose, and remember it so the next visit
+      // paints it immediately rather than flashing the default first.
+      const theme = data?.site?.theme;
+      if (theme) {
+        if (document.documentElement.dataset.theme !== theme) {
+          document.documentElement.dataset.theme = theme;
+        }
+        try { localStorage.setItem('kc-site-theme', theme); } catch {}
+      }
+
       renderOfferBar(data?.offers);
 
       // Same request carries the site flags the panel can switch.
@@ -1241,4 +1254,128 @@ function renderOfferBar(offers) {
       document.getElementById('acctNm').textContent = first;
     })
     .catch(() => {});
+})();
+
+/* ══ CONFETTI ════════════════════════════════════════════════════
+   Hand-rolled, no library. One canvas, created on first use and torn
+   down when the burst ends, so nothing runs while the page is idle.
+   Pieces are drawn as rotating rectangles — cheap, and they read as
+   paper rather than dots. ══════════════════════════════════════════ */
+function confetti({ count = 130, duration = 2600 } = {}) {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const canvas = document.createElement('canvas');
+  canvas.className = 'confetti';
+  document.body.appendChild(canvas);
+
+  const ctx = canvas.getContext('2d');
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const size = () => {
+    canvas.width = innerWidth * dpr;
+    canvas.height = innerHeight * dpr;
+    canvas.style.width = innerWidth + 'px';
+    canvas.style.height = innerHeight + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  };
+  size();
+  addEventListener('resize', size);
+
+  // Pull the live theme colours so confetti matches whatever is on screen.
+  const css = getComputedStyle(document.documentElement);
+  const palette = ['--brand', '--violet', '--accent', '--green']
+    .map(v => css.getPropertyValue(v).trim())
+    .filter(Boolean);
+  if (!palette.length) palette.push('#bd517b', '#8b60c7', '#f5a524');
+
+  // Two side cannons rather than a top-down drizzle — it reads as celebration.
+  const pieces = Array.from({ length: count }, (_, i) => {
+    const left = i % 2 === 0;
+    return {
+      x: left ? -10 : innerWidth + 10,
+      y: innerHeight * (0.55 + Math.random() * 0.25),
+      vx: (left ? 1 : -1) * (7 + Math.random() * 7),
+      vy: -(9 + Math.random() * 9),
+      w: 6 + Math.random() * 6,
+      h: 9 + Math.random() * 7,
+      rot: Math.random() * Math.PI,
+      spin: (Math.random() - 0.5) * 0.3,
+      colour: palette[(Math.random() * palette.length) | 0],
+      drag: 0.985 + Math.random() * 0.01,
+    };
+  });
+
+  const started = performance.now();
+  let raf = 0;
+
+  function frame(now) {
+    const elapsed = now - started;
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+
+    for (const p of pieces) {
+      p.vy += 0.34;                 // gravity
+      p.vx *= p.drag;               // air resistance
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rot += p.spin;
+
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      // Fade out over the last third rather than vanishing abruptly.
+      ctx.globalAlpha = Math.max(0, 1 - Math.max(0, elapsed - duration * 0.6) / (duration * 0.4));
+      ctx.fillStyle = p.colour;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    }
+
+    if (elapsed < duration) {
+      raf = requestAnimationFrame(frame);
+    } else {
+      cancelAnimationFrame(raf);
+      removeEventListener('resize', size);
+      canvas.remove();
+    }
+  }
+  raf = requestAnimationFrame(frame);
+}
+window.kcConfetti = confetti;
+
+/* ══ SCROLL PROGRESS ═════════════════════════════════════════════ */
+(function progressBar() {
+  const bar = document.createElement('div');
+  bar.className = 'progress';
+  document.body.appendChild(bar);
+
+  let ticking = false;
+  const update = () => {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    bar.style.transform = 'scaleX(' + (max > 0 ? Math.min(1, scrollY / max) : 0) + ')';
+    ticking = false;
+  };
+  addEventListener('scroll', () => {
+    // One write per frame; scroll fires far more often than the screen redraws.
+    if (!ticking) { ticking = true; requestAnimationFrame(update); }
+  }, { passive: true });
+  update();
+})();
+
+/* ══ CARD TILT ═══════════════════════════════════════════════════
+   Pointer-driven, and only on devices with a real pointer — on touch
+   it would fire on tap and look like a glitch. ═══════════════════ */
+(function cardTilt() {
+  if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const cards = document.querySelectorAll('.svc-card, .work-card, .price-card, .cl-card');
+  cards.forEach(card => {
+    card.classList.add('tilt');
+    card.addEventListener('pointermove', e => {
+      const r = card.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width - 0.5;
+      const py = (e.clientY - r.top) / r.height - 0.5;
+      card.style.transform =
+        `perspective(900px) rotateX(${(-py * 5).toFixed(2)}deg) rotateY(${(px * 5).toFixed(2)}deg) translateY(-4px)`;
+    });
+    card.addEventListener('pointerleave', () => { card.style.transform = ''; });
+  });
 })();

@@ -487,6 +487,14 @@ header.bar h1{font-size:15px;font-weight:600;color:var(--muted);flex:1;min-width
     </form>
     <span class="note" id="meetState" style="margin:10px 0 0"></span>
 
+    <div class="row-toggle" style="align-items:flex-start">
+      <div>
+        <b>Website colour</b>
+        <span>What visitors see. Your logo is pink, so rose and plum sit most naturally with it.</span>
+        <div class="swatches" id="siteSwatches" style="grid-template-columns:repeat(8,1fr);margin-top:10px"></div>
+      </div>
+    </div>
+
     <div class="row-toggle">
       <div>
         <b>Show my photo on the site</b>
@@ -641,6 +649,19 @@ function applyTheme(name, { save = true } = {}) {
     .catch(() => toast('Saved on this device only - could not reach the server.', 'warn'));
 }
 
+const SITE_THEMES = [
+  ['rose', '#bd517b'], ['emerald', '#2a8469'], ['lavender', '#8763bf'], ['indigo', '#6d69bf'],
+  ['teal', '#287d8a'], ['pistachio', '#567f39'], ['amber', '#9f6728'], ['plum', '#8a4a7d'],
+];
+
+function buildSiteSwatches(active) {
+  const box = document.getElementById('siteSwatches');
+  if (!box) return;
+  box.innerHTML = SITE_THEMES.map(([name, colour]) =>
+    `<button class="sw ${name === active ? 'on' : ''}" type="button" data-site-theme="${name}"
+             title="${name}" style="background:${colour}"><span>${name}</span></button>`).join('');
+}
+
 function buildSwatches() {
   $('#swatches').innerHTML = THEMES.map(([name, colour]) =>
     `<button class="sw" type="button" data-theme="${name}" title="${name}"
@@ -653,6 +674,19 @@ $('#themeBtn').addEventListener('click', (e) => {
   const menu = $('#themeMenu');
   menu.hidden = !menu.hidden;
   $('#themeBtn').setAttribute('aria-expanded', String(!menu.hidden));
+});
+
+document.addEventListener('click', async (e) => {
+  const sw = e.target.closest('[data-site-theme]');
+  if (!sw) return;
+  const name = sw.dataset.siteTheme;
+  buildSiteSwatches(name);
+  try {
+    await api('/api/admin/settings', { method: 'POST', body: JSON.stringify({ siteTheme: name }) });
+    toast('Website is now ' + name + '. Reload the site to see it.');
+  } catch (err) {
+    say(err.message, 'bad');
+  }
 });
 
 $('#swatches').addEventListener('click', (e) => {
@@ -1056,6 +1090,8 @@ function renderMeet(d) {
   if (d.theme && d.theme !== document.documentElement.dataset.theme) {
     applyTheme(d.theme, { save: false });
   }
+
+  buildSiteSwatches(d.siteTheme || 'rose');
 
   const on = d.showMentorPhoto !== false;
   const sw = $('#photoBtn');

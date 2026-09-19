@@ -58,6 +58,12 @@
   ]
 }
 </script>
+<script>
+/* Apply the last-known site theme before the stylesheet paints. The value is
+   cached from /api/companies on the previous visit, so only a first-ever
+   visit briefly shows the default. */
+try { const t = localStorage.getItem('kc-site-theme'); if (t) document.documentElement.dataset.theme = t; } catch {}
+</script>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
