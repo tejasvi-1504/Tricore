@@ -968,6 +968,11 @@ document.addEventListener('DOMContentLoaded', () => {
           showSuccess(data.booking || {}, data.whatsappUrl);
           return;
         }
+        if (data.razorpay) {
+          confirmBtn.innerHTML = 'Opening payment…';
+          await payWithRazorpay(data);
+          return;
+        }
         if (data.requiresPayment && data.paymentUrl) {
           confirmBtn.innerHTML = 'Redirecting to payment…';
           window.location.href = data.paymentUrl;
@@ -983,7 +988,89 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    function showSuccess(booking, waUrl) {
+    /** Load Checkout once, on demand — no third-party script on first paint. */
+    function loadRazorpay() {
+      if (window.Razorpay) return Promise.resolve(true);
+      return new Promise((resolve) => {
+        const el = document.createElement('script');
+        el.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        el.onload = () => resolve(true);
+        el.onerror = () => resolve(false);
+        document.head.appendChild(el);
+      });
+    }
+
+    /**
+     * Razorpay Checkout. The handler's signature is never trusted on its own —
+     * it is posted to the server, which asks Razorpay directly whether the
+     * order is actually paid before anything is confirmed.
+     */
+    async function payWithRazorpay(data) {
+      const ok = await loadRazorpay();
+      if (!ok) {
+        showError('Could not load the payment window. Check your connection and try again.');
+        confirmBtn.innerHTML = 'Try payment again';
+        return;
+      }
+
+      const rp = data.razorpay;
+      const rz = new window.Razorpay({
+        key: rp.key,
+        order_id: rp.orderId,
+        amount: rp.amount,
+        currency: rp.currency,
+        name: rp.name,
+        description: rp.description,
+        image: '/assets/logo-256.png',
+        prefill: rp.prefill,
+        notes: { bookingId: data.bookingId },
+        theme: { color: '#bd517b' },
+        modal: {
+          ondismiss() {
+            // They closed it — the booking is still held, so say so rather
+            // than leaving them staring at a dead button.
+            showError('Payment was cancelled. Your slot is held for a short while — you can try again.');
+            confirmBtn.innerHTML = 'Pay ' + rupees(data.amount);
+            submitting = false;
+            updateSummary();
+          },
+        },
+        handler(resp) {
+          confirmBtn.innerHTML = 'Confirming…';
+          verifyPayment(data.bookingId, resp);
+        },
+      });
+
+      rz.on('payment.failed', (e) => {
+        showError(e?.error?.description || 'That payment did not go through. Please try again.');
+        confirmBtn.innerHTML = 'Try payment again';
+        submitting = false;
+        updateSummary();
+      });
+
+      rz.open();
+    }
+
+    /** Ask our server to confirm with Razorpay, then show the result. */
+    async function verifyPayment(bookingId, resp) {
+      try {
+        const r = await fetch('/api/booking-status?id=' + encodeURIComponent(bookingId), {
+          method: 'GET', headers: { accept: 'application/json' },
+        });
+        const out = await r.json().catch(() => ({}));
+
+        if (out.status === 'confirmed') {
+          showSuccess(out);
+          return;
+        }
+        // Captured but not yet settled our side: the webhook will finish it.
+        showSuccess(out, null, 'Payment received. We are confirming it now — you will get an email within a few minutes.');
+      } catch {
+        showSuccess({ bookingId }, null, 'Payment received. We are confirming it now — you will get an email shortly.');
+      }
+    }
+
+    function showSuccess(booking, waUrl, override) {
       form.hidden = true;
       successEl.hidden = false;
 
@@ -991,6 +1078,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (title) title.textContent = waUrl
         ? 'Almost there — send us the message'
         : 'You’re booked in';
+      if (override) { successMsg.textContent = override; return; }
       successMsg.textContent = waUrl
         ? 'We’ve opened WhatsApp with your booking details. Send that message and Kanishka will confirm your slot and share payment details.'
         : 'We’ve emailed your confirmation, and we’ll send joining details before the session.';

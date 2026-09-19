@@ -149,6 +149,18 @@ export async function checkReferral(db, rawCode, email, offers) {
   return { ok: true, referral: { code: r.code, owner: r.email }, discount: offers.referral.discount };
 }
 
+/* ── credits ──────────────────────────────────────────────────────────────
+   What someone has earned by referring people, minus what they have already
+   spent. Their own money, so it is applied automatically rather than hidden
+   behind a checkbox they have to find.                                      */
+
+export async function getCredit(db, email) {
+  if (!email) return 0;
+  const r = await collections.referrals(db).findOne({ email: String(email).toLowerCase() });
+  if (!r) return 0;
+  return Math.max(0, Math.round((r.earned || 0) - (r.spent || 0)));
+}
+
 /* ── the quote ────────────────────────────────────────────────────────────── */
 
 /**
@@ -156,7 +168,7 @@ export async function checkReferral(db, rawCode, email, offers) {
  * should say out loud — a rejected code must never fail silently and leave
  * someone believing they got a discount.
  */
-export async function quote(db, { plan, coupon, referral, email } = {}) {
+export async function quote(db, { plan, coupon, referral, email, useCredit = true } = {}) {
   const offers = await getOffers(db);
   const listPrice = listPriceForPlan(plan);
 
@@ -196,10 +208,28 @@ export async function quote(db, { plan, coupon, referral, email } = {}) {
     }
   }
 
+  // Credit last, so it is spent against the smallest possible bill and stretches
+  // across more bookings.
+  let creditAvailable = 0;
+  if (email) {
+    try {
+      creditAvailable = await getCredit(db, email);
+    } catch (err) {
+      console.error('[pricing] credit read failed:', err.message);
+    }
+  }
+  if (useCredit && creditAvailable > 0 && total > 0) {
+    const used = Math.min(creditAvailable, total);
+    lines.push({ kind: 'credit', amount: used });
+    total -= used;
+  }
+
   total = Math.max(0, Math.round(total));
 
   return {
     plan,
+    creditAvailable,
+    creditUsed: lines.find((l) => l.kind === 'credit')?.amount || 0,
     listPrice,
     basePrice: base,
     earlyBird,
@@ -217,6 +247,12 @@ export async function recordUse(db, q, bookingEmail) {
     try {
       if (line.kind === 'coupon') {
         await collections.coupons(db).updateOne({ code: line.code }, { $inc: { usedCount: 1 } });
+      }
+      if (line.kind === 'credit') {
+        await collections.referrals(db).updateOne(
+          { email: String(bookingEmail).toLowerCase() },
+          { $inc: { spent: line.amount } }
+        );
       }
       if (line.kind === 'referral') {
         const offers = q.offers || (await getOffers(db));

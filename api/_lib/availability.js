@@ -290,7 +290,8 @@ export function isEarlyBird(planKey) {
  * the volume justifies automating it.
  */
 export function paymentMode() {
-  return process.env.PAYMENT_MODE === 'cashfree' ? 'cashfree' : 'manual';
+  const m = process.env.PAYMENT_MODE;
+  return m === 'razorpay' || m === 'cashfree' ? m : 'manual';
 }
 
 /** The WhatsApp number bookings are sent to. */

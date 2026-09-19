@@ -12,13 +12,18 @@
 import { collections } from './db.js';
 import { releaseSeat } from './reservations.js';
 import * as cashfree from './cashfree.js';
+import * as razorpay from './razorpay.js';
 import { sendBookingConfirmation, sendBookingNotification, sendBookingCancelled } from './mailer.js';
 import { getSettings, meetLinkFor } from './settings.js';
 
 export async function settleBooking(db, bookingId) {
   const bookings = collections.bookings(db);
-  const booking = await bookings.findOne({ bookingId });
+  // Accept either our own reference or the gateway's order id, since a webhook
+  // may only know the latter.
+  const booking = await bookings.findOne({ bookingId })
+    ?? await bookings.findOne({ 'payment.orderId': bookingId });
   if (!booking) return { found: false };
+  bookingId = booking.bookingId;
 
   // Already settled — nothing to do.
   if (booking.status === 'confirmed' || booking.status === 'cancelled') {
@@ -28,13 +33,18 @@ export async function settleBooking(db, bookingId) {
     return { found: true, booking, changed: false };
   }
 
+  const provider = booking.payment?.provider || 'cashfree';
   const orderId = booking.payment?.orderId || booking.bookingId;
 
+  // Whichever gateway took the money is the one we ask. Nothing in the
+  // incoming request decides this — it comes off the stored booking.
   let status;
   try {
-    status = await cashfree.getPaymentLinkStatus(orderId);
+    status = provider === 'razorpay'
+      ? await razorpay.getOrderStatus(orderId)
+      : await cashfree.getPaymentLinkStatus(orderId);
   } catch (err) {
-    console.error('[confirm] Cashfree lookup failed:', err.message);
+    console.error(`[confirm] ${provider} lookup failed:`, err.message);
     return { found: true, booking, changed: false, error: 'lookup_failed' };
   }
 
@@ -49,6 +59,7 @@ export async function settleBooking(db, bookingId) {
           status: 'confirmed',
           'payment.status': 'PAID',
           'payment.amountPaid': status.amountPaid,
+          ...(status.paymentId ? { 'payment.paymentId': status.paymentId } : {}),
           'payment.paidAt': new Date(),
           updatedAt: new Date(),
         },
@@ -70,7 +81,14 @@ export async function settleBooking(db, bookingId) {
   }
 
   /* ── expired or failed: release the slot for someone else ──────────────── */
-  if (status.status === 'EXPIRED' || status.status === 'CANCELLED') {
+  /*
+   * Only a gateway that actually reports a dead link releases the seat.
+   * Razorpay orders go created -> attempted -> paid, and "attempted" means
+   * someone tried and can still retry — cancelling on it would free a seat
+   * out from under a student who is mid-payment.
+   */
+  const dead = provider === 'cashfree' && ['EXPIRED', 'CANCELLED'].includes(status.status);
+  if (dead) {
     const result = await bookings.findOneAndUpdate(
       { bookingId, status: 'pending' },
       {

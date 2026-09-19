@@ -1,5 +1,5 @@
 /**
- * POST /api/payment-webhook — Cashfree payment notifications.
+ * POST /api/payment-webhook — Razorpay and Cashfree payment notifications.
  *
  * Set this URL as the webhook endpoint in the Cashfree dashboard.
  *
@@ -14,6 +14,7 @@
 import { getDb, ConfigError } from './_lib/db.js';
 import { json, methodGuard, readBody } from './_lib/http.js';
 import { verifyWebhookSignature } from './_lib/cashfree.js';
+import { verifyWebhookSignature as verifyRazorpay } from './_lib/razorpay.js';
 import { settleBooking } from './_lib/confirm.js';
 
 export default async function handler(req, res) {
@@ -32,6 +33,39 @@ export default async function handler(req, res) {
       req.headers['x-webhook-timestamp']
     );
     if (!ok) console.warn('[webhook] signature mismatch — verifying with Cashfree directly');
+  }
+
+  /* ── Razorpay ──
+     Its events carry the booking id in the order notes and the receipt, both
+     of which we set when the order was created. The order id is the fallback,
+     since settleBooking looks the booking up by the stored order id too. */
+  const rzpSig = req.headers['x-razorpay-signature'];
+  if (rzpSig || payload?.event?.startsWith?.('payment.') || payload?.event?.startsWith?.('order.')) {
+    if (rawBody && !verifyRazorpay(rawBody, rzpSig)) {
+      console.warn('[webhook] razorpay signature mismatch — verifying with Razorpay directly');
+    }
+
+    const entity = payload?.payload?.payment?.entity || payload?.payload?.order?.entity || {};
+    const id = entity?.notes?.bookingId || entity?.receipt;
+
+    if (!id) {
+      console.warn('[webhook] razorpay event with no booking id:', payload?.event);
+      return json(res, 200, { received: true, ignored: true });
+    }
+
+    try {
+      const db = await getDb();
+      const out = await settleBooking(db, String(id));
+      console.log(`[webhook] razorpay ${id} -> ${out.booking?.status ?? 'not-found'}${out.changed ? ' (updated)' : ''}`);
+      return json(res, 200, { received: true });
+    } catch (err) {
+      if (err instanceof ConfigError) {
+        console.error('[webhook]', err.message);
+        return json(res, 200, { received: true, ignored: true });
+      }
+      console.error('[webhook] razorpay failed:', err.message);
+      return json(res, 500, { error: 'Could not process webhook.' });
+    }
   }
 
   const bookingId =

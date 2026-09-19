@@ -30,6 +30,7 @@ import { bookingWhatsappUrl } from './_lib/handoff.js';
 import { getSettings, meetLinkFor } from './_lib/settings.js';
 import { quote, recordUse, getOrCreateReferral } from './_lib/pricing.js';
 import * as cashfree from './_lib/cashfree.js';
+import * as razorpay from './_lib/razorpay.js';
 import { sendBookingNotification, sendBookingConfirmation } from './_lib/mailer.js';
 
 export default async function handler(req, res) {
@@ -109,7 +110,8 @@ export default async function handler(req, res) {
   const bookingId = makeBookingId();
   const now = new Date();
   const endDate = plan.weeks ? addDays(date, plan.weeks * 7 - 1) : date;
-  const manual = paymentMode() === 'manual';
+  const gateway = paymentMode();
+  const manual = gateway === 'manual';
 
   const booking = {
     bookingId,
@@ -137,11 +139,11 @@ export default async function handler(req, res) {
     discounts: q.discounts,
     totalDiscount: q.totalDiscount,
     currency: 'INR',
-    paymentMode: manual ? 'manual' : 'cashfree',
+    paymentMode: manual ? 'manual' : gateway,
     status: manual ? 'awaiting_confirmation' : (amount > 0 ? 'pending' : 'confirmed'),
     payment: manual
       ? { provider: 'manual', status: 'AWAITING_WHATSAPP' }
-      : (amount > 0 ? { provider: 'cashfree', status: 'PENDING' } : null),
+      : (amount > 0 ? { provider: gateway, status: 'PENDING' } : null),
     source: 'website',
     createdAt: now,
     updatedAt: now,
@@ -192,6 +194,68 @@ export default async function handler(req, res) {
     return json(res, 201, {
       bookingId, status: 'confirmed', requiresPayment: false, booking: publicView(booking),
     });
+  }
+
+  /* ── razorpay ──────────────────────────────────────────────────────────── */
+  if (gateway === 'razorpay') {
+    if (!razorpay.isConfigured()) {
+      console.error('[bookings] PAYMENT_MODE=razorpay but keys are missing.');
+      await releaseSeat(db, slotId);
+      await collections.bookings(db).updateOne(
+        { bookingId },
+        { $set: { status: 'cancelled', cancelReason: 'gateway_unconfigured', updatedAt: new Date() } }
+      );
+      return json(res, 503, {
+        error: 'Online payment is not available right now. Please message us on WhatsApp to book.',
+      });
+    }
+
+    try {
+      const order = await razorpay.createOrder({
+        bookingId,
+        amount,
+        notes: { plan: planKey, mode: modeKey, name, email },
+      });
+
+      await collections.bookings(db).updateOne(
+        { bookingId },
+        { $set: { 'payment.orderId': order.orderId, 'payment.status': 'CREATED', updatedAt: new Date() } }
+      );
+
+      sendBookingNotification(booking).catch(() => {});
+
+      // Only the public key id crosses to the browser; the secret never does.
+      return json(res, 201, {
+        bookingId,
+        status: 'pending',
+        requiresPayment: true,
+        paymentMode: 'razorpay',
+        amount,
+        razorpay: {
+          key: razorpay.publicKeyId(),
+          orderId: order.orderId,
+          amount: order.amount,
+          currency: order.currency,
+          name: 'Kanishka Creates',
+          description: `${plan.label} (${mode.short})`,
+          prefill: { name, email, contact: phone },
+        },
+        referralCode: mine?.code || null,
+        discounts: q.discounts,
+        totalDiscount: q.totalDiscount,
+        booking: publicView(booking),
+      });
+    } catch (err) {
+      console.error('[bookings] razorpay order failed:', err.message);
+      await releaseSeat(db, slotId);
+      await collections.bookings(db).updateOne(
+        { bookingId },
+        { $set: { status: 'cancelled', cancelReason: 'gateway_error', updatedAt: new Date() } }
+      );
+      return json(res, 502, {
+        error: 'We could not start the payment. Please try again, or message us on WhatsApp.',
+      });
+    }
   }
 
   /* ── cashfree ──────────────────────────────────────────────────────────── */

@@ -8,6 +8,7 @@
 import { json, methodGuard } from '../http.js';
 import { getDb, collections, ConfigError } from '../db.js';
 import { readSession } from '../userAuth.js';
+import { getOrCreateReferral, getCredit, getOffers } from '../pricing.js';
 
 export default async function handler(req, res) {
   if (methodGuard(req, res, ['GET'])) return;
@@ -31,9 +32,25 @@ export default async function handler(req, res) {
       collections.contacts(db).find({ email }).sort({ createdAt: -1 }).limit(100).toArray(),
     ]);
 
+    // Their own code exists only once they have booked; do not mint one just
+    // for visiting the page.
+    const hasBooked = bookings.length > 0;
+    const [ref, credit, offers] = await Promise.all([
+      hasBooked ? getOrCreateReferral(db, email, bookings[0]?.name).catch(() => null) : null,
+      getCredit(db, email).catch(() => 0),
+      getOffers(db).catch(() => null),
+    ]);
+
     return json(res, 200, {
       email,
       name: me.name || bookings[0]?.name || enquiries[0]?.name || '',
+      referral: ref && offers?.referral?.active ? {
+        code: ref.code,
+        uses: ref.uses || 0,
+        credit,
+        discount: offers.referral.discount,
+        reward: offers.referral.reward,
+      } : null,
       bookings: bookings.map(bookingView),
       enquiries: enquiries.map(enquiryView),
     });
