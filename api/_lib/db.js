@@ -54,6 +54,9 @@ async function ensureIndexes(db) {
       db.collection('contacts').createIndex({ createdAt: -1 }),
       db.collection('companies').createIndex({ order: 1 }),
       db.collection('dsa').createIndex({ topic: 1, order: 1 }),
+      db.collection('coupons').createIndex({ code: 1 }, { unique: true }),
+      db.collection('referrals').createIndex({ code: 1 }, { unique: true }),
+      db.collection('referrals').createIndex({ email: 1 }, { unique: true }),
       // One live code per email, and Mongo expires them on its own.
       db.collection('otps').createIndex({ email: 1 }, { unique: true }),
       db.collection('otps').createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 }),
@@ -79,4 +82,8 @@ export const collections = {
   settings: (db) => db.collection('settings'),
   /** The mentor's own DSA plan and question bank. */
   dsa: (db) => db.collection('dsa'),
+  /** Admin-created discount codes. */
+  coupons: (db) => db.collection('coupons'),
+  /** One referral code per person, earned by sharing it. */
+  referrals: (db) => db.collection('referrals'),
 };

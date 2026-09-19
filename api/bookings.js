@@ -28,6 +28,7 @@ import {
 import { reserveSeat, releaseSeat } from './_lib/reservations.js';
 import { bookingWhatsappUrl } from './_lib/handoff.js';
 import { getSettings, meetLinkFor } from './_lib/settings.js';
+import { quote, recordUse, getOrCreateReferral } from './_lib/pricing.js';
 import * as cashfree from './_lib/cashfree.js';
 import { sendBookingNotification, sendBookingConfirmation } from './_lib/mailer.js';
 
@@ -93,7 +94,18 @@ export default async function handler(req, res) {
   }
 
   /* ── store ─────────────────────────────────────────────────────────────── */
-  const amount = priceForPlan(planKey);
+  /**
+   * Recomputed here from the codes submitted, never taken from the form — the
+   * browser can be edited, so a price that arrives in the request body is a
+   * suggestion, not a fact.
+   */
+  const q = await quote(db, {
+    plan: planKey,
+    coupon: str(body.coupon, 24),
+    referral: str(body.referral, 24),
+    email,
+  });
+  const amount = q.amount;
   const bookingId = makeBookingId();
   const now = new Date();
   const endDate = plan.weeks ? addDays(date, plan.weeks * 7 - 1) : date;
@@ -119,7 +131,11 @@ export default async function handler(req, res) {
     slotId,
     name, email, phone, college, year, topic,
     amount,
-    listPrice: listPriceForPlan(planKey),
+    basePrice: q.basePrice,
+    listPrice: q.listPrice,
+    earlyBird: q.earlyBird,
+    discounts: q.discounts,
+    totalDiscount: q.totalDiscount,
     currency: 'INR',
     paymentMode: manual ? 'manual' : 'cashfree',
     status: manual ? 'awaiting_confirmation' : (amount > 0 ? 'pending' : 'confirmed'),
@@ -139,6 +155,15 @@ export default async function handler(req, res) {
     return json(res, 500, { error: 'We could not save your booking. Please try again.' });
   }
 
+  // Counters and the booker's own referral code. Neither may fail the booking.
+  await recordUse(db, q, email).catch(() => {});
+  const mine = await getOrCreateReferral(db, email, name).catch(() => null);
+  if (mine) {
+    await collections.bookings(db)
+      .updateOne({ bookingId }, { $set: { referralCode: mine.code } })
+      .catch(() => {});
+  }
+
   /* ── manual: hand the student to WhatsApp ──────────────────────────────── */
   if (manual) {
     // Kanishka Creates gets the email immediately so a booking is never only in WhatsApp.
@@ -150,6 +175,9 @@ export default async function handler(req, res) {
       paymentMode: 'manual',
       amount,
       whatsappUrl: bookingWhatsappUrl(booking),
+      referralCode: mine?.code || null,
+      discounts: q.discounts,
+      totalDiscount: q.totalDiscount,
       booking: publicView(booking),
     });
   }

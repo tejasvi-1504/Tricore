@@ -7,5 +7,6 @@ import contacts from '../_lib/admin/contacts.js';
 import login from '../_lib/admin/login.js';
 import settings from '../_lib/admin/settings.js';
 import curriculum from '../_lib/admin/curriculum.js';
+import coupons from '../_lib/admin/coupons.js';
 
-export default makeDispatcher('admin', { action, bookings, companies, contacts, login, settings, curriculum }, 'admin');
+export default makeDispatcher('admin', { action, bookings, companies, contacts, login, settings, curriculum, coupons }, 'admin');

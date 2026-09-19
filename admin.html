@@ -195,6 +195,30 @@ header.bar.stuck{border-bottom-color:var(--line)}
 .switch:focus-visible{outline:none;box-shadow:0 0 0 3px var(--brand-100)}
 .switch:disabled{opacity:.5;cursor:not-allowed}
 
+/* ── offers & coupons ── */
+.offer-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:6px}
+.mini{display:block}
+.mini span{display:block;font-size:11.5px;font-weight:600;color:var(--muted);margin-bottom:5px}
+.mini input{width:100%;min-height:40px;padding:0 12px;border:1px solid var(--line);
+  border-radius:var(--r-sm);background:#fff;outline:none}
+.mini input:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-100)}
+.cpn{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);
+  border-radius:var(--r-sm);padding:11px 13px;margin-bottom:8px;flex-wrap:wrap;
+  transition:border-color .2s var(--e)}
+.cpn:hover{border-color:var(--brand-100)}
+.cpn.off{opacity:.55}
+.cpn code{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:13.5px;
+  background:var(--brand-100);color:var(--brand-600);border-radius:7px;padding:4px 9px}
+.cpn .val{font-weight:700;font-size:14px}
+.cpn .meta{font-size:12px;color:var(--muted);flex:1;min-width:110px}
+.cpn .acts{display:flex;gap:6px}
+.bar-mini{height:4px;border-radius:99px;background:var(--line);overflow:hidden;width:60px}
+.bar-mini i{display:block;height:100%;background:var(--brand);border-radius:99px}
+.lead-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:13px}
+.lead-row:first-of-type{border-top:0}
+.lead-row code{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--brand-600)}
+.lead-row b{margin-left:auto;font-weight:700}
+
 .kbd{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;background:var(--tint);
   border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 5px;
   color:var(--muted)}
@@ -348,6 +372,51 @@ header.bar h1{font-size:15px;font-weight:600;color:var(--muted);flex:1;min-width
   </header>
 
   <div class="msg" id="msg"></div>
+
+  <section class="panel">
+    <h2>Offers</h2>
+    <span class="note">Early bird sets the monthly price. Referrals give the friend a discount and credit the referrer.</span>
+    <form id="offersForm">
+      <div class="offer-grid">
+        <label class="mini"><span>Early-bird monthly price (₹)</span>
+          <input id="ebPrice" type="number" min="0" step="1" placeholder="1499"></label>
+        <label class="mini"><span>Referral discount for the friend (₹)</span>
+          <input id="refDisc" type="number" min="0" step="1" placeholder="200"></label>
+        <label class="mini"><span>Referral reward for the referrer (₹)</span>
+          <input id="refRew" type="number" min="0" step="1" placeholder="200"></label>
+        <div style="align-self:end"><button class="btn btn-primary btn-wide" type="submit">Save offers</button></div>
+      </div>
+    </form>
+    <div class="row-toggle">
+      <div><b>Early bird active</b><span id="ebState">—</span></div>
+      <button class="switch" id="ebBtn" type="button" role="switch" aria-checked="false" aria-label="Early bird active"></button>
+    </div>
+    <div class="row-toggle">
+      <div><b>Referral programme active</b><span id="refState">—</span></div>
+      <button class="switch" id="refBtn" type="button" role="switch" aria-checked="false" aria-label="Referral programme active"></button>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Discount codes</h2>
+    <span class="note">Codes stack on top of the early-bird price, and on top of a referral.</span>
+    <form class="co-add" id="cpnForm" style="margin-bottom:14px">
+      <input id="cpnCode" placeholder="CODE" maxlength="20" style="max-width:130px" required>
+      <select id="cpnType" style="min-height:40px;padding:0 10px;border:1px solid var(--line);border-radius:10px;background:#fff">
+        <option value="flat">₹ flat</option><option value="percent">% off</option>
+      </select>
+      <input id="cpnValue" type="number" min="1" placeholder="300" style="max-width:100px" required>
+      <input id="cpnLimit" type="number" min="0" placeholder="uses (0 = ∞)" style="max-width:140px">
+      <button class="btn btn-primary" type="submit">Add code</button>
+    </form>
+    <div id="cpnList"></div>
+  </section>
+
+  <section class="panel" id="refPanel" hidden>
+    <h2>Top referrers</h2>
+    <span class="note">People whose code has been used at least once.</span>
+    <div id="refList"></div>
+  </section>
 
   <section class="panel">
     <h2>Google Meet room</h2>
@@ -505,7 +574,7 @@ $('#loginForm').addEventListener('submit', async (e) => {
     await api('/api/admin/login', { method: 'POST', body: JSON.stringify({ password: $('#pw').value }) });
     $('#pw').value = '';
     showPanel();
-    await Promise.all([load(true), loadCompanies(), loadMeet()]);
+    await Promise.all([load(true), loadCompanies(), loadMeet(), loadOffers()]);
   } catch (err) {
     box.className = 'msg bad show';
     box.textContent = err.message;
@@ -723,6 +792,136 @@ $('#q').addEventListener('input', (e) => {
   t = setTimeout(() => { state.q = e.target.value.trim(); load(true); }, 300);
 });
 
+/* ── offers & discount codes ─────────────────────────────────────────── */
+let OFFERS = null;
+
+function renderOffers(d) {
+  OFFERS = d.offers;
+  const eb = d.offers.earlyBird, rf = d.offers.referral;
+
+  $('#ebPrice').value = eb.monthly ?? '';
+  $('#refDisc').value = rf.discount ?? '';
+  $('#refRew').value = rf.reward ?? '';
+
+  $('#ebBtn').setAttribute('aria-checked', String(eb.active === true));
+  $('#ebState').textContent = eb.active
+    ? `Monthly sells at ₹${eb.monthly}.` : 'Off — monthly sells at the regular price.';
+
+  $('#refBtn').setAttribute('aria-checked', String(rf.active === true));
+  $('#refState').textContent = rf.active
+    ? `Friend saves ₹${rf.discount}; referrer earns ₹${rf.reward}.` : 'Off — referral codes will not apply.';
+
+  $('#cpnList').innerHTML = d.coupons.length ? d.coupons.map((c) => {
+    const used = c.usageLimit ? Math.min(100, Math.round((c.usedCount / c.usageLimit) * 100)) : 0;
+    const bits = [
+      c.plans.length ? c.plans.join(' + ') + ' only' : 'all plans',
+      c.usageLimit ? `${c.usedCount}/${c.usageLimit} used` : `${c.usedCount} used`,
+      c.expiresAt ? 'expires ' + new Date(c.expiresAt).toLocaleDateString('en-IN') : '',
+    ].filter(Boolean).join(' · ');
+
+    return `<div class="cpn ${c.active ? '' : 'off'}">
+      <code>${esc(c.code)}</code>
+      <span class="val">${c.type === 'percent' ? esc(c.value) + '%' : '₹' + esc(c.value)}</span>
+      <span class="meta">${esc(bits)}</span>
+      ${c.usageLimit ? `<span class="bar-mini"><i style="width:${used}%"></i></span>` : ''}
+      <span class="acts">
+        <button class="btn btn-ghost btn-sm" data-cpn-toggle="${esc(c.code)}" data-next="${c.active ? 'false' : 'true'}">
+          ${c.active ? 'Pause' : 'Activate'}</button>
+        <button class="btn btn-danger btn-sm" data-cpn-del="${esc(c.code)}">Delete</button>
+      </span>
+    </div>`;
+  }).join('') : '<div class="empty" style="padding:26px"><p>No codes yet.</p></div>';
+
+  const panel = $('#refPanel');
+  panel.hidden = !d.referrers.length;
+  if (d.referrers.length) {
+    $('#refList').innerHTML = d.referrers.map((r) => `
+      <div class="lead-row">
+        <code>${esc(r.code)}</code>
+        <span class="meta">${esc(r.name || r.email)}</span>
+        <b>${esc(r.uses)} joined · ₹${esc(r.earned)} earned</b>
+      </div>`).join('');
+  }
+}
+
+async function loadOffers() {
+  try { renderOffers(await api('/api/admin/coupons')); }
+  catch (err) { say(err.message, 'bad'); }
+}
+
+$('#offersForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = e.target.querySelector('button');
+  btn.dataset.busy = '1'; btn.disabled = true;
+  try {
+    renderOffers(await api('/api/admin/coupons', {
+      method: 'PATCH',
+      body: JSON.stringify({
+        earlyBird: { monthly: Number($('#ebPrice').value) },
+        referral: { discount: Number($('#refDisc').value), reward: Number($('#refRew').value) },
+      }),
+    }));
+    say('Offers saved.', 'ok');
+  } catch (err) { say(err.message, 'bad'); }
+  finally { delete btn.dataset.busy; btn.disabled = false; }
+});
+
+async function toggleOffer(which, btn) {
+  const next = btn.getAttribute('aria-checked') !== 'true';
+  btn.setAttribute('aria-checked', String(next));   // optimistic
+  btn.disabled = true;
+  try {
+    renderOffers(await api('/api/admin/coupons', {
+      method: 'PATCH', body: JSON.stringify({ [which]: { active: next } }),
+    }));
+  } catch (err) {
+    btn.setAttribute('aria-checked', String(!next));
+    say(err.message, 'bad');
+  } finally { btn.disabled = false; }
+}
+$('#ebBtn').addEventListener('click', () => toggleOffer('earlyBird', $('#ebBtn')));
+$('#refBtn').addEventListener('click', () => toggleOffer('referral', $('#refBtn')));
+
+$('#cpnForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = e.target.querySelector('button');
+  btn.dataset.busy = '1'; btn.disabled = true;
+  try {
+    renderOffers(await api('/api/admin/coupons', {
+      method: 'POST',
+      body: JSON.stringify({
+        code: $('#cpnCode').value, type: $('#cpnType').value,
+        value: Number($('#cpnValue').value), usageLimit: Number($('#cpnLimit').value) || 0,
+      }),
+    }));
+    $('#cpnCode').value = ''; $('#cpnValue').value = ''; $('#cpnLimit').value = '';
+    say('Code added.', 'ok');
+  } catch (err) { say(err.message, 'bad'); }
+  finally { delete btn.dataset.busy; btn.disabled = false; }
+});
+
+$('#cpnList').addEventListener('click', async (e) => {
+  const t = e.target.closest('[data-cpn-toggle]');
+  const d = e.target.closest('[data-cpn-del]');
+  if (!t && !d) return;
+
+  const btn = t || d;
+  btn.disabled = true;
+  try {
+    if (t) {
+      renderOffers(await api('/api/admin/coupons', {
+        method: 'PUT', body: JSON.stringify({ code: t.dataset.cpnToggle, active: t.dataset.next === 'true' }),
+      }));
+    } else {
+      if (!confirm(`Delete ${d.dataset.cpnDel}? Bookings already made keep their discount.`)) { d.disabled = false; return; }
+      renderOffers(await api('/api/admin/coupons', {
+        method: 'DELETE', body: JSON.stringify({ code: d.dataset.cpnDel }),
+      }));
+      say('Code deleted.', 'ok');
+    }
+  } catch (err) { say(err.message, 'bad'); btn.disabled = false; }
+});
+
 /* ── Google Meet room ────────────────────────────────────────────────── */
 function renderMeet(d) {
   const on = d.showMentorPhoto !== false;
@@ -867,7 +1066,7 @@ buildSwatches();
     if (!s.authenticated) return showGate();
 
     showPanel();
-    await Promise.all([load(true), loadCompanies(), loadMeet()]);
+    await Promise.all([load(true), loadCompanies(), loadMeet(), loadOffers()]);
   } catch {
     showGate('Could not reach the server.');
   }

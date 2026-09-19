@@ -9,16 +9,36 @@ import { json, methodGuard } from './_lib/http.js';
 import { getDb } from './_lib/db.js';
 import { listCompanies, DEFAULTS } from './_lib/companies.js';
 import { getSettings } from './_lib/settings.js';
+import { getOffers } from './_lib/pricing.js';
+import { priceForPlan, listPriceForPlan } from './_lib/availability.js';
 
 export default async function handler(req, res) {
   if (methodGuard(req, res, ['GET'])) return;
 
   try {
     const db = await getDb();
-    const [{ companies }, settings] = await Promise.all([listCompanies(db), getSettings(db)]);
+    const [{ companies }, settings, offers] = await Promise.all([
+      listCompanies(db), getSettings(db), getOffers(db),
+    ]);
+
+    const monthly = offers.earlyBird.active && Number.isFinite(offers.earlyBird.monthly)
+      ? offers.earlyBird.monthly
+      : priceForPlan('monthly');
+
     res.setHeader('cache-control', 'public, max-age=60, stale-while-revalidate=300');
     // Also the public bootstrap for anything the panel can switch on the site.
-    return json(res, 200, { companies, site: { showMentorPhoto: settings.showMentorPhoto } });
+    return json(res, 200, {
+      companies,
+      site: { showMentorPhoto: settings.showMentorPhoto },
+      offers: {
+        earlyBird: {
+          active: offers.earlyBird.active === true,
+          price: monthly,
+          listPrice: listPriceForPlan('monthly'),
+        },
+        referral: { active: offers.referral.active === true, discount: offers.referral.discount },
+      },
+    });
   } catch (err) {
     console.error('[companies] falling back to defaults:', err.message);
     return json(res, 200, { companies: DEFAULTS.map((name) => ({ name })), site: { showMentorPhoto: true }, fallback: true });

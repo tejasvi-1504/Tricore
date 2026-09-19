@@ -1554,3 +1554,68 @@ img.logo-mk { object-fit: contain; }
 .ftr-social { display: flex; gap: 1.25rem; }
 .ftr-social a { font-size: .9375rem; transition: color .2s var(--e); }
 .ftr-social a:hover { color: #fff; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   OFFER BANNER — early bird and referral, driven by the admin panel
+   Hidden in the markup and only revealed once the API confirms an
+   offer is actually running, so a switched-off offer never flashes.
+   ═══════════════════════════════════════════════════════════════════ */
+.offer-bar {
+  position: relative; z-index: 60;
+  background: linear-gradient(100deg, var(--brand) 0%, var(--violet) 100%);
+  color: #fff; font-size: .9375rem; font-weight: 500;
+  display: flex; align-items: center; justify-content: center; gap: .85rem;
+  padding: .7rem 2.75rem .7rem 1.25rem; text-align: center; flex-wrap: wrap;
+  animation: offerIn .5s var(--e) both;
+}
+@keyframes offerIn { from { transform: translateY(-100%); } to { transform: none; } }
+.offer-bar b { font-weight: 800; }
+.offer-bar .tag {
+  background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.3);
+  border-radius: 100px; padding: .15rem .7rem; font-size: .8125rem; font-weight: 700;
+  letter-spacing: .03em; text-transform: uppercase;
+}
+.offer-bar .strike { opacity: .72; text-decoration: line-through; font-weight: 500; }
+.offer-bar a {
+  color: #fff; text-decoration: underline; text-underline-offset: 3px; font-weight: 700;
+}
+.offer-close {
+  position: absolute; right: .6rem; top: 50%; transform: translateY(-50%);
+  width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
+  color: #fff; background: rgba(255,255,255,.14); font-size: 1rem; line-height: 1;
+  transition: background .2s var(--e);
+}
+.offer-close:hover { background: rgba(255,255,255,.28); }
+@media (max-width: 560px) {
+  .offer-bar { font-size: .875rem; gap: .5rem; padding-right: 2.4rem; }
+  .offer-bar .tag { font-size: .75rem; }
+}
+
+/* ── Coupon / referral field in the booking summary ── */
+.promo { margin-bottom: 1.1rem; }
+.promo > label {
+  display: block; font-size: .8125rem; font-weight: 600;
+  color: var(--muted); margin-bottom: .45rem;
+}
+.promo-row { display: flex; gap: .5rem; }
+.promo-row input {
+  flex: 1; min-width: 0; min-height: 46px; padding: 0 .9rem;
+  border: 1px solid var(--line); border-radius: var(--r-sm); background: #fff;
+  font-family: ui-monospace, Menlo, monospace; text-transform: uppercase;
+  letter-spacing: .08em; font-size: .9375rem; outline: none;
+  transition: border-color .2s var(--e), box-shadow .2s var(--e);
+}
+.promo-row input::placeholder { font-family: var(--f-b); letter-spacing: normal; text-transform: none; }
+.promo-row input:focus { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-100); }
+.promo-row .btn { min-height: 46px; flex-shrink: 0; }
+.promo-msg {
+  margin: .55rem 0 0; font-size: .875rem; font-weight: 500;
+  animation: promoIn .25s var(--e) both;
+}
+@keyframes promoIn { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: none; } }
+.promo-msg.good { color: var(--green); }
+.promo-msg.bad { color: #dc2626; }
+
+/* Discount lines sit between the details and the total. */
+.sum .disc dt, .sum .disc dd { color: var(--green); font-weight: 600; }
+.sum .disc dd { white-space: nowrap; }

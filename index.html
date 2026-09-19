@@ -64,6 +64,10 @@
 
 <a href="#main" class="skip">Skip to content</a>
 
+<!-- Offer banner. Empty and hidden until /api/companies confirms an offer is
+     running — a switched-off offer must never flash on screen. -->
+<div class="offer-bar" id="offerBar" role="region" aria-label="Current offer" hidden></div>
+
 <!-- ══ ICON SPRITE ══ -->
 <svg class="sprite" aria-hidden="true" focusable="false">
   <symbol id="i-work" viewBox="0 0 24 24"><rect x="2.5" y="7" width="19" height="13" rx="2.5"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7M2.5 12.5h19"/></symbol>
@@ -584,11 +588,23 @@
 
         <div class="bk-block bk-confirm">
           <p class="stp"><span class="stp-n">6</span> Confirm</p>
+
+          <div class="promo">
+            <label for="bkPromo">Coupon or referral code</label>
+            <div class="promo-row">
+              <input type="text" id="bkPromo" placeholder="Enter a code" autocomplete="off"
+                     maxlength="20" spellcheck="false">
+              <button type="button" class="btn btn-ghost" id="bkPromoBtn">Apply</button>
+            </div>
+            <p class="promo-msg" id="bkPromoMsg" hidden></p>
+          </div>
+
           <dl class="sum">
             <div><dt>Plan</dt><dd id="sumPlan">1-Day Trial</dd></div>
             <div><dt>Attending</dt><dd id="sumSession">Online</dd></div>
             <div><dt>Starts</dt><dd id="sumDate" class="pending">Select a Saturday</dd></div>
             <div><dt>Ends</dt><dd id="sumTime" class="pending">—</dd></div>
+            <div id="sumDiscounts"></div>
             <div class="sum-amt"><dt>You pay</dt><dd id="sumPrice">₹200</dd></div>
           </dl>
           <p class="alert" id="bkError" role="alert" hidden></p>

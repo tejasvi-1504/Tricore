@@ -460,6 +460,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorEl     = document.getElementById('bkError');
     const confirmBtn  = document.getElementById('bkConfirm');
     const confirmText = document.getElementById('bkConfirmText');
+    const promoInput  = document.getElementById('bkPromo');
+    const promoBtn    = document.getElementById('bkPromoBtn');
+    const promoMsg    = document.getElementById('bkPromoMsg');
     const successEl   = document.getElementById('bkSuccess');
     const successMsg  = document.getElementById('bkSuccessMsg');
     const successCard = document.getElementById('bkSuccessCard');
@@ -545,6 +548,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let planKey    = 'trial';
     let price      = 200;
     let listPrice  = 3000;
+    // The code the visitor typed, and whatever the server made of it.
+    let promoCode  = '';
+    let discounts  = [];
     let seatsByDate = new Map();
     let request    = 0;
     let submitting = false;
@@ -708,7 +714,11 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         const qs = '/api/slots?mode=' + encodeURIComponent(modeKey) +
                    '&plan=' + encodeURIComponent(planKey) +
-                   (timed() && startDate ? '&date=' + encodeURIComponent(startDate) : '');
+                   (timed() && startDate ? '&date=' + encodeURIComponent(startDate) : '') +
+                   (promoCode ? '&coupon=' + encodeURIComponent(promoCode) +
+                                '&referral=' + encodeURIComponent(promoCode) : '') +
+                   // Sent so the server can reject someone's own referral code.
+                   (val('bkEmail') ? '&email=' + encodeURIComponent(val('bkEmail')) : '');
         const res = await fetch(qs);
         if (ticket !== request) return;
         if (!res.ok) throw new Error('unavailable');
@@ -717,6 +727,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         price = data.price != null ? data.price : price;
         listPrice = data.listPrice != null ? data.listPrice : listPrice;
+        discounts = data.discounts || [];
+        if (promoCode) showPromoResult(data);
         if (data.slots) slotData = data.slots;
         if (data.batches) seatsByDate = new Map(data.batches.map(b => [b.date, b]));
 
@@ -762,6 +774,16 @@ document.addEventListener('DOMContentLoaded', () => {
         sumEnd.classList.toggle('pending', !chosenTime);
       }
 
+      // Each applied discount gets its own line, so the total is never a
+      // number the visitor has to take on trust.
+      const discBox = document.getElementById('sumDiscounts');
+      if (discBox) {
+        discBox.innerHTML = discounts.map(d => {
+          const label = d.kind === 'referral' ? 'Referral ' + d.code : 'Code ' + d.code;
+          return '<div class="disc"><dt>' + label + '</dt><dd>− ' + rupees(d.amount) + '</dd></div>';
+        }).join('');
+      }
+
       sumPrice.innerHTML = price < listPrice
         ? '<s>' + rupees(listPrice) + '</s> ' + rupees(price)
         : rupees(price);
@@ -769,6 +791,50 @@ document.addEventListener('DOMContentLoaded', () => {
       confirmText.textContent = 'Book on WhatsApp · ' + rupees(price);
       confirmBtn.disabled = submitting || !startDate ||
                             (timed() && !chosenTime);
+    }
+
+    /**
+     * One field accepts both a coupon and a referral code, because visitors
+     * do not know or care which kind they were given. The request tries it as
+     * both; the server rejects the wrong one silently and we report whichever
+     * actually applied.
+     */
+    function showPromoResult(data) {
+      if (!promoMsg) return;
+      const applied = (data.discounts || []).find(d => d.code === promoCode.toUpperCase());
+
+      if (applied) {
+        promoMsg.hidden = false;
+        promoMsg.className = 'promo-msg good';
+        promoMsg.textContent = (applied.kind === 'referral' ? 'Referral applied — ' : 'Code applied — ')
+                             + rupees(applied.amount) + ' off';
+        return;
+      }
+
+      // Both attempts failed: show the more specific complaint of the two.
+      const notices = data.notices || [];
+      const pick = notices.find(n => !/not valid|Enter a code/i.test(n.message)) || notices[0];
+      promoMsg.hidden = false;
+      promoMsg.className = 'promo-msg bad';
+      promoMsg.textContent = pick ? pick.message : 'That code is not valid.';
+    }
+
+    function applyPromo() {
+      const code = (promoInput.value || '').trim().toUpperCase();
+      promoInput.value = code;
+      if (code === promoCode) return;
+      promoCode = code;
+      if (!code) { promoMsg.hidden = true; discounts = []; }
+      loadBatches();
+    }
+
+    if (promoBtn) {
+      promoBtn.addEventListener('click', applyPromo);
+      promoInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); applyPromo(); }
+      });
+      // Re-check on blur too, so tabbing away still applies it.
+      promoInput.addEventListener('blur', applyPromo);
     }
 
     function showError(msg) {
@@ -858,6 +924,8 @@ document.addEventListener('DOMContentLoaded', () => {
         time: timed() ? chosenTime : undefined,
         name: val('bkName'),
         email: val('bkEmail'),
+        coupon: promoCode,
+        referral: promoCode,
         phone: val('bkPhone'),
         college: val('bkCollege'),
         year: document.getElementById('bkYear').value,
@@ -997,6 +1065,8 @@ document.addEventListener('DOMContentLoaded', () => {
   fetch('/api/companies')
     .then((r) => (r.ok ? r.json() : null))
     .then((data) => {
+      renderOfferBar(data?.offers);
+
       // Same request carries the site flags the panel can switch.
       if (data?.site?.showMentorPhoto === false) {
         const img = document.getElementById('mentorImg');
@@ -1025,6 +1095,45 @@ document.addEventListener('DOMContentLoaded', () => {
    The navbar ships signed-out. If the visitor already has a session we swap
    in their initial and first name, so the page never flashes the wrong state
    for people who are not signed in (the common case). */
+/**
+ * The offer strip above the header. Dismissing it is remembered for the
+ * session only — a new visit shows the offer again, but it never nags within
+ * one sitting.
+ */
+function renderOfferBar(offers) {
+  const bar = document.getElementById('offerBar');
+  if (!bar || !offers) return;
+
+  let dismissed = false;
+  try { dismissed = sessionStorage.getItem('kc-offer-hidden') === '1'; } catch {}
+  if (dismissed) return;
+
+  const eb = offers.earlyBird || {};
+  const rf = offers.referral || {};
+  const parts = [];
+
+  if (eb.active && eb.price) {
+    parts.push(`<span class="tag">Early bird</span>
+      <span>Monthly programme at <b>₹${eb.price}</b>` +
+      (eb.listPrice > eb.price ? ` <span class="strike">₹${eb.listPrice}</span>` : '') +
+      `</span>`);
+  }
+  if (rf.active && rf.discount) {
+    parts.push(`<span>Refer a friend — you both save <b>₹${rf.discount}</b></span>`);
+  }
+  if (!parts.length) return;
+
+  bar.innerHTML = parts.join('<span aria-hidden="true" style="opacity:.45">•</span>') +
+    ' <a href="#booking">Book now</a>' +
+    '<button class="offer-close" type="button" aria-label="Dismiss offer">&times;</button>';
+  bar.hidden = false;
+
+  bar.querySelector('.offer-close').addEventListener('click', () => {
+    bar.hidden = true;
+    try { sessionStorage.setItem('kc-offer-hidden', '1'); } catch {}
+  });
+}
+
 (function accountChip() {
   const chip = document.getElementById('acct');
   if (!chip) return;

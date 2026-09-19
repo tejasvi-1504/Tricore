@@ -10,6 +10,7 @@
  * Kept at this path so the frontend contract stays stable.
  */
 import { getDb, collections, ConfigError } from './_lib/db.js';
+import { quote } from './_lib/pricing.js';
 import { json, methodGuard, str } from './_lib/http.js';
 import {
   MODES,
@@ -44,6 +45,11 @@ export default async function handler(req, res) {
   // A trial is always a specific hour; the monthly plan only when online.
   const timed = needsTime(planKey, modeKey);
 
+  // Codes arrive as query params so the form can price live as they type.
+  const couponCode = str(req.query?.coupon, 24);
+  const referralCode = str(req.query?.referral, 24);
+  const email = str(req.query?.email, 160).toLowerCase();
+
   const base = {
     mode: modeKey,
     modeLabel: mode.label,
@@ -63,6 +69,32 @@ export default async function handler(req, res) {
     },
   };
 
+  /**
+   * Overlay the live quote — early bird, coupon and referral — onto the
+   * headline price. Any failure leaves the env-based price in place rather
+   * than blocking the whole availability response.
+   */
+  async function withQuote(db) {
+    if (!db) return base;
+    try {
+      const q = await quote(db, { plan: planKey, coupon: couponCode, referral: referralCode, email });
+      return {
+        ...base,
+        price: q.amount,
+        basePrice: q.basePrice,
+        listPrice: q.listPrice,
+        earlyBird: q.earlyBird,
+        discounts: q.discounts,
+        totalDiscount: q.totalDiscount,
+        notices: q.notices,
+        offers: { referral: { active: q.offers.referral.active, discount: q.offers.referral.discount } },
+      };
+    } catch (err) {
+      console.error('[slots] quote failed:', err.message);
+      return base;
+    }
+  }
+
   let db = null;
   try {
     db = await getDb();
@@ -71,6 +103,8 @@ export default async function handler(req, res) {
     else console.error('[slots] db error:', err.message);
   }
 
+  const priced = await withQuote(db);
+
   /* ── online + a specific date: the day's time slots ──────────────────── */
   if (timed && date) {
     if (!isValidDateStr(date)) return json(res, 400, { error: 'Invalid date.' });
@@ -78,7 +112,7 @@ export default async function handler(req, res) {
     const open = isWithinBookingWindow(date);
     const slots = open ? generateDailySlots(date) : [];
     if (!slots.length) {
-      return json(res, 200, { ...base, date, open: false, slots: [] });
+      return json(res, 200, { ...priced, date, open: false, slots: [] });
     }
 
     let taken = new Map();
@@ -96,7 +130,7 @@ export default async function handler(req, res) {
     }
 
     return json(res, 200, {
-      ...base,
+      ...priced,
       date,
       open: true,
       slots: slots.map((s) => {
@@ -140,7 +174,7 @@ export default async function handler(req, res) {
   }
 
   return json(res, 200, {
-    ...base,
+    ...priced,
     batches: starts.map((s) => {
       const held = taken.get(s.date);
       const capacity = held?.capacity ?? mode.capacity;
