@@ -138,36 +138,83 @@ try { const t = localStorage.getItem('kc-site-theme'); if (t) document.documentE
 
 <main id="main">
 
-<!-- ══ BUSINESS HERO ══ -->
-<section class="bhero">
-  <div class="hero-blob hero-blob-1" aria-hidden="true"></div>
-  <div class="hero-blob hero-blob-2" aria-hidden="true"></div>
-  <div class="hero-mesh" aria-hidden="true"></div>
-
-  <div class="wrap bhero-in">
-    <span class="eyebrow"><svg class="ic"><use href="#i-crm"/></svg> For Business</span>
-    <h1>Software that runs the <em>boring half</em> of your business</h1>
-    <p class="bhero-lead">CRMs, online stores and websites built for Indian businesses —
-       fixed price, published up front, delivered on a date we agree before we start.</p>
-
-    <div class="bhero-cta">
-      <a href="#contact" class="btn btn-pri btn-lg">Tell us what you need <svg class="ic"><use href="#i-right"/></svg></a>
-      <a href="#pricing" class="btn btn-ghost btn-lg">See prices</a>
+<!-- FRAMED HERO
+     Everything below is clipped by one rounded container, so the dashboard
+     cards bleed off its bottom edge rather than sitting under it. -->
+<section class="frame">
+  <div class="frame-in">
+    <div class="frame-media" aria-hidden="true">
+      <img class="frame-still" src="https://images.unsplash.com/photo-1557683316-973673baf926?w=1600&q=60" alt="" decoding="async">
+      <video class="frame-vid" id="bizVid" muted playsinline preload="none"
+             disableremoteplayback webkit-playsinline="true" x5-playsinline="true"
+             poster="https://images.unsplash.com/photo-1557683316-973673baf926?w=1600&q=60" data-src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260424_064411_9e9d7f84-9277-41f4-ab10-59172d89e6be.mp4"></video>
+      <span class="frame-wash"></span>
     </div>
 
-    <ul class="bhero-marks">
-      <li><svg class="ic"><use href="#i-check"/></svg> Fixed price, no hourly surprises</li>
-      <li><svg class="ic"><use href="#i-check"/></svg> A date agreed before we start</li>
-      <li><svg class="ic"><use href="#i-check"/></svg> You own the code and the data</li>
-    </ul>
+    <div class="frame-content">
+      <span class="chip"><i></i> Kanishka Creates &middot; For business</span>
 
-    <dl class="bhero-stats">
-      <div><dt><span class="counter" data-target="12">0</span>+</dt><dd>Projects delivered</dd></div>
-      <div><dt>₹<span class="counter" data-target="8000">0</span></dt><dd>Websites start at</dd></div>
-      <div><dt><span class="counter" data-target="2">0</span> wks</dt><dd>Typical website build</dd></div>
-    </dl>
+      <h1>Software that runs the <em>boring half</em><br>of your business</h1>
+      <p class="frame-sub">CRMs, online stores and websites for Indian businesses &mdash;
+         fixed price, agreed before we start.</p>
+
+      <a href="#contact" class="frame-cta">
+        Start a project
+        <span class="frame-cta-i"><svg class="ic"><use href="#i-right"/></svg></span>
+      </a>
+
+      <!-- A CRM is the thing we most often build, so the preview is one
+           rather than generic SaaS decoration. -->
+      <div class="tray">
+        <div class="tray-grid">
+
+          <article class="dash">
+            <header class="dash-hd"><b>Leads</b><span>This month</span></header>
+            <p class="dash-n">1,248<span class="dash-pill up">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8M21 7v6h-6"/></svg>
+              +214 (21%)</span></p>
+            <p class="dash-cap">Compared to last month</p>
+            <p class="dash-goal">Monthly target</p>
+            <svg class="gauge" viewBox="0 0 200 120" role="img" aria-label="92 percent"><line class="g-on" x1="30.00" y1="100.00" x2="20.00" y2="100.00"/><line class="g-on" x1="30.23" y1="94.37" x2="20.26" y2="93.56"/><line class="g-on" x1="30.91" y1="88.77" x2="21.04" y2="87.17"/><line class="g-on" x1="32.03" y1="83.25" x2="22.32" y2="80.85"/><line class="g-on" x1="33.60" y1="77.83" x2="24.12" y2="74.67"/><line class="g-on" x1="35.60" y1="72.56" x2="26.40" y2="68.64"/><line class="g-on" x1="38.02" y1="67.47" x2="29.16" y2="62.82"/><line class="g-on" x1="40.84" y1="62.59" x2="32.38" y2="57.24"/><line class="g-on" x1="44.04" y1="57.95" x2="36.04" y2="51.94"/><line class="g-on" x1="47.60" y1="53.58" x2="40.12" y2="46.95"/><line class="g-on" x1="51.51" y1="49.52" x2="44.58" y2="42.30"/><line class="g-on" x1="55.73" y1="45.78" x2="49.40" y2="38.03"/><line class="g-on" x1="60.24" y1="42.39" x2="54.55" y2="34.16"/><line class="g-on" x1="65.00" y1="39.38" x2="60.00" y2="30.72"/><line class="g-on" x1="69.99" y1="36.76" x2="65.70" y2="27.72"/><line class="g-on" x1="75.18" y1="34.55" x2="71.63" y2="25.20"/><line class="g-on" x1="80.52" y1="32.76" x2="77.74" y2="23.16"/><line class="g-on" x1="86.00" y1="31.41" x2="84.00" y2="21.62"/><line class="g-on" x1="91.56" y1="30.51" x2="90.36" y2="20.58"/><line class="g-on" x1="97.18" y1="30.06" x2="96.78" y2="20.06"/><line class="g-on" x1="102.82" y1="30.06" x2="103.22" y2="20.06"/><line class="g-on" x1="108.44" y1="30.51" x2="109.64" y2="20.58"/><line class="g-on" x1="114.00" y1="31.41" x2="116.00" y2="21.62"/><line class="g-on" x1="119.48" y1="32.76" x2="122.26" y2="23.16"/><line class="g-on" x1="124.82" y1="34.55" x2="128.37" y2="25.20"/><line class="g-on" x1="130.01" y1="36.76" x2="134.30" y2="27.72"/><line class="g-on" x1="135.00" y1="39.38" x2="140.00" y2="30.72"/><line class="g-on" x1="139.76" y1="42.39" x2="145.45" y2="34.16"/><line class="g-on" x1="144.27" y1="45.78" x2="150.60" y2="38.03"/><line class="g-on" x1="148.49" y1="49.52" x2="155.42" y2="42.30"/><line class="g-on" x1="152.40" y1="53.58" x2="159.88" y2="46.95"/><line class="g-on" x1="155.96" y1="57.95" x2="163.96" y2="51.94"/><line class="g-on" x1="159.16" y1="62.59" x2="167.62" y2="57.24"/><line class="g-on" x1="161.98" y1="67.47" x2="170.84" y2="62.82"/><line class="g-on" x1="164.40" y1="72.56" x2="173.60" y2="68.64"/><line class="g-on" x1="166.40" y1="77.83" x2="175.88" y2="74.67"/><line class="g-on" x1="167.97" y1="83.25" x2="177.68" y2="80.85"/><line class="g-off" x1="169.09" y1="88.77" x2="178.96" y2="87.17"/><line class="g-off" x1="169.77" y1="94.37" x2="179.74" y2="93.56"/><line class="g-off" x1="170.00" y1="100.00" x2="180.00" y2="100.00"/><text x="100" y="105" text-anchor="middle">92%</text></svg><div class="g-ends"><span>0</span><span>150</span></div>
+            <div class="dash-tabs"><span class="on">Leads</span><span>Converted</span></div>
+          </article>
+
+          <article class="dash">
+            <label class="dash-f"><span>Show figures for</span>
+              <button type="button">This month <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+            </label>
+            <label class="dash-f"><span>Compare period by</span>
+              <button type="button">Month-to-date <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+            </label>
+            <label class="dash-f"><span>Target (this month)</span>
+              <span class="dash-in"><i>#</i>150</span>
+            </label>
+            <label class="dash-f"><span>Target (this year)</span>
+              <span class="dash-in"><i>#</i>1800</span>
+            </label>
+            <div class="dash-foot">
+              <span class="dash-save">Save</span><span class="dash-cancel">Cancel</span>
+              <svg class="dash-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            </div>
+          </article>
+
+          <article class="dash">
+            <header class="dash-hd"><b>Orders</b><span>Today</span></header>
+            <p class="dash-n">38<span class="dash-pill flat">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8M21 7v6h-6"/></svg>
+              +4</span></p>
+            <p class="dash-cap">Compared to yesterday</p>
+            <p class="dash-goal">Fulfilled</p>
+            <svg class="gauge" viewBox="0 0 200 120" role="img" aria-label="68 percent"><line class="g-on g-grey" x1="30.00" y1="100.00" x2="20.00" y2="100.00"/><line class="g-on g-grey" x1="30.23" y1="94.37" x2="20.26" y2="93.56"/><line class="g-on g-grey" x1="30.91" y1="88.77" x2="21.04" y2="87.17"/><line class="g-on g-grey" x1="32.03" y1="83.25" x2="22.32" y2="80.85"/><line class="g-on g-grey" x1="33.60" y1="77.83" x2="24.12" y2="74.67"/><line class="g-on g-grey" x1="35.60" y1="72.56" x2="26.40" y2="68.64"/><line class="g-on g-grey" x1="38.02" y1="67.47" x2="29.16" y2="62.82"/><line class="g-on g-grey" x1="40.84" y1="62.59" x2="32.38" y2="57.24"/><line class="g-on g-grey" x1="44.04" y1="57.95" x2="36.04" y2="51.94"/><line class="g-on g-grey" x1="47.60" y1="53.58" x2="40.12" y2="46.95"/><line class="g-on g-grey" x1="51.51" y1="49.52" x2="44.58" y2="42.30"/><line class="g-on g-grey" x1="55.73" y1="45.78" x2="49.40" y2="38.03"/><line class="g-on g-grey" x1="60.24" y1="42.39" x2="54.55" y2="34.16"/><line class="g-on g-grey" x1="65.00" y1="39.38" x2="60.00" y2="30.72"/><line class="g-on g-grey" x1="69.99" y1="36.76" x2="65.70" y2="27.72"/><line class="g-on g-grey" x1="75.18" y1="34.55" x2="71.63" y2="25.20"/><line class="g-on g-grey" x1="80.52" y1="32.76" x2="77.74" y2="23.16"/><line class="g-on g-grey" x1="86.00" y1="31.41" x2="84.00" y2="21.62"/><line class="g-on g-grey" x1="91.56" y1="30.51" x2="90.36" y2="20.58"/><line class="g-on g-grey" x1="97.18" y1="30.06" x2="96.78" y2="20.06"/><line class="g-on g-grey" x1="102.82" y1="30.06" x2="103.22" y2="20.06"/><line class="g-on g-grey" x1="108.44" y1="30.51" x2="109.64" y2="20.58"/><line class="g-on g-grey" x1="114.00" y1="31.41" x2="116.00" y2="21.62"/><line class="g-on g-grey" x1="119.48" y1="32.76" x2="122.26" y2="23.16"/><line class="g-on g-grey" x1="124.82" y1="34.55" x2="128.37" y2="25.20"/><line class="g-on g-grey" x1="130.01" y1="36.76" x2="134.30" y2="27.72"/><line class="g-on g-grey" x1="135.00" y1="39.38" x2="140.00" y2="30.72"/><line class="g-off" x1="139.76" y1="42.39" x2="145.45" y2="34.16"/><line class="g-off" x1="144.27" y1="45.78" x2="150.60" y2="38.03"/><line class="g-off" x1="148.49" y1="49.52" x2="155.42" y2="42.30"/><line class="g-off" x1="152.40" y1="53.58" x2="159.88" y2="46.95"/><line class="g-off" x1="155.96" y1="57.95" x2="163.96" y2="51.94"/><line class="g-off" x1="159.16" y1="62.59" x2="167.62" y2="57.24"/><line class="g-off" x1="161.98" y1="67.47" x2="170.84" y2="62.82"/><line class="g-off" x1="164.40" y1="72.56" x2="173.60" y2="68.64"/><line class="g-off" x1="166.40" y1="77.83" x2="175.88" y2="74.67"/><line class="g-off" x1="167.97" y1="83.25" x2="177.68" y2="80.85"/><line class="g-off" x1="169.09" y1="88.77" x2="178.96" y2="87.17"/><line class="g-off" x1="169.77" y1="94.37" x2="179.74" y2="93.56"/><line class="g-off" x1="170.00" y1="100.00" x2="180.00" y2="100.00"/><text x="100" y="105" text-anchor="middle">68%</text></svg>
+            <div class="dash-tabs"><span class="on">Orders</span><span>Returns</span></div>
+          </article>
+
+        </div>
+      </div>
+    </div>
   </div>
 </section>
+
 <section class="sec sec-soft" id="services">
   <div class="wrap">
     <header class="sec-hd reveal">

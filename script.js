@@ -1529,3 +1529,40 @@ window.kcConfetti = confetti;
     if (card && typeof window.kcSetPlan === 'function') window.kcSetPlan(card.dataset.plan);
   });
 })();
+
+/* ══ FRAMED HERO VIDEO (business page) ═══════════════════════════
+   31MB clip. Same rule as anywhere else: the poster paints first and
+   the video is only fetched on a wide screen with a connection that
+   is not metered, and only once the frame is near the viewport.
+   Native loop, so no per-frame work once it is running. ══════════ */
+(function framedVideo() {
+  const vid = document.getElementById('bizVid');
+  if (!vid || !vid.dataset.src) return;
+
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!matchMedia('(min-width: 900px)').matches) return;
+
+  const net = navigator.connection;
+  if (net && (net.saveData || /^(slow-)?2g$/.test(net.effectiveType || ''))) return;
+
+  const start = () => {
+    vid.loop = true;
+    vid.src = vid.dataset.src;
+    vid.load();
+    vid.play().then(() => vid.classList.add('is-on')).catch(() => {});
+  };
+
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(e => {
+      if (e.some(x => x.isIntersecting)) { io.disconnect(); start(); }
+    }, { rootMargin: '200px' });
+    io.observe(vid);
+  } else {
+    start();
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) vid.pause();
+    else if (vid.src) vid.play().catch(() => {});
+  });
+})();
