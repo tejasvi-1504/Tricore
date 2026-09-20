@@ -2285,12 +2285,19 @@ body, .hdr, .card, .btn, .sec, section {
    ═══════════════════════════════════════════════════════════════════ */
 .cine {
   --u: min(calc(100vw / 1600), calc(100vh / 780), 1.6px);
-  position: relative; overflow: hidden; background: #1d8fb8;
+  position: relative; overflow: hidden; background: #05070e;
   min-height: min(780px, calc(100svh - 4.5rem));
   display: flex; align-items: center;
   padding: calc(120 * var(--u)) 0 calc(96 * var(--u));
 }
-.cine-bg { position: absolute; inset: 0; overflow: hidden; background: #1d8fb8; }
+.cine-bg {
+  position: absolute; inset: 0; overflow: hidden;
+  background:
+    radial-gradient(ellipse 120% 80% at 50% 108%, #1a5c78 0%, rgba(26,92,120,0) 62%),
+    radial-gradient(ellipse 80% 50% at 62% 58%, rgba(196,148,74,.20) 0%, rgba(196,148,74,0) 70%),
+    radial-gradient(ellipse 90% 60% at 22% 22%, rgba(40,86,122,.35) 0%, rgba(40,86,122,0) 68%),
+    linear-gradient(180deg, #05070e 0%, #071627 46%, #0d3147 78%, #12455e 100%);
+}
 .cine-still, .cine-vid {
   position: absolute; right: 0; bottom: 0; width: 100%; height: 100%;
   object-fit: cover; object-position: right bottom; filter: saturate(.86);
@@ -3110,3 +3117,8 @@ button.err-wa:disabled { opacity: .55; cursor: default; }
   .as-modal .book,
   .as-modal .bk-pane:not([hidden]) { animation: none; }
 }
+
+/* The plan chip's price comes from the server, so it has a moment of not
+   knowing. Italics would be wrong — it is a number, not an aside. */
+.type-c em[data-chip-price] { font-style: normal; }
+.sum-amt dd.pending { color: var(--muted); font-weight: 500; }

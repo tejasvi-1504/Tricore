@@ -570,8 +570,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let chosenTime = null;
     let modeKey    = 'online';
     let planKey    = 'trial';
-    let price      = 200;
-    let listPrice  = 3000;
+    // null until the server has quoted, because a number typed into this
+    // file is a number that will one day disagree with the one being
+    // charged — which is exactly what happened: the chip read 149 from the
+    // markup while this said 200, and the pay button believed this.
+    let price      = null;
+    let listPrice  = null;
     // The code the visitor typed, and whatever the server made of it.
     let promoCode  = '';
     // Until the server says otherwise, assume the introductory price applies.
@@ -737,6 +741,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const renderWeekends = renderStep3;   // keep the old call sites working
 
+    /**
+     * The price on each plan chip, from the server.
+     *
+     * The chip for the plan being quoted is filled from this response; the
+     * other one is asked for separately, once, so both can be shown without
+     * either being typed into the markup.
+     */
+    const chipCache = {};
+    function paintChips(data) {
+      if (data && data.plan && data.price != null) chipCache[data.plan] = data.price;
+      document.querySelectorAll('[data-chip-price]').forEach((el) => {
+        const p = chipCache[el.dataset.chipPrice];
+        el.textContent = p == null ? '\u2014' : '\u00b7 ' + rupees(p);
+      });
+    }
+    (function otherChip() {
+      for (const p of ['trial', 'monthly']) {
+        fetch('/api/slots?plan=' + p + '&mode=online')
+          .then((r) => (r.ok ? r.json() : null))
+          .then((d) => { if (d && d.price != null) { chipCache[p] = d.price; paintChips(); } })
+          .catch(() => {});
+      }
+    })();
+
     /* ── live batch availability ─────────────────────────────────────── */
     async function loadBatches() {
       const ticket = ++request;
@@ -756,6 +784,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         price = data.price != null ? data.price : price;
         listPrice = data.listPrice != null ? data.listPrice : listPrice;
+        paintChips(data);
         firstCall = data.firstCall !== false;
         sessionRate = data.sessionRate != null ? data.sessionRate : sessionRate;
         discounts = data.discounts || [];
@@ -816,9 +845,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }).join('');
       }
 
-      sumPrice.innerHTML = price < listPrice
-        ? '<s>' + rupees(listPrice) + '</s> ' + rupees(price)
-        : rupees(price);
+      const known = price != null;
+      sumPrice.classList.toggle('pending', !known);
+      sumPrice.innerHTML = !known
+        ? '\u2014'
+        : (listPrice != null && price < listPrice
+            ? '<s>' + rupees(listPrice) + '</s> ' + rupees(price)
+            : rupees(price));
 
       // The introductory price is for a first call only. When it no longer
       // applies, say so next to the number rather than leaving a changed
@@ -841,6 +874,9 @@ document.addEventListener('DOMContentLoaded', () => {
       // waiting on, because that step is somewhere further up the form.
       const missing = !startDate            ? 'Pick a day first'
                     : (timed() && !chosenTime) ? 'Select a time first'
+                    // Never offer to take a payment for an amount we have not
+                    // been told. The quote is one request away.
+                    : price == null            ? 'Getting the price\u2026'
                     : null;
 
       // Say what the next tap does. "Book on WhatsApp" was left over from
@@ -965,6 +1001,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!RULES.plans[next]) return;
       planKey = next;
       firstCall = true;                 // re-established by the next quote
+      price = null;                     // the old plan's price is not this one's
+      listPrice = null;
       planBtns.forEach(b => b.classList.toggle('is-on', b.dataset.plan === next));
       // The valid days differ between a trial and the monthly batch.
       startDate = null;
@@ -1765,10 +1803,19 @@ window.kcConfetti = confetti;
   if (!clips.length) return;
 
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  if (!matchMedia('(min-width: 900px)').matches) return;
 
   const net = navigator.connection;
-  if (net && (net.saveData || /^(slow-)?2g$/.test(net.effectiveType || ''))) return;
+  if (net && net.saveData) return;
+
+  // A phone was refused the clip outright, which left the hero as a flat
+  // colour — the one screen where the backdrop is the whole design. It gets
+  // the clip too now, but only on a connection that reports 4g, which covers
+  // wifi as well. Anything slower, or a browser that will not say, keeps the
+  // painted background rather than spending someone's data on decoration.
+  const wide = matchMedia('(min-width: 900px)').matches;
+  const fast = net ? net.effectiveType === '4g' : false;
+  if (!wide && !fast) return;
+  if (wide && net && /^(slow-)?2g$/.test(net.effectiveType || '')) return;
 
   const FADE_MS = 500;
   /* Begin fading out while this much of the clip is left. Long enough to
@@ -2015,7 +2062,7 @@ window.kcConfetti = confetti;
   function showTotal() {
     if (!total) return;
     const amt = document.getElementById('sumPrice')?.textContent?.trim();
-    const show = Boolean(amt) && step !== 3;   // step 3 shows the full summary
+    const show = Boolean(amt) && amt !== '\u2014' && step !== 3;
     total.hidden = !show;
     if (show) total.innerHTML = amt + '<small>total</small>';
   }
