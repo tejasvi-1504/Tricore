@@ -1573,3 +1573,67 @@ window.kcConfetti = confetti;
     });
   });
 })();
+
+/* ══ HERO ENTRANCE ═══════════════════════════════════════════════
+   Runs once, on first paint. The background video is the stage and is
+   never animated. If anything here throws, the resting styles are
+   cleared anyway so the page can never be left invisible — that is
+   what the finally block is for. ════════════════════════════════ */
+(function heroEntrance() {
+  const root = document.documentElement;
+  if (!root.classList.contains('js-enter')) return;
+  if (document.body.dataset.entered) return;
+  document.body.dataset.entered = '1';
+
+  const EXPO   = 'cubic-bezier(.16,1,.3,1)';
+  const SOFT   = 'cubic-bezier(.22,.65,.28,1)';
+  const SETTLE = 'cubic-bezier(.33,1,.68,1)';
+
+  // Shorter travel and a brisker tempo on a phone; the same distance
+  // reads as sluggish on a small screen.
+  const small = matchMedia('(max-width: 648px)').matches;
+  const d = small ? 0.62 : 1;
+  const t = small ? 0.85 : 1;
+
+  const running = [];
+  const play = (el, frames, duration, delay, easing) => {
+    if (!el || !el.animate) return;
+    running.push(el.animate(frames, {
+      duration, delay: delay * t, easing, fill: 'both',
+    }));
+  };
+  const rise = (el, px, duration, delay, easing) => play(el, [
+    { opacity: 0, transform: `translate3d(0,${px * d}px,0)` },
+    { opacity: 1, transform: 'none' },
+  ], duration, delay, easing);
+
+  const $$ = (s) => document.querySelector(s);
+
+  try {
+    rise($$('.eyebrow-c'), 12, 560, 60, SOFT);
+
+    document.querySelectorAll('.headline').forEach((h, i) => {
+      play(h, [{ transform: 'translate3d(0,118%,0)' }, { transform: 'none' }],
+           950, 170 + i * 90, EXPO);
+    });
+
+    rise($$('.lede'), 14, 660, 430, SOFT);
+
+    play($$('.cine-cta'), [
+      { opacity: 0, transform: `translate3d(0,${12 * d}px,0) scale(.985)` },
+      { opacity: 1, transform: 'none' },
+    ], 580, 620, SETTLE);
+
+    rise($$('.cine-by'), 10, 540, 760, SOFT);
+  } finally {
+    // Clear the resting state once the last animation settles — or
+    // immediately if the API is unavailable — so nothing stays hidden.
+    const last = running[running.length - 1];
+    const done = () => {
+      root.classList.remove('js-enter');
+      running.forEach((a) => { try { a.cancel(); } catch {} });
+    };
+    if (last && last.finished) last.finished.then(done).catch(done);
+    else done();
+  }
+})();

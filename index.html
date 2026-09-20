@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#faeff4">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Great+Vibes&display=swap" rel="stylesheet">
 <link rel="canonical" href="https://kanishkacreates.vercel.app/">
 <link rel="icon" type="image/png" sizes="96x96" href="assets/logo-96.png">
 <link rel="icon" type="image/png" sizes="256x256" href="assets/logo-256.png">
@@ -63,6 +63,16 @@
    cached from /api/companies on the previous visit, so only a first-ever
    visit briefly shows the default. */
 try { const t = localStorage.getItem('kc-site-theme'); if (t) document.documentElement.dataset.theme = t; } catch {}
+</script>
+<script>
+/* Arm the entrance before paint. If this script fails the class is never
+   added and everything renders fully visible — the animation is the
+   enhancement, not the thing holding content up. */
+try {
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.documentElement.classList.add('js-enter');
+  }
+} catch (e) {}
 </script>
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -136,37 +146,44 @@ try { const t = localStorage.getItem('kc-site-theme'); if (t) document.documentE
 
 <main id="main">
 
-<!-- HERO
-     Cinematic, but the video is a progressive enhancement: the poster paints
-     first and the clip is only fetched on a wide screen with a connection that
-     can afford it. The source is ~30MB, which is a lot of somebody's mobile
-     data to spend on a background. -->
-<section class="hero" id="top">
-  <div class="hero-glow" aria-hidden="true"></div>
+<!-- CINEMATIC HERO
+     Left-aligned over the painting, with the entrance timeline run once on
+     first paint. The video is the stage and is never animated. -->
+<section class="cine" id="top">
+  <div class="cine-bg">
+    <img class="cine-still" src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/693205bf-8048-456a-879e-4e0a1b85a098.webp" alt="" decoding="async" fetchpriority="high" aria-hidden="true">
+    <video class="cine-vid" muted loop playsinline preload="none"
+           poster="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/693205bf-8048-456a-879e-4e0a1b85a098.webp" data-src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260826_123836_11a3c5e0-713f-4bef-a8e9-7dd93bdea3b0.mp4" aria-label="Painted alpine panorama: a lone hiker with a pink backpack faces a snow-capped peak above a sea of clouds"></video>
+  </div>
+  <span class="cine-scrim" aria-hidden="true"></span>
 
+  <div class="wrap cine-stage">
+    <p class="eyebrow-c">Ready when you are</p>
 
-  <div class="wrap hero-in">
-    <span class="eyebrow"><svg class="ic"><use href="#i-cap"/></svg> Career guidance &middot; B.Tech</span>
-
-    <h1>You&rsquo;ve done the courses.<br>Started the projects.<br><em>Still not sure any of it counts.</em></h1>
-
-    <p class="hero-lead">
-      Most students don&rsquo;t fall behind from laziness. They fall behind
-      spreading themselves across six things that never add up to one.
-      Let&rsquo;s work out what you should stop doing.
-    </p>
-
-    <div class="hero-cta">
-      <a href="#book" class="btn btn-pri btn-lg">Book a call <svg class="ic"><use href="#i-right"/></svg></a>
-      <a href="#you" class="btn btn-ghost btn-lg">Is this me?</a>
+    <div class="headline-mask">
+      <h1 class="headline">You&rsquo;ve done the courses.</h1>
+    </div>
+    <div class="headline-mask">
+      <h1 class="headline">Started the projects.</h1>
+    </div>
+    <div class="headline-mask">
+      <h1 class="headline headline-soft">Still not sure any of it counts.</h1>
     </div>
 
-    <p class="hero-by">
+    <p class="lede">Most students don&rsquo;t fall behind from laziness. They fall
+       behind spreading themselves across six things that never add up to one.
+       Let&rsquo;s work out what you should stop doing.</p>
+
+    <div class="cine-cta">
+      <a class="cta" href="#book"><span>Book a call</span></a>
+      <a class="cta-ghost" href="#you">Is this me?</a>
+    </div>
+
+    <p class="cine-by">
       <img src="assets/mentor-420.jpg" alt="" width="34" height="34" loading="lazy" decoding="async">
       Taught by <b>Kanishka Sharma</b> &middot; SDE at BharatPe &middot; interviewed at Google, Uber and ServiceNow
     </p>
   </div>
-
 </section>
 
 <!-- IS THIS YOU -->
@@ -353,12 +370,9 @@ try { const t = localStorage.getItem('kc-site-theme'); if (t) document.documentE
      Full-bleed, text over artwork. The numbers come from the API like
      everywhere else — nothing about the price is typed into this markup. -->
 <section class="summit" id="pricing">
-  <div class="summit-bg">
-    <img class="summit-still" src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/693205bf-8048-456a-879e-4e0a1b85a098.webp" alt="" loading="lazy" decoding="async" aria-hidden="true">
-    <video class="summit-vid" id="summitVid" muted loop playsinline preload="none" poster="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/693205bf-8048-456a-879e-4e0a1b85a098.webp"
-           data-src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260826_123836_11a3c5e0-713f-4bef-a8e9-7dd93bdea3b0.mp4"
-           aria-label="Painted alpine panorama: a lone hiker with a pink backpack faces a snow-capped peak above a sea of clouds"></video>
-    <span class="summit-scrim" aria-hidden="true"></span>
+  <div class="summit-bg" aria-hidden="true">
+    <img class="summit-still" src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/693205bf-8048-456a-879e-4e0a1b85a098.webp" alt="" loading="lazy" decoding="async">
+    <span class="summit-scrim"></span>
   </div>
 
   <div class="wrap summit-in">

@@ -1954,35 +1954,6 @@ body, .hdr, .card, .btn, .ftr, .sec, section {
    adding up — so the page opens with recognition, not a sales pitch,
    and price is held back until the booking section.
    ═══════════════════════════════════════════════════════════════════ */
-.hero { position: relative; overflow: hidden; padding: clamp(3rem, 9vw, 6.5rem) 0 clamp(3rem, 8vw, 5rem); }
-.hero-glow {
-  position: absolute; inset: -30% -10% auto; height: 620px; pointer-events: none;
-  background:
-    radial-gradient(ellipse 50% 60% at 22% 40%, rgba(var(--brand-rgb), .16), transparent 62%),
-    radial-gradient(ellipse 45% 55% at 78% 30%, rgba(var(--violet-rgb), .13), transparent 60%);
-}
-.hero-in { position: relative; max-width: 780px; }
-.hero h1 {
-  font-size: clamp(2.1rem, 5.6vw, 3.55rem); line-height: 1.12;
-  letter-spacing: -.035em; margin: 1rem 0 1.2rem;
-}
-.hero h1 em {
-  font-style: normal;
-  background: linear-gradient(115deg, var(--brand), var(--violet));
-  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
-}
-.hero-lead {
-  font-size: clamp(1.0313rem, 1.7vw, 1.1875rem); color: var(--body);
-  line-height: 1.7; max-width: 56ch; margin: 0 0 2rem;
-}
-.hero-cta { display: flex; gap: .7rem; flex-wrap: wrap; margin-bottom: 2.2rem; }
-.hero-by {
-  display: flex; align-items: center; gap: .6rem; flex-wrap: wrap;
-  font-size: .875rem; color: var(--muted); margin: 0;
-}
-.hero-by img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; object-position: center 30%; }
-.hero-by b { color: var(--ink); font-weight: 700; }
-
 /* ── symptoms: the recognition grid ── */
 .sym-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(258px, 1fr)); gap: 1rem; }
 .sym {
@@ -2512,4 +2483,141 @@ body, .hdr, .card, .btn, .ftr, .sec, section {
 @media (prefers-reduced-motion: reduce) {
   .frame-vid { display: none; }
   .frame-cta:hover { transform: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   CINEMATIC HERO
+
+   Sized in --u, a unit derived from a 1600x780 design frame, so the
+   whole composition scales as one piece instead of each element
+   guessing at its own clamp(). The painting is the stage and is never
+   animated; everything else rises onto it once, on first paint.
+   ═══════════════════════════════════════════════════════════════════ */
+.cine {
+  --u: min(calc(100vw / 1600), calc(100vh / 780), 1.6px);
+  position: relative; overflow: hidden; background: #1d8fb8;
+  min-height: min(780px, calc(100svh - 4.5rem));
+  display: flex; align-items: center;
+  padding: calc(120 * var(--u)) 0 calc(96 * var(--u));
+}
+.cine-bg { position: absolute; inset: 0; overflow: hidden; background: #1d8fb8; }
+.cine-still, .cine-vid {
+  position: absolute; right: 0; bottom: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: right bottom; filter: saturate(.86);
+}
+.cine-vid { opacity: 0; transition: opacity .8s linear; }
+.cine-vid.is-on { opacity: 1; }
+
+/* Scrim strength follows aspect ratio: a wide viewport shows more sky
+   above the peak, and white type needs more help there. */
+.cine-scrim {
+  position: absolute; left: 0; right: 0; top: 0; height: calc(410 * var(--u));
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(4,20,32,.30) 0, rgba(4,20,32,.15) 52%, rgba(4,20,32,0) 100%);
+}
+@media (min-aspect-ratio: 17/10) {
+  .cine-scrim { height: calc(450 * var(--u));
+    background: linear-gradient(180deg, rgba(4,20,32,.48) 0, rgba(4,20,32,.25) 52%, rgba(4,20,32,0) 100%); }
+}
+@media (min-aspect-ratio: 19/10) {
+  .cine-scrim { height: calc(470 * var(--u));
+    background: linear-gradient(180deg, rgba(4,20,32,.58) 0, rgba(4,20,32,.31) 52%, rgba(4,20,32,0) 100%); }
+}
+@media (min-aspect-ratio: 21/10) {
+  .cine-still, .cine-vid { object-position: right 76%; }
+  .cine-scrim { height: calc(480 * var(--u));
+    background: linear-gradient(180deg, rgba(4,20,32,.56) 0, rgba(4,20,32,.30) 52%, rgba(4,20,32,0) 100%); }
+}
+
+.cine-stage { position: relative; z-index: 1; }
+
+.eyebrow-c {
+  font-size: clamp(11px, calc(15 * var(--u)), 15px); font-weight: 500;
+  line-height: 1; letter-spacing: .145em; text-transform: uppercase;
+  color: #fff; margin: 0 0 calc(22 * var(--u));
+}
+
+/* Each line is masked so the type rises from behind its own edge. */
+.headline-mask { overflow: hidden; padding-bottom: .04em; }
+.headline {
+  font-family: 'Instrument Serif', Georgia, serif; font-weight: 400;
+  font-size: clamp(34px, calc(71.2 * var(--u)), 71px);
+  line-height: 1.04; letter-spacing: .008em; color: #fff; margin: 0;
+}
+.headline-soft { color: rgba(255,255,255,.72); font-style: italic; }
+
+.lede {
+  margin: calc(26 * var(--u)) 0 0; max-width: 46ch;
+  font-size: clamp(14.5px, calc(17 * var(--u)), 17.5px); font-weight: 500;
+  line-height: 1.55; letter-spacing: -.009em; color: rgba(255,255,255,.92);
+}
+
+.cine-cta { display: flex; align-items: center; gap: calc(14 * var(--u)); flex-wrap: wrap;
+            margin-top: calc(34 * var(--u)); }
+.cta {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: clamp(140px, calc(157 * var(--u)), 168px);
+  height: clamp(42px, calc(40.6 * var(--u)), 46px);
+  padding: 0 clamp(20px, calc(30 * var(--u)), 34px);
+  border-radius: 4px; background: #fff; text-decoration: none;
+  transition: background .25s ease, transform .25s ease, box-shadow .25s ease;
+}
+.cta span {
+  font-size: clamp(14px, calc(15.8 * var(--u)), 16px); font-weight: 400;
+  line-height: 1; letter-spacing: .004em; color: #000; white-space: nowrap;
+}
+.cta:hover { background: #eef2f3; transform: translateY(-1.5px);
+             box-shadow: 0 8px 22px rgba(0,0,0,.20); }
+.cta-ghost {
+  display: inline-flex; align-items: center; height: clamp(42px, calc(40.6 * var(--u)), 46px);
+  padding: 0 clamp(16px, calc(22 * var(--u)), 26px); border-radius: 4px;
+  border: 1px solid rgba(255,255,255,.4); color: #fff;
+  font-size: clamp(14px, calc(15.8 * var(--u)), 16px); font-weight: 500;
+  backdrop-filter: blur(8px); background: rgba(255,255,255,.08);
+  transition: background .25s ease, border-color .25s ease;
+}
+.cta-ghost:hover { background: rgba(255,255,255,.18); border-color: rgba(255,255,255,.66); }
+
+.cine-by {
+  display: flex; align-items: center; gap: .6rem; flex-wrap: wrap;
+  margin: calc(34 * var(--u)) 0 0; font-size: .8438rem; color: rgba(255,255,255,.74);
+}
+.cine-by img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover;
+               object-position: center 30%; border: 2px solid rgba(255,255,255,.4); }
+.cine-by b { color: #fff; font-weight: 600; }
+
+/* ── entrance: resting state while armed ── */
+.js-enter .eyebrow-c,
+.js-enter .lede,
+.js-enter .cine-cta,
+.js-enter .cine-by { opacity: 0; }
+.js-enter .headline { transform: translate3d(0, 118%, 0); }
+
+/* ── section headings pick up the display serif ── */
+.sec-hd h2, .summit h2, .door-in h2 {
+  font-family: 'Instrument Serif', Georgia, serif; font-weight: 400;
+  letter-spacing: -.005em;
+}
+.sec-hd h2 { font-size: clamp(1.9rem, 4.2vw, 2.9rem); line-height: 1.1; }
+
+@media (max-aspect-ratio: 5/4) {
+  .cine { --u: calc(100vw / 780); min-height: 0;
+          padding: clamp(3rem, 9vh, 5rem) 0 clamp(2.5rem, 7vh, 4rem); }
+  .cine-still, .cine-vid { object-position: 80% bottom; }
+  .cine-scrim { height: min(56vh, calc(560 * var(--u)));
+    background: linear-gradient(180deg, rgba(6,22,34,.42) 0, rgba(6,22,34,.26) 52%, rgba(6,22,34,0) 100%); }
+  .headline { font-size: clamp(32px, 9.4vw, 56px); }
+  .lede { max-width: 36ch; }
+}
+@media (max-width: 648px) {
+  .headline { font-size: clamp(30px, 10.2vw, 48px); text-wrap: balance; }
+  .lede { max-width: 34ch; }
+  .cine-cta .cta, .cine-cta .cta-ghost { flex: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cine-vid { display: none; }
+  .cta:hover { transform: none; }
+  .js-enter .eyebrow-c, .js-enter .lede, .js-enter .cine-cta, .js-enter .cine-by { opacity: 1; }
+  .js-enter .headline { transform: none; }
 }
