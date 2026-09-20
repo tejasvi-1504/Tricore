@@ -414,9 +414,10 @@ try {
       <header class="book-hd">
         <div>
           <span class="tagline">Book</span>
-          <h3>Reserve your slot</h3>
+          <h3 id="bkTitle">Reserve your slot</h3>
+          <p class="book-sub" id="bkStepOf">Step 1 of 3</p>
         </div>
-        <div class="hours">
+        <div class="hours" hidden>
           <span><svg class="ic"><use href="#i-cal"/></svg> <b>Saturday</b> Learning session</span>
           <span><svg class="ic"><use href="#i-user"/></svg> <b>Sunday</b> 1:1 interaction</span>
           <span class="hours-tz">Batches start on a Saturday</span>
@@ -426,10 +427,11 @@ try {
         </button>
       </header>
 
-      <ol class="bk-steps" id="bkSteps">
-        <li data-step="1" class="is-on"><b>1</b> When</li>
-        <li data-step="2"><b>2</b> Your details</li>
-        <li data-step="3"><b>3</b> Pay</li>
+      <div class="bk-bar" aria-hidden="true"><i id="bkBarFill"></i></div>
+      <ol class="bk-steps" id="bkSteps" aria-label="Booking steps">
+        <li data-step="1" role="button" tabindex="0" class="is-on"><b>1</b> When</li>
+        <li data-step="2" role="button" tabindex="0"><b>2</b> Details</li>
+        <li data-step="3" role="button" tabindex="0"><b>3</b> Pay</li>
       </ol>
 
       <form class="book-body" id="bookingForm" novalidate>
@@ -554,8 +556,10 @@ try {
 
         <div class="bk-nav">
           <button type="button" class="btn btn-ghost" id="bkBack" hidden>Back</button>
+          <p class="bk-total" id="bkNavTotal" hidden></p>
           <button type="button" class="btn btn-pri" id="bkNext">Continue</button>
         </div>
+        <p class="sr-only" id="bkStepLive" aria-live="polite"></p>
       </form>
 
       <div class="book-ok" id="bkSuccess" hidden>

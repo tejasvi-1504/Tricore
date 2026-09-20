@@ -421,12 +421,9 @@ img,svg { display: block; max-width: 100%; }
 .hours b { color: var(--ink); }
 .hours-tz { color: var(--muted); font-size: .78rem !important; padding-left: 1.65rem; }
 
-.book-body { display: grid; grid-template-columns: 1fr 22rem;
-  grid-template-areas: "type cal" "time cal" "details cal" "confirm cal"; }
-.bk-block { padding: 1.75rem 2.25rem; border-bottom: 1px solid var(--line); min-width: 0; }
-.bk-type { grid-area: type; } .bk-cal { grid-area: cal; border-left: 1px solid var(--line); border-bottom: 0; }
-.bk-time { grid-area: time; } .bk-details { grid-area: details; }
-.bk-confirm { grid-area: confirm; border-bottom: 0; }
+.book-body { display: block; }
+.bk-block { padding: 1.5rem clamp(1.1rem, 3vw, 2rem); border-bottom: 1px solid var(--line); min-width: 0; }
+.bk-pane > .bk-block:last-child { border-bottom: 0; }
 
 .stp { display: flex; align-items: center; gap: .6rem; font-family: var(--f-h);
   font-weight: 700; font-size: .95rem; color: var(--ink); margin-bottom: 1.1rem; }
@@ -575,7 +572,6 @@ img,svg { display: block; max-width: 100%; }
   .ct-grid { grid-template-columns: 1fr; }
   .ct-side { grid-template-columns: repeat(2,1fr); }
   .consult { grid-template-columns: 1fr; }
-  .book-body { grid-template-columns: 1fr 19rem; }
 }
 
 @media (max-width: 900px) {
@@ -602,7 +598,6 @@ img,svg { display: block; max-width: 100%; }
   .why-grid { grid-template-columns: 1fr; gap: 2.5rem; }
   .vs { grid-template-columns: 1fr; }
   .vs-or { justify-self: center; }
-  .book-body { grid-template-columns: 1fr; grid-template-areas: "type" "cal" "time" "details" "confirm"; }
   .bk-cal { border-left: 0; border-bottom: 1px solid var(--line); }
 }
 
@@ -2947,92 +2942,164 @@ button.err-wa:disabled { opacity: .55; cursor: default; }
 /* ═══════════════════════════════════════════════════════════════════
    BOOKING DIALOG
 
-   The booking section is not on the landing page. It opens as a dialog
-   from any "Book" control, and walks through three panes: when, who,
-   pay. The section element is the backdrop and the .book card is the
-   dialog, so no markup has to move — which keeps every listener and
-   every id exactly where the booking module expects them.
+   The section element is the backdrop and the .book card is the dialog,
+   so no markup had to move and every id the booking module owns stayed
+   where it was.
+
+   The scroll chain is the part worth reading. A dialog that is taller
+   than the viewport has to scroll its *body* and keep its header and
+   its buttons where they are, which needs an unbroken flex column with
+   min-height:0 at every level — without that, a flex item refuses to
+   shrink below its content and the whole card grows past the screen
+   with nothing to scroll.
    ═══════════════════════════════════════════════════════════════════ */
 .sec.book-sec.is-stowed { display: none; }
 
 .sec.book-sec.as-modal {
   position: fixed; inset: 0; z-index: 400;
-  display: grid; place-items: center;
-  margin: 0; padding: clamp(.5rem, 3vh, 2.5rem) clamp(.5rem, 3vw, 2rem);
-  border-radius: 0; background: rgba(6, 10, 18, .62);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0; padding: clamp(.5rem, 3vh, 2rem) clamp(.5rem, 3vw, 2rem);
+  border-radius: 0; background: rgba(6, 10, 18, .6);
   backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-  overflow: hidden;
-  animation: bk-fade .22s var(--e) both;
+  animation: bk-fade .2s var(--e) both;
 }
-/* The section's own clip and heading belong to the page version of it. */
 .sec.book-sec.as-modal > .book-bg,
 .sec.book-sec.as-modal .sec-hd { display: none; }
+
 .sec.book-sec.as-modal > .wrap {
-  max-width: 760px; width: 100%; max-height: 100%;
-  padding: 0; display: flex;
+  width: 100%; max-width: 720px; max-height: 100%;
+  padding: 0; margin: 0; display: flex; min-height: 0;
 }
-.sec.book-sec.as-modal .book {
-  margin: 0; width: 100%; max-height: 100%;
-  overflow-y: auto; overscroll-behavior: contain;
+
+/* ── the card ── */
+.as-modal .book {
+  display: flex; flex-direction: column;
+  width: 100%; max-height: 100%; min-height: 0;
+  margin: 0; overflow: hidden; border-radius: var(--r-xl);
   box-shadow: 0 40px 90px rgba(0, 0, 0, .5);
-  animation: bk-rise .28s var(--e) both;
+  animation: bk-rise .26s var(--e) both;
 }
+.as-modal .book-hd,
+.as-modal .bk-bar,
+.as-modal .bk-steps,
+.as-modal .bk-nav { flex: 0 0 auto; }
+
+.as-modal .book-body {
+  flex: 1 1 auto; min-height: 0;
+  display: flex; flex-direction: column;
+}
+/* The only thing that scrolls. */
+.as-modal .bk-pane,
+.as-modal .book-ok {
+  flex: 1 1 auto; min-height: 0;
+  overflow-y: auto; overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.as-modal .bk-pane:not([hidden]) { animation: bk-pane-in .24s var(--e) both; }
+
 @keyframes bk-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes bk-rise {
-  from { opacity: 0; transform: translateY(14px) scale(.985); }
+  from { opacity: 0; transform: translateY(12px) scale(.99); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes bk-pane-in {
+  from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: none; }
 }
 
-/* ── the way out ── */
+/* ── header ── */
+.as-modal .book-hd {
+  position: relative; padding: 1.15rem clamp(1.1rem, 3vw, 2rem);
+  padding-right: 3.75rem; gap: .25rem; align-items: flex-start;
+}
+.as-modal .book-hd h3 { font-size: 1.2rem; margin: 0; }
+.book-sub { font-size: .8rem; color: var(--muted); margin: .15rem 0 0; }
+
 .book-x {
-  position: absolute; top: 1rem; right: 1rem;
-  width: 36px; height: 36px; border-radius: 50%;
+  position: absolute; top: .9rem; right: .9rem;
+  width: 38px; height: 38px; border-radius: 50%;
   display: grid; place-items: center; cursor: pointer;
-  background: #fff; border: 1px solid var(--line); color: var(--body);
+  background: var(--tint); border: 1px solid transparent; color: var(--body);
   transition: background .2s var(--e), color .2s var(--e);
 }
-.book-x:hover { background: var(--tint); color: var(--ink); }
+.book-x:hover { background: var(--brand-100); color: var(--brand-600); }
+.book-x:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 .book-x .ic { width: 18px; height: 18px; }
-.book-hd { position: relative; padding-right: 3.5rem; }
 
-/* ── where you are ── */
+/* ── progress ── */
+.bk-bar { height: 3px; background: var(--line); }
+.bk-bar i {
+  display: block; height: 100%; width: 33.333%;
+  background: var(--brand); border-radius: 0 3px 3px 0;
+  transition: width .35s var(--e);
+}
+
+/* ── steps ── */
 .bk-steps {
-  display: flex; align-items: center; gap: .35rem;
-  list-style: none; margin: 0; padding: 1rem clamp(1.1rem, 3vw, 2.25rem) 0;
+  display: flex; gap: .25rem; list-style: none;
+  margin: 0; padding: .75rem clamp(.75rem, 2vw, 1.25rem);
+  border-bottom: 1px solid var(--line); background: var(--soft);
 }
 .bk-steps li {
-  display: flex; align-items: center; gap: .5rem; cursor: pointer;
-  flex: 1; min-width: 0;
+  flex: 1; min-width: 0; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: .45rem;
+  padding: .5rem .4rem; border-radius: 100px;
   font-size: .8125rem; font-weight: 600; color: var(--muted);
-  padding: .45rem .3rem; border-radius: var(--r-sm);
-  border-bottom: 2px solid var(--line);
-  transition: color .2s var(--e), border-color .2s var(--e);
-}
-.bk-steps li b {
-  width: 22px; height: 22px; flex-shrink: 0; border-radius: 50%;
-  display: grid; place-items: center; font-size: .72rem;
-  background: var(--tint); color: var(--muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   transition: background .2s var(--e), color .2s var(--e);
 }
-.bk-steps li.is-on { color: var(--ink); border-bottom-color: var(--brand); }
-.bk-steps li.is-on b { background: var(--brand); color: #fff; }
-.bk-steps li.is-done { color: var(--body); border-bottom-color: var(--brand-100); }
-.bk-steps li.is-done b { background: var(--brand-100); color: var(--brand-600); }
-
-/* ── forward and back ── */
-.bk-nav {
-  display: flex; gap: .75rem; align-items: center;
-  padding: 0 clamp(1.1rem, 3vw, 2.25rem) clamp(1.25rem, 3vw, 2rem);
+.bk-steps li:hover { background: rgba(var(--brand-rgb), .07); }
+.bk-steps li:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px; }
+.bk-steps li b {
+  width: 21px; height: 21px; flex: 0 0 auto; border-radius: 50%;
+  display: grid; place-items: center; font-size: .7rem;
+  background: var(--line); color: var(--muted);
+  transition: background .2s var(--e), color .2s var(--e);
 }
-.bk-nav .btn { flex: 1; justify-content: center; }
-.bk-nav #bkBack { flex: 0 0 auto; min-width: 104px; }
+.bk-steps li.is-on { color: var(--ink); background: #fff; box-shadow: var(--sh-xs); }
+.bk-steps li.is-on b { background: var(--brand); color: #fff; }
+.bk-steps li.is-done { color: var(--brand-600); }
+.bk-steps li.is-done b { background: var(--brand-100); color: var(--brand-600); font-size: 0; }
+.bk-steps li.is-done b::after {
+  content: '\2713'; font-size: .7rem; line-height: 1;
+}
 
-@media (max-width: 560px) {
-  .sec.book-sec.as-modal { padding: 0; }
+/* ── footer ── */
+.bk-nav {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .9rem clamp(1.1rem, 3vw, 2rem);
+  border-top: 1px solid var(--line); background: var(--soft);
+}
+.bk-nav #bkBack { flex: 0 0 auto; }
+.bk-nav #bkNext { flex: 1 1 auto; justify-content: center; }
+.bk-total {
+  margin: 0 auto 0 0; font-family: var(--f-h); font-weight: 700;
+  font-size: .95rem; color: var(--ink); white-space: nowrap;
+}
+.bk-total small { display: block; font-size: .7rem; font-weight: 500; color: var(--muted); }
+
+/* ── inside the panes ── */
+.as-modal .bk-block:first-child { padding-top: 1.25rem; }
+.as-modal .stp { font-size: .9rem; margin-bottom: .9rem; }
+.as-modal .book-ok { padding: 2.5rem 1.5rem; }
+
+/* ── a sheet on small screens ── */
+@media (max-width: 620px) {
+  .sec.book-sec.as-modal { padding: 0; align-items: flex-end; }
   .sec.book-sec.as-modal > .wrap { max-width: none; height: 100%; }
-  .sec.book-sec.as-modal .book { border-radius: 0; max-height: none; height: 100%; }
-  .bk-steps li span, .bk-steps li { font-size: .75rem; }
+  .as-modal .book { border-radius: 0; height: 100%; max-height: none; }
+  .bk-steps li { font-size: .75rem; }
+  .bk-nav { padding-bottom: max(.9rem, env(safe-area-inset-bottom)); }
+  .bk-nav #bkBack { min-width: 88px; }
+}
+/* Landscape on a phone leaves almost no height; every pixel is the pane's. */
+@media (max-height: 520px) {
+  .as-modal .book-hd { padding-top: .8rem; padding-bottom: .5rem; }
+  .as-modal .book-hd h3 { font-size: 1.05rem; }
+  .bk-steps { padding-top: .45rem; padding-bottom: .45rem; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .sec.book-sec.as-modal, .sec.book-sec.as-modal .book { animation: none; }
+  .sec.book-sec.as-modal,
+  .as-modal .book,
+  .as-modal .bk-pane:not([hidden]) { animation: none; }
 }

@@ -822,6 +822,8 @@ document.addEventListener('DOMContentLoaded', () => {
       // The introductory price is for a first call only. When it no longer
       // applies, say so next to the number rather than leaving a changed
       // figure unexplained.
+      window.kcBookingTotal?.();
+
       const rateNote = document.getElementById('sumRateNote');
       if (rateNote) {
         const show = planKey === 'trial' && !firstCall;
@@ -1919,7 +1921,12 @@ window.kcConfetti = confetti;
   const back   = document.getElementById('bkBack');
   const next   = document.getElementById('bkNext');
   const closeB = document.getElementById('bkClose');
+  const barFill = document.getElementById('bkBarFill');
+  const stepOf = document.getElementById('bkStepOf');
+  const live   = document.getElementById('bkStepLive');
+  const total  = document.getElementById('bkNavTotal');
   const panes  = [...sec.querySelectorAll('.bk-pane')];
+  const NAMES  = { 1: 'When', 2: 'Your details', 3: 'Pay' };
   const LINK   = 'a[href="#book"], a[href="#booking"], a[href="/#book"], a[href="/#booking"]';
 
   let open = false;
@@ -1952,15 +1959,45 @@ window.kcConfetti = confetti;
     panes.forEach((p) => { p.hidden = Number(p.dataset.pane) !== step; });
     steps?.querySelectorAll('li').forEach((li) => {
       const i = Number(li.dataset.step);
-      li.classList.toggle('is-on', i === step);
+      const on = i === step;
+      li.classList.toggle('is-on', on);
       li.classList.toggle('is-done', i < step);
+      // aria-current marks the one step of the set you are on; the rest
+      // must not carry it at all.
+      if (on) li.setAttribute('aria-current', 'step');
+      else li.removeAttribute('aria-current');
     });
+
+    if (barFill) barFill.style.width = (step / 3 * 100).toFixed(1) + '%';
+    if (stepOf) stepOf.textContent = `Step ${step} of 3 \u00b7 ${NAMES[step]}`;
+    // Announced on its own, because the heading itself never changes.
+    if (live) live.textContent = `Step ${step} of 3, ${NAMES[step]}`;
+
     back.hidden = step === 1;
     // The last step's action is the pay button inside the pane, not this one.
     next.hidden = step === 3;
     next.textContent = step === 1 ? 'Continue' : 'Continue to payment';
-    card?.scrollTo?.({ top: 0, behavior: 'smooth' });
+    showTotal();
+
+    // The pane is the scroller, not the card.
+    const pane = panes.find((p) => Number(p.dataset.pane) === step);
+    pane?.scrollTo?.({ top: 0 });
   }
+
+  /**
+   * The running total, in the footer from the first step.
+   *
+   * Reading the summary line rather than holding a second copy of the price:
+   * one number, computed in one place, displayed twice.
+   */
+  function showTotal() {
+    if (!total) return;
+    const amt = document.getElementById('sumPrice')?.textContent?.trim();
+    const show = Boolean(amt) && step !== 3;   // step 3 shows the full summary
+    total.hidden = !show;
+    if (show) total.innerHTML = amt + '<small>total</small>';
+  }
+  window.kcBookingTotal = showTotal;
 
   next?.addEventListener('click', () => {
     const why = blocking(step);
@@ -1969,6 +2006,14 @@ window.kcConfetti = confetti;
     show(step + 1);
   });
   back?.addEventListener('click', () => { window.kcBookingError?.(''); show(step - 1); });
+
+  steps?.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const li = e.target.closest('li');
+    if (!li) return;
+    e.preventDefault();
+    li.click();
+  });
 
   steps?.addEventListener('click', (e) => {
     const li = e.target.closest('li');
@@ -1994,6 +2039,7 @@ window.kcConfetti = confetti;
     sec.removeAttribute('aria-hidden');
     card?.setAttribute('role', 'dialog');
     card?.setAttribute('aria-modal', 'true');
+    card?.setAttribute('aria-labelledby', 'bkTitle');
     window.kcScrollLock?.on();
     sec.querySelectorAll('video[data-src]').forEach((v) => {
       if (!v.src) window.kcStartClip?.(v);
