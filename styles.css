@@ -3125,17 +3125,6 @@ button.err-wa:disabled { opacity: .55; cursor: default; }
    I need?", and the answer is the first word on the card. No avatar, because
    a coloured disc with two initials is not a photograph of anybody and reads
    as a stand-in for one. */
-.cl-scope {
-  display: inline-flex; align-items: center; align-self: flex-start;
-  font-family: var(--f-h); font-weight: 700;
-  font-size: clamp(1.35rem, 2.4vw, 1.7rem); line-height: 1;
-  letter-spacing: -.02em; color: var(--brand-600);
-  padding: .45rem .9rem; border-radius: 100px;
-  background: var(--brand-100); margin-bottom: auto;
-}
-.cl-scope-crm { color: var(--violet-600); background: var(--violet-100); }
-/* The name block is pushed to the foot of the card by the margin above. */
-.cl-card .cl-who { margin-top: 1.75rem; }
 
 /* ═══════════════════════════════════════════════════════════════════
    SERVICE RAIL
@@ -3185,4 +3174,81 @@ button.err-wa:disabled { opacity: .55; cursor: default; }
 }
 @media (prefers-reduced-motion: reduce) {
   .cards-rail { scroll-behavior: auto; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   CLIENT CARDS
+
+   A label at the top and a name at the foot left the middle of the card
+   empty, which is what made them read as unfinished. The middle now
+   holds a drawing of the work — a page for a website, a board for a CRM
+   — in the card's own colour at low contrast, so it fills the space
+   without competing with the name.
+
+   Not a photograph. A stock face beside a real client's name is that
+   person's name on somebody else's portrait.
+   ═══════════════════════════════════════════════════════════════════ */
+.cl-card {
+  position: relative; overflow: hidden;
+  --cl-accent: var(--brand);
+  --cl-tint: var(--brand-100);
+  --cl-ink: var(--brand-600);
+  transition: transform .3s var(--e), box-shadow .3s var(--e), border-color .3s var(--e);
+}
+.cl-card.cl-crm {
+  --cl-accent: var(--violet);
+  --cl-tint: var(--violet-100);
+  --cl-ink: var(--violet-600);
+}
+/* A wash that only shows itself on hover, so a row of cards stays calm. */
+.cl-card::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 90% 70% at 88% -10%,
+              rgba(var(--brand-rgb), .10), transparent 68%);
+  opacity: 0; transition: opacity .3s var(--e);
+}
+.cl-card:not(.cl-cta):hover {
+  transform: translateY(-5px);
+  border-color: var(--cl-tint);
+  box-shadow: var(--sh-md);
+}
+.cl-card:not(.cl-cta):hover::before { opacity: 1; }
+.cl-card > * { position: relative; }
+
+/* ── the index ── */
+.cl-no {
+  position: absolute; top: 1.4rem; right: 1.5rem;
+  font-family: var(--f-h); font-weight: 800; font-size: .8rem;
+  letter-spacing: .1em; color: var(--line);
+  transition: color .3s var(--e);
+}
+.cl-card:hover .cl-no { color: var(--cl-tint); }
+
+/* ── the drawing ── */
+.cl-art {
+  display: block; margin: .25rem 0 auto; color: var(--cl-accent);
+  opacity: .16; transition: opacity .3s var(--e), transform .45s var(--e);
+}
+.cl-art svg { width: 100%; height: auto; display: block; }
+.cl-card:hover .cl-art { opacity: .3; transform: translateY(-2px) scale(1.02); }
+
+/* ── the label, smaller now that it is not the only thing on the card ── */
+.cl-scope {
+  display: inline-flex; align-items: center; align-self: flex-start;
+  font-family: var(--f-h); font-weight: 700;
+  font-size: .78rem; line-height: 1; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--cl-ink);
+  padding: .42rem .8rem; border-radius: 100px;
+  background: var(--cl-tint); margin: 1.4rem 0 0;
+}
+.cl-scope-crm { color: var(--cl-ink); background: var(--cl-tint); }
+
+/* ── the name is the point ── */
+.cl-card .cl-who { margin-top: .85rem; }
+.cl-who strong { font-size: 1.05rem; letter-spacing: -.01em; }
+.cl-who span { display: block; margin-top: .15rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cl-card:not(.cl-cta):hover { transform: none; }
+  .cl-card:hover .cl-art { transform: none; }
 }
