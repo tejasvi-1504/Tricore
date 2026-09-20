@@ -4,13 +4,13 @@
  *   GET    /api/admin/coupons              -> coupons, offers, referral leaders
  *   POST   /api/admin/coupons { ...coupon } -> create one
  *   PUT    /api/admin/coupons { code, active } -> switch one on or off
- *   PATCH  /api/admin/coupons { earlyBird, referral } -> offer settings
+ *   PATCH  /api/admin/coupons { earlyBird, referral, prices } -> offers and prices
  *   DELETE /api/admin/coupons { code }     -> remove one
  */
 import { json, methodGuard, readBody, str, rateLimited } from '../http.js';
 import { isConfigured, isAuthenticated } from '../adminAuth.js';
 import { getDb, collections, ConfigError } from '../db.js';
-import { getOffers, setOffers, normaliseCode } from '../pricing.js';
+import { getOffers, setOffers, getPrices, setPrices, effectivePrices, normaliseCode } from '../pricing.js';
 
 const TYPES = ['flat', 'percent'];
 const PLANS = ['trial', 'monthly'];
@@ -42,6 +42,11 @@ export default async function handler(req, res) {
         expiresAt: c.expiresAt || null, createdAt: c.createdAt,
       })),
     offers: await getOffers(db),
+    // What is stored, and what those settings actually come out as.
+    prices: await getPrices(db),
+    rates: await effectivePrices(db).then((r) => ({
+      firstCall: r.firstCall, monthly: r.monthly, session: r.session, weekends: r.weekends,
+    })),
     referrers: (await collections.referrals(db).find({ uses: { $gt: 0 } })
       .sort({ uses: -1 }).limit(20).toArray())
       .map((r) => ({ code: r.code, email: r.email, name: r.name || '', uses: r.uses, earned: r.earned || 0 })),
@@ -57,8 +62,15 @@ export default async function handler(req, res) {
 
   try {
     if (req.method === 'PATCH') {
-      const out = await setOffers(db, body);
-      if (!out.ok) return json(res, 400, { error: out.error });
+      // Prices and offers arrive on the same request; either may be absent.
+      if (body.prices) {
+        const p = await setPrices(db, body.prices);
+        if (!p.ok) return json(res, 400, { error: p.error });
+      }
+      if (body.earlyBird || body.referral) {
+        const out = await setOffers(db, body);
+        if (!out.ok) return json(res, 400, { error: out.error });
+      }
       return json(res, 200, { ok: true, ...(await load()) });
     }
 

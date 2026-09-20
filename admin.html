@@ -195,6 +195,16 @@ header.bar.stuck{border-bottom-color:var(--line)}
 .switch:focus-visible{outline:none;box-shadow:0 0 0 3px var(--brand-100)}
 .switch:disabled{opacity:.5;cursor:not-allowed}
 
+.mini-hint { display: block; margin-top: .3rem; font-size: .72rem;
+  font-style: normal; color: var(--muted); line-height: 1.45; }
+.price-read { margin: 1rem 0 0; font-size: .82rem; color: var(--muted); line-height: 1.6; }
+.price-read b { color: var(--ink); font-weight: 600; }
+.price-warn {
+  margin: .7rem 0 0; padding: .6rem .8rem; border-radius: 8px;
+  font-size: .78rem; line-height: 1.5;
+  background: #fff6e5; border: 1px solid #f3d9a6; color: #7a5200;
+}
+
 /* ── offers & coupons ── */
 .offer-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:6px}
 .mini{display:block}
@@ -448,6 +458,31 @@ header.bar h1{font-size:15px;font-weight:600;color:var(--muted);flex:1;min-width
     <div class="stat"><span class="k">Collected</span><div class="v" data-n="0" data-rupee="1">0</div>
       <span class="s">confirmed payments</span></div>
   </div>
+
+  <section class="panel">
+    <h2>Prices</h2>
+    <span class="note">What each thing costs. Leave a field blank to fall back to the
+      deployment's own setting.</span>
+    <form id="pricesForm">
+      <div class="offer-grid">
+        <label class="mini"><span>First 1:1 call (&#8377;)</span>
+          <input id="prFirst" type="number" min="0" step="1" placeholder="300" inputmode="numeric">
+          <em class="mini-hint">The introductory price, charged once per email address.</em></label>
+
+        <label class="mini"><span>Full month (&#8377;)</span>
+          <input id="prMonthly" type="number" min="0" step="1" placeholder="2000" inputmode="numeric">
+          <em class="mini-hint">Four weekends &mdash; Saturday group session and Sunday 1:1.</em></label>
+
+        <label class="mini"><span>Every 1:1 after the first (&#8377;)</span>
+          <input id="prSession" type="number" min="0" step="1" placeholder="auto" inputmode="numeric">
+          <em class="mini-hint" id="prSessionHint">Blank keeps it at the month divided by its weekends.</em></label>
+
+        <div style="align-self:end"><button class="btn btn-primary btn-wide" type="submit">Save prices</button></div>
+      </div>
+    </form>
+    <p class="price-read" id="prRead">&mdash;</p>
+    <p class="price-warn" id="prWarn" hidden></p>
+  </section>
 
   <section class="panel">
     <h2>Offers</h2>
@@ -988,6 +1023,7 @@ let OFFERS = null;
 
 function renderOffers(d) {
   OFFERS = d.offers;
+  renderPrices(d);
   const eb = d.offers.earlyBird, rf = d.offers.referral;
 
   $('#ebPrice').value = eb.monthly ?? '';
@@ -1039,6 +1075,64 @@ async function loadOffers() {
   try { renderOffers(await api('/api/admin/coupons')); }
   catch (err) { say(err.message, 'bad'); }
 }
+
+/* ── prices ──────────────────────────────────────────────────────────── */
+
+function renderPrices(d) {
+  if (!d.rates) return;
+  const stored = d.prices || {};
+  const r = d.rates;
+
+  // Blank where nothing is stored, so the placeholder shows what is in force.
+  $('#prFirst').value = stored.firstCall ?? '';
+  $('#prMonthly').value = stored.monthly ?? '';
+  $('#prSession').value = stored.session ?? '';
+  $('#prFirst').placeholder = String(r.firstCall);
+  $('#prMonthly').placeholder = String(r.monthly);
+  $('#prSession').placeholder = String(r.session);
+
+  $('#prSessionHint').textContent = stored.session == null
+    ? `Blank — following the month: \u20b9${r.monthly} over ${r.weekends} weekends is \u20b9${r.session}.`
+    : `Set by hand. The month works out at \u20b9${Math.round(r.monthly / r.weekends)} a weekend.`;
+
+  $('#prRead').innerHTML =
+    `In force now: first call <b>\u20b9${r.firstCall}</b> \u00b7 ` +
+    `full month <b>\u20b9${r.monthly}</b> \u00b7 ` +
+    `each 1:1 after the first <b>\u20b9${r.session}</b>.`;
+
+  // The introductory call being dearer than a repeat, or a repeat being
+  // cheaper than the month's own rate, are the two ways this goes wrong.
+  const perWeekend = r.monthly / r.weekends;
+  const warn =
+    r.firstCall > r.session
+      ? 'The first call costs more than a repeat one, so there is no reason to book the introductory session.'
+    : r.session < perWeekend
+      ? `A repeat 1:1 at \u20b9${r.session} is cheaper than the \u20b9${Math.round(perWeekend)} a weekend the month works out at, so booking one at a time beats the programme.`
+    : r.monthly <= r.firstCall
+      ? 'The full month costs no more than a single call.'
+    : '';
+  $('#prWarn').hidden = !warn;
+  $('#prWarn').textContent = warn;
+}
+
+$('#pricesForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = e.target.querySelector('button');
+  btn.dataset.busy = '1'; btn.disabled = true;
+  // An empty box means "use the default", which is not the same as zero.
+  const val = (id) => ($(id).value.trim() === '' ? null : Number($(id).value));
+  try {
+    const d = await api('/api/admin/coupons', {
+      method: 'PATCH',
+      body: JSON.stringify({
+        prices: { firstCall: val('#prFirst'), monthly: val('#prMonthly'), session: val('#prSession') },
+      }),
+    });
+    renderOffers(d);
+    say('Prices saved.', 'ok');
+  } catch (err) { say(err.message, 'bad'); }
+  finally { delete btn.dataset.busy; btn.disabled = false; }
+});
 
 $('#offersForm').addEventListener('submit', async (e) => {
   e.preventDefault();

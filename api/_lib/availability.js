@@ -67,7 +67,7 @@ export const PLANS = {
     weeks: 0,
     sessions: 1,
     // The introductory price, and only for a first call. Every session after
-    // it is priced at sessionRate() — see the note there.
+    // it is priced at the session rate — see effectivePrices() in pricing.js.
     priceEnv: 'PRICE_TRIAL',
     priceDefault: 300,
     // Always a specific date + time, whichever mode you pick.
@@ -279,23 +279,6 @@ export function priceForPlan(planKey) {
 export function listPriceForPlan(planKey) {
   if (planKey !== 'monthly') return priceForPlan(planKey);
   return readPrice('PRICE_REGULAR', 2000);
-}
-
-/**
- * What one session costs once the introductory call has been used.
- *
- * The monthly fee spread across its weekends, so a student booking singly
- * pays the same weekly rate as one who commits to the month. Derived rather
- * than typed, because two independent numbers drift: the trial was 200 while
- * the month worked out at 375 a weekend, which made a single session cheaper
- * than the programme it was meant to introduce.
- *
- * PRICE_SESSION overrides it if a different rate is ever wanted.
- */
-export function sessionRate() {
-  const monthly = readPrice('PRICE_MONTHLY', PLANS.monthly.priceDefault);
-  const weekends = PLANS.monthly.weeks || 4;
-  return readPrice('PRICE_SESSION', Math.round(monthly / weekends));
 }
 
 /** True when the student is getting a discount worth showing. */

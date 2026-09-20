@@ -12,7 +12,7 @@
  * price was — otherwise anyone could edit the form and pay ₹1.
  */
 import { collections } from './db.js';
-import { priceForPlan, listPriceForPlan, sessionRate } from './availability.js';
+import { priceForPlan, listPriceForPlan, PLANS as PLAN_DEFS } from './availability.js';
 
 const DOC_ID = 'site';
 
@@ -63,6 +63,74 @@ export async function setOffers(db, patch) {
     { _id: DOC_ID }, { $set: { offers: next, updatedAt: new Date() } }, { upsert: true }
   );
   return { ok: true, offers: next };
+}
+
+/* ── prices ───────────────────────────────────────────────────────────────── */
+
+/**
+ * The three numbers the business actually sets.
+ *
+ * null means "not set here" and the env value stands, so a deployment that
+ * has never opened the panel behaves exactly as it did before. The session
+ * rate is the one that defaults to a calculation rather than a constant:
+ * left alone it is the monthly price divided by its weekends, which is what
+ * stops a single call drifting cheaper than the programme it introduces.
+ */
+export const DEFAULT_PRICES = { firstCall: null, monthly: null, session: null };
+
+export async function getPrices(db) {
+  let doc = null;
+  try {
+    doc = await collections.settings(db).findOne({ _id: DOC_ID });
+  } catch (err) {
+    console.error('[pricing] prices read failed:', err.message);
+  }
+  const p = doc?.prices || {};
+  const clean = (v) => (Number.isFinite(Number(v)) && Number(v) >= 0 ? Math.round(Number(v)) : null);
+  return {
+    firstCall: p.firstCall == null ? null : clean(p.firstCall),
+    monthly: p.monthly == null ? null : clean(p.monthly),
+    session: p.session == null ? null : clean(p.session),
+  };
+}
+
+/**
+ * What each plan costs once the stored prices, the env and the derived
+ * session rate have all had their say. One place, so the booking route, the
+ * availability route and the admin panel cannot disagree.
+ */
+export async function effectivePrices(db) {
+  const stored = await getPrices(db);
+  const weekends = PLAN_DEFS.monthly.weeks || 4;
+
+  const monthly = stored.monthly ?? priceForPlan('monthly');
+  const firstCall = stored.firstCall ?? priceForPlan('trial');
+  const session = stored.session ?? Math.round(monthly / weekends);
+
+  return { monthly, firstCall, session, weekends, stored };
+}
+
+export async function setPrices(db, patch = {}) {
+  const current = await getPrices(db);
+  const next = { ...current };
+
+  for (const key of ['firstCall', 'monthly', 'session']) {
+    if (!(key in patch)) continue;
+    const raw = patch[key];
+    // An empty field means "stop overriding", not "free".
+    if (raw === null || raw === '' || raw === undefined) { next[key] = null; continue; }
+    const n = Number(raw);
+    if (!Number.isFinite(n) || n < 0) {
+      return { ok: false, error: `${key} must be a number, or blank to use the default.` };
+    }
+    if (n > 500000) return { ok: false, error: `${key} looks wrong — that is over \u20b95,00,000.` };
+    next[key] = Math.round(n);
+  }
+
+  await collections.settings(db).updateOne(
+    { _id: DOC_ID }, { $set: { prices: next, updatedAt: new Date() } }, { upsert: true }
+  );
+  return { ok: true, prices: next };
 }
 
 /* ── coupons ──────────────────────────────────────────────────────────────── */
@@ -194,21 +262,25 @@ export async function hasBookedBefore(db, email) {
 
 export async function quote(db, { plan, coupon, referral, email, useCredit = true } = {}) {
   const offers = await getOffers(db);
-  let listPrice = listPriceForPlan(plan);
+  const rates = await effectivePrices(db);
 
-  let base = priceForPlan(plan);
+  let base;
+  let listPrice;
   let earlyBird = false;
 
   // The introductory price is for the first call only. After that a single
   // session costs the weekly rate the monthly programme works out at, so
   // booking one at a time is never cheaper than committing to the month.
   let firstCall = true;
-  if (plan === 'trial') {
+  if (plan === 'monthly') {
+    base = rates.monthly;
+    // Never strike through a number below what is being charged, which is
+    // what a stale PRICE_REGULAR would otherwise do after a rise.
+    listPrice = Math.max(listPriceForPlan('monthly'), base);
+  } else {
     firstCall = !(await hasBookedBefore(db, email));
-    if (!firstCall) {
-      base = sessionRate();
-      listPrice = base;
-    }
+    base = firstCall ? rates.firstCall : rates.session;
+    listPrice = base;
   }
 
   const ebPrice = firstCall ? offers.earlyBird[plan === 'monthly' ? 'monthly' : 'trial'] : null;
@@ -265,7 +337,7 @@ export async function quote(db, { plan, coupon, referral, email, useCredit = tru
   return {
     plan,
     firstCall,
-    sessionRate: sessionRate(),
+    sessionRate: rates.session,
     creditAvailable,
     creditUsed: lines.find((l) => l.kind === 'credit')?.amount || 0,
     listPrice,
