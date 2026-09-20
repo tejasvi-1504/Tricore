@@ -591,6 +591,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let submitting = false;
 
     const rupees = n => '₹' + Number(n).toLocaleString('en-IN');
+    /* Read a field. Declared out here because both the quote request and the
+       submit handler need it; it used to sit inside the submit callback, and
+       loadBatches referencing it from the outer scope threw on every call. */
+    const val = id => (document.getElementById(id)?.value || '').trim();
 
     const stepDateEl = document.querySelector('.bk-cal .stp');
     const stepSlotEl = document.querySelector('.bk-time .stp');
@@ -761,8 +765,12 @@ document.addEventListener('DOMContentLoaded', () => {
      * stale number to hide.
      */
     function paintChips(data) {
-      if (data && data.plan && data.price != null) {
-        chipCache[data.plan] = data.price;
+      // basePrice, not price: with a coupon applied the latter is what this
+      // visitor pays today, and writing that onto the chip would relabel the
+      // plan itself — "One call · 1" after a 148-off code.
+      if (data && data.plan) {
+        const listed = data.basePrice != null ? data.basePrice : data.price;
+        if (listed != null) chipCache[data.plan] = listed;
         if (data.sessionRate != null) chipCache.session = data.sessionRate;
       }
       document.querySelectorAll('[data-chip-price]').forEach((el) => {
@@ -795,20 +803,28 @@ document.addEventListener('DOMContentLoaded', () => {
                                 '&referral=' + encodeURIComponent(promoCode) : '') +
                    // Sent so the server can reject someone's own referral code.
                    (val('bkEmail') ? '&email=' + encodeURIComponent(val('bkEmail')) : '');
-        const res = await fetch(qs);
-        if (ticket !== request) return;
-        if (!res.ok) throw new Error('unavailable');
-        const data = await res.json();
+        // A request with no end is the same as a failed one, except the
+        // page never finds out. Ten seconds, then treat it as failed.
+        const ctl = new AbortController();
+        const bell = setTimeout(() => ctl.abort(), 10000);
+        let data;
+        try {
+          const res = await fetch(qs, { signal: ctl.signal });
+          if (ticket !== request) return;
+          if (!res.ok) throw new Error('slots ' + res.status);
+          data = await res.json();
+        } finally {
+          clearTimeout(bell);
+        }
         if (ticket !== request) return;
 
-        price = data.price != null ? data.price : price;
-        listPrice = data.listPrice != null ? data.listPrice : listPrice;
-        paintChips(data);
+        /* ── state first, all of it, before anything can throw ── */
+        if (data.price != null) price = data.price;
+        if (data.listPrice != null) listPrice = data.listPrice;
+        if (data.sessionRate != null) sessionRate = data.sessionRate;
         firstCall = data.firstCall !== false;
-        sessionRate = data.sessionRate != null ? data.sessionRate : sessionRate;
         discounts = data.discounts || [];
         if (data.paymentMode) payMode = data.paymentMode;
-        if (promoCode) showPromoResult(data);
         if (data.slots) slotData = data.slots;
         if (data.batches) seatsByDate = new Map(data.batches.map(b => [b.date, b]));
 
@@ -817,14 +833,36 @@ document.addEventListener('DOMContentLoaded', () => {
           const seat = seatsByDate.get(startDate);
           if (seat && seat.available === false) startDate = null;
         }
-        renderCalendar();
-        renderWeekends();
-        updateSummary();
-      } catch {
-        // API unreachable — the local rules still give a usable calendar and
-        // the server rejects anything invalid on submit.
+
+        /* ── then the rendering, each piece on its own ── */
+        paint(() => paintChips(data));
+        if (promoCode) paint(() => showPromoResult(data));
+        paint(renderCalendar);
+        paint(renderWeekends);
+      } catch (err) {
         if (ticket !== request) return;
+        // Silence here is what left a visitor watching "Getting the price…"
+        // for two minutes with nothing to click.
+        console.error('[slots]', err && err.message ? err.message : err);
+        if (price == null) {
+          showError('We could not fetch the price just now. Check your '
+                  + 'connection and try again.');
+        }
+      } finally {
+        // Whatever happened above, the summary reflects what we know. It is
+        // the only thing that decides whether the pay button is usable.
+        if (ticket === request) paint(updateSummary);
       }
+    }
+
+    /**
+     * Run one piece of rendering without letting it take the others down.
+     * These are independent views of the same state; a thrown error in the
+     * calendar is not a reason to leave the price blank.
+     */
+    function paint(fn) {
+      try { fn(); }
+      catch (err) { console.error('[booking] render failed:', err && err.message ? err.message : err); }
     }
 
     /* ── summary ─────────────────────────────────────────────────────── */
@@ -1126,7 +1164,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (submitting || !startDate) return;
       if (timed() && !chosenTime) return showError('Please pick a time slot.');
 
-      const val = id => (document.getElementById(id).value || '').trim();
       const payload = {
         mode: modeKey,
         date: startDate,
