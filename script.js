@@ -463,6 +463,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const promoInput  = document.getElementById('bkPromo');
     const promoBtn    = document.getElementById('bkPromoBtn');
     const promoMsg    = document.getElementById('bkPromoMsg');
+    const payNote     = document.getElementById('bkPayNote');
     const successEl   = document.getElementById('bkSuccess');
     const successMsg  = document.getElementById('bkSuccessMsg');
     const successCard = document.getElementById('bkSuccessCard');
@@ -550,7 +551,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let listPrice  = 3000;
     // The code the visitor typed, and whatever the server made of it.
     let promoCode  = '';
-    let payMode    = 'manual';
+    let payMode    = null;   // unknown until /api/slots answers
     let discounts  = [];
     let seatsByDate = new Map();
     let request    = 0;
@@ -793,10 +794,18 @@ document.addEventListener('DOMContentLoaded', () => {
       // Say what the next tap does. "Book on WhatsApp" was left over from
       // manual mode and is simply wrong once a gateway is live.
       confirmText.textContent =
-        price <= 0            ? 'Confirm booking'
+        price <= 0               ? 'Confirm booking'
         : payMode === 'razorpay' ? 'Pay ' + rupees(price) + ' securely'
         : payMode === 'cashfree' ? 'Pay ' + rupees(price)
-        : 'Book on WhatsApp · ' + rupees(price);
+        : payMode === 'manual'   ? 'Book on WhatsApp · ' + rupees(price)
+        : 'Continue · ' + rupees(price);   // still waiting on the server
+
+      // The note under the button has to describe the real flow too.
+      if (payNote) {
+        payNote.textContent = payMode === 'manual'
+          ? 'We hold your slot and open WhatsApp with your booking details. Kanishka confirms the slot and shares payment details there.'
+          : 'Pay securely by UPI, card or netbanking. Your slot is held while you pay, and your confirmation is emailed the moment it goes through.';
+      }
       confirmBtn.disabled = submitting || !startDate ||
                             (timed() && !chosenTime);
     }
@@ -873,6 +882,10 @@ document.addEventListener('DOMContentLoaded', () => {
       chosenTime = null;
       slotData = [];
       price = RULES.plans[next].price;
+      // Clear the old plan's list price so nothing is struck through until
+      // the server confirms a real discount for THIS plan.
+      listPrice = price;
+      discounts = [];
       updateStepLabels();
       renderCalendar();
       renderStep3();
