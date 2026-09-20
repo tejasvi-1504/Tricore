@@ -64,7 +64,7 @@
    visit briefly shows the default. */
 try { const t = localStorage.getItem('kc-site-theme'); if (t) document.documentElement.dataset.theme = t; } catch {}
 </script>
-<link rel="stylesheet" href="styles.css?v=20260920c">
+<link rel="stylesheet" href="styles.css?v=20260920d">
 </head>
 <body>
 
@@ -320,8 +320,8 @@ try { const t = localStorage.getItem('kc-site-theme'); if (t) document.documentE
   <div class="wrap">
     <header class="sec-hd reveal">
       <span class="tagline">Our clients</span>
-      <h2>Businesses that backed us first</h2>
-      <p>We're early — these are the teams that took the bet.</p>
+      <h2>Client <em>Feedback</em></h2>
+      <p>The businesses that backed us first, and what we built for them.</p>
     </header>
   </div>
 
@@ -330,26 +330,54 @@ try { const t = localStorage.getItem('kc-site-theme'); if (t) document.documentE
     <div class="cl-view">
       <div class="cl-track" id="clTrack">
         <!-- Who, and what was built for them. -->
-        <article class="cl-card">
-          <strong>Subhanshu Goswami</strong>
-          <span>Website &middot; Meerut</span>
+        <article class="fb-card fb-a">
+          <span class="fb-badge" aria-hidden="true"><svg class="ic"><use href="#i-quote"/></svg></span>
+          <div class="fb-body">
+            <h3>Subhanshu Goswami</h3>
+            <p class="fb-role">Website &middot; Meerut</p>
+            <!-- Replace with the client's own words when they send them. -->
+            <p class="fb-note">A business site built around how he actually sells, and handed over with nothing locked behind us.</p>
+          </div>
+          <span class="fb-mark" aria-hidden="true"><svg class="ic"><use href="#i-quote"/></svg></span>
         </article>
-        <article class="cl-card">
-          <strong>Subhanshu Goswami</strong>
-          <span>CRM &middot; The Empire Properties, Meerut</span>
+        <article class="fb-card fb-b">
+          <span class="fb-badge" aria-hidden="true"><svg class="ic"><use href="#i-quote"/></svg></span>
+          <div class="fb-body">
+            <h3>Subhanshu Goswami</h3>
+            <p class="fb-role">CRM &middot; The Empire Properties</p>
+            <!-- Replace with the client's own words when they send them. -->
+            <p class="fb-note">Lead pipeline, follow-up reminders and staff logins, built for the way the office already works.</p>
+          </div>
+          <span class="fb-mark" aria-hidden="true"><svg class="ic"><use href="#i-quote"/></svg></span>
         </article>
-        <article class="cl-card">
-          <strong>Swati Khanna</strong>
-          <span>Website &middot; Sukoon Crystal Solutions</span>
+        <article class="fb-card fb-c">
+          <span class="fb-badge" aria-hidden="true"><svg class="ic"><use href="#i-quote"/></svg></span>
+          <div class="fb-body">
+            <h3>Swati Khanna</h3>
+            <p class="fb-role">Website &middot; Sukoon Crystal Solutions</p>
+            <!-- Replace with the client's own words when they send them. -->
+            <p class="fb-note">A site that loads fast on a phone and puts the products in front of people who search for them.</p>
+          </div>
+          <span class="fb-mark" aria-hidden="true"><svg class="ic"><use href="#i-quote"/></svg></span>
         </article>
-        <article class="cl-card">
-          <strong>Gaurav Chaudhary</strong>
-          <span>CRM &middot; Youth Helping Trust</span>
+        <article class="fb-card fb-a">
+          <span class="fb-badge" aria-hidden="true"><svg class="ic"><use href="#i-quote"/></svg></span>
+          <div class="fb-body">
+            <h3>Gaurav Chaudhary</h3>
+            <p class="fb-role">CRM &middot; Youth Helping Trust</p>
+            <!-- Replace with the client's own words when they send them. -->
+            <p class="fb-note">Member records and reporting in one place, so the trust spends its time on the work, not the paperwork.</p>
+          </div>
+          <span class="fb-mark" aria-hidden="true"><svg class="ic"><use href="#i-quote"/></svg></span>
         </article>
-        <article class="cl-card cl-cta">
-          <span class="cl-mark"><svg class="ic"><use href="#i-star"/></svg></span>
-          <p class="cl-note">Be our next success story. Early clients get founder attention and pricing that won't hold forever.</p>
-          <a href="#contact" class="btn btn-pri">Start your project <svg class="ic"><use href="#i-right"/></svg></a>
+        <article class="fb-card fb-cta">
+          <span class="fb-badge" aria-hidden="true"><svg class="ic"><use href="#i-star"/></svg></span>
+          <div class="fb-body">
+            <h3>Your project next</h3>
+            <p class="fb-role">Early clients &middot; founder attention</p>
+            <p class="fb-note">Fixed price, agreed before we start.</p>
+            <a href="#contact" class="btn btn-pri">Start your project <svg class="ic"><use href="#i-right"/></svg></a>
+          </div>
         </article>
       </div>
     </div>
@@ -622,6 +650,6 @@ try { const t = localStorage.getItem('kc-site-theme'); if (t) document.documentE
   <svg class="ic"><use href="#i-wa"/></svg>
 </a>
 
-<script src="script.js?v=20260920c"></script>
+<script src="script.js?v=20260920d"></script>
 </body>
 </html>
