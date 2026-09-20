@@ -796,14 +796,24 @@ document.addEventListener('DOMContentLoaded', () => {
         ? '<s>' + rupees(listPrice) + '</s> ' + rupees(price)
         : rupees(price);
 
+      // What is still missing, if anything. A greyed-out button that says
+      // "Continue" tells the visitor nothing; it has to name the step it is
+      // waiting on, because that step is somewhere further up the form.
+      const missing = !startDate            ? 'Pick a day first'
+                    : (timed() && !chosenTime) ? 'Select a time first'
+                    : null;
+
       // Say what the next tap does. "Book on WhatsApp" was left over from
       // manual mode and is simply wrong once a gateway is live.
-      confirmText.textContent =
-        price <= 0               ? 'Confirm booking'
-        : payMode === 'razorpay' ? 'Pay ' + rupees(price) + ' securely'
-        : payMode === 'cashfree' ? 'Pay ' + rupees(price)
-        : payMode === 'manual'   ? 'Book on WhatsApp · ' + rupees(price)
-        : 'Continue · ' + rupees(price);   // still waiting on the server
+      if (!submitting) {
+        confirmText.textContent =
+          missing                  ? missing
+          : price <= 0             ? 'Confirm booking'
+          : payMode === 'razorpay' ? 'Pay ' + rupees(price) + ' securely'
+          : payMode === 'cashfree' ? 'Pay ' + rupees(price)
+          : payMode === 'manual'   ? 'Book on WhatsApp · ' + rupees(price)
+          : 'Continue · ' + rupees(price);   // still waiting on the server
+      }
 
       // The note under the button has to describe the real flow too.
       if (payNote) {
@@ -811,8 +821,7 @@ document.addEventListener('DOMContentLoaded', () => {
           ? 'We hold your slot and open WhatsApp with your booking details. Kanishka confirms the slot and shares payment details there.'
           : 'Pay securely by UPI, card or netbanking. Your slot is held while you pay, and your confirmation is emailed the moment it goes through.';
       }
-      confirmBtn.disabled = submitting || !startDate ||
-                            (timed() && !chosenTime);
+      confirmBtn.disabled = submitting || !!missing;
     }
 
     /**

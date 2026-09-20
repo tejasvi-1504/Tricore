@@ -2984,3 +2984,14 @@ body:has(.cine) .hdr .nav.open > a:not(.nav-btn) { text-shadow: none; }
   .cine-stage { max-width: none; }
   .cine-stage .lede { max-width: 42ch; }
 }
+
+/* Discount lines live in a #sumDiscounts wrapper, so they were never
+   matched by `.sum > div` — they rendered unstyled, and the wrapper itself
+   picked up a row's padding and border even with nothing in it, which is
+   the empty bordered strip above the total. display:contents lifts the
+   children into the list and makes the empty wrapper disappear. */
+#sumDiscounts { display: contents; }
+.sum .disc {
+  display: flex; justify-content: space-between; gap: 1rem;
+  padding: .8rem 1rem; border-bottom: 1px solid var(--line);
+}
