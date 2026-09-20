@@ -2096,8 +2096,7 @@ body, .hdr, .card, .btn, .ftr, .sec, section {
    background and becomes a flow item beneath the copy, at its own ratio.
    ═══════════════════════════════════════════════════════════════════ */
 .site-footer {
-  --ink-f: #175A67;
-  --ink-soft: #2A707C;
+  --ink-f: #12505C;      /* 7.1:1 on the cream */
   --cream: #EAE3DE;
 
   position: relative; isolation: isolate;
@@ -2164,7 +2163,7 @@ body, .hdr, .card, .btn, .ftr, .sec, section {
   margin: 0 0 clamp(1rem, 2.2vh, 1.6rem); max-width: 32ch;
   line-height: 1.62; font-size: .9375rem;
 }
-.foot-cta {
+.site-footer a.foot-cta {
   display: inline-flex; align-items: center; gap: .6rem;
   background: var(--ink-f); color: var(--cream);
   padding: .95rem 1.5rem; font-size: .9375rem; font-weight: 500;
@@ -3007,3 +3006,24 @@ body:has(.cine) .hdr .nav.open > a:not(.nav-btn) { text-shadow: none; }
 }
 .err-wa:hover { filter: brightness(1.08); }
 .err-wa::before { content: '\1F4AC'; font-size: .95em; }
+
+/* ── footer legibility ──
+   Above 1100px the artwork sits behind the columns rather than below them,
+   so the blurb, the contact list and the link columns were being read
+   through cranes and mountain ridges. A cream veil holds the clip back
+   where the text is, thins out across the middle so the peaks still carry
+   the composition, and comes up again at the foot for the socials and the
+   copyright line. Below 1100px the media is a separate block underneath
+   the text and needs none of this. */
+@media (min-width: 1101px) {
+  .footer-media::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(to bottom,
+      rgba(234,227,222,.93) 0%,
+      rgba(234,227,222,.90) 30%,
+      rgba(234,227,222,.62) 50%,
+      rgba(234,227,222,.30) 66%,
+      rgba(234,227,222,.34) 82%,
+      rgba(234,227,222,.66) 100%);
+  }
+}
