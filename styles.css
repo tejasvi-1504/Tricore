@@ -2793,3 +2793,101 @@ body, .hdr, .card, .btn, .ftr, .sec, section {
   .duo-card:hover .duo-media video { transform: none; }
   .split-vid, .duo-media video { opacity: 1; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   HEADER OVER THE CINEMATIC HERO
+
+   Scoped with :has(.cine) so only the landing page gets it — the
+   business page's framed hero sits on light grey, where white-on-glass
+   nav would be unreadable.
+
+   Transparent while the hero is behind it, solid once you scroll past.
+   The transition is on the header itself rather than a second element,
+   so nothing can get out of step with the scroll position.
+   ═══════════════════════════════════════════════════════════════════ */
+body:has(.cine) .hdr {
+  background: linear-gradient(to bottom, rgba(7,8,12,.72), rgba(7,8,12,.34) 70%, transparent);
+  backdrop-filter: blur(10px) saturate(1.1);
+  -webkit-backdrop-filter: blur(10px) saturate(1.1);
+  border-bottom-color: transparent;
+  transition: background .35s var(--e), backdrop-filter .35s var(--e),
+              border-color .3s var(--e), box-shadow .3s var(--e);
+}
+body:has(.cine) .hdr .wm { color: #fff; }
+body:has(.cine) .hdr .nav > a:not(.nav-btn):not(.nav-cross) { color: rgba(255,255,255,.82); }
+body:has(.cine) .hdr .nav > a:not(.nav-btn):not(.nav-cross):hover { color: #fff; }
+body:has(.cine) .hdr .nav > a::after { background: #fff; }
+
+body:has(.cine) .hdr .nav-cross {
+  border-color: rgba(255,255,255,.3); color: rgba(255,255,255,.82);
+}
+body:has(.cine) .hdr .nav-cross:hover {
+  border-color: rgba(255,255,255,.6); color: #fff; background: rgba(255,255,255,.1);
+}
+body:has(.cine) .hdr .acct {
+  background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.24);
+  color: rgba(255,255,255,.88);
+}
+body:has(.cine) .hdr .acct:hover { border-color: rgba(255,255,255,.55); color: #fff; }
+body:has(.cine) .hdr .acct-av { background: rgba(255,255,255,.18); color: #fff; }
+body:has(.cine) .hdr .burger span { background: #fff; }
+
+/* Past the hero it becomes the ordinary solid bar again. */
+body:has(.cine) .hdr.stuck {
+  background: rgba(255,255,255,.9);
+  border-bottom-color: var(--line); box-shadow: var(--sh-xs);
+}
+body:has(.cine) .hdr.stuck .wm { color: var(--ink); }
+body:has(.cine) .hdr.stuck .nav > a:not(.nav-btn):not(.nav-cross) { color: var(--body); }
+body:has(.cine) .hdr.stuck .nav > a:not(.nav-btn):not(.nav-cross):hover { color: var(--brand); }
+body:has(.cine) .hdr.stuck .nav > a::after { background: var(--brand); }
+body:has(.cine) .hdr.stuck .nav-cross { border-color: var(--line); color: var(--muted); }
+body:has(.cine) .hdr.stuck .acct {
+  background: #fff; border-color: var(--line); color: var(--body);
+}
+body:has(.cine) .hdr.stuck .acct-av { background: var(--brand-100); color: var(--brand-600); }
+body:has(.cine) .hdr.stuck .burger span { background: var(--ink); }
+
+/* The mobile drawer is its own surface and must stay legible either way. */
+@media (max-width: 900px) {
+  body:has(.cine) .hdr .nav > a:not(.nav-btn):not(.nav-cross),
+  body:has(.cine) .hdr .nav-cross { color: var(--body); }
+  body:has(.cine) .hdr .nav.open > a:not(.nav-btn) { color: var(--body); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   HERO COPY, PULLED LEFT
+
+   Centred in a 1200px container, the text landed in the middle of the
+   frame and collided with the figure. It now hugs the left gutter with
+   its own measure, and a left-side wash keeps it readable over the
+   brighter part of the clip.
+   ═══════════════════════════════════════════════════════════════════ */
+.cine-stage {
+  max-width: none; width: 100%;
+  padding-inline: clamp(1.25rem, 5vw, 5.5rem);
+  margin-inline: 0;
+}
+.cine-stage > * { max-width: 40ch; }
+.cine-stage .headline-mask { max-width: none; }
+.cine-stage .headline { max-width: 18ch; }
+.cine-stage .lede { max-width: 42ch; }
+
+/* Darkens the left third only, so the artwork on the right is untouched. */
+.cine-scrim::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(to right, rgba(4,12,24,.62) 0%, rgba(4,12,24,.28) 34%, transparent 62%);
+}
+
+@media (min-width: 1500px) {
+  /* Past the design frame, keep the copy near the text rather than letting
+     it drift out to the edge of a very wide monitor. */
+  .cine-stage { padding-inline: max(clamp(1.25rem, 5vw, 5.5rem), calc((100vw - 1600px) / 2 + 3rem)); }
+}
+@media (max-aspect-ratio: 5/4) {
+  .cine-stage > * { max-width: none; }
+  .cine-stage .headline { max-width: 15ch; }
+  .cine-scrim::after {
+    background: linear-gradient(to right, rgba(4,12,24,.5) 0%, rgba(4,12,24,.3) 55%, rgba(4,12,24,.12) 100%);
+  }
+}

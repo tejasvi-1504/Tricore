@@ -11,7 +11,12 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ══ HEADER ══════════════════════════════════════════════════════ */
   const hdr = document.getElementById('hdr');
   if (hdr) {
-    const onScroll = () => hdr.classList.toggle('stuck', window.scrollY > 10);
+    // Over a full-height cinematic hero the bar stays transparent until you
+    // have actually scrolled past it. Ten pixels would flip it to solid
+    // before the visitor had moved, which defeats the whole effect.
+    const hero = document.querySelector('.cine');
+    const threshold = () => (hero ? hero.offsetHeight - 90 : 10);
+    const onScroll = () => hdr.classList.toggle('stuck', window.scrollY > threshold());
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
   }
