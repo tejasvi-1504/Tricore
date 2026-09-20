@@ -12,6 +12,7 @@
 import { getDb, collections, ConfigError } from './_lib/db.js';
 import { quote } from './_lib/pricing.js';
 import { json, methodGuard, str } from './_lib/http.js';
+import { reapStaleHolds } from './_lib/confirm.js';
 import {
   MODES,
   PLANS,
@@ -117,6 +118,12 @@ export default async function handler(req, res) {
 
     let taken = new Map();
     if (db) {
+      // Hand back the seats behind checkouts that were abandoned, before
+      // counting what is left. A paid-but-unsettled booking is confirmed here
+      // rather than released, so this also rescues a missing webhook.
+      await reapStaleHolds(db, { date, mode: modeKey, plan: planKey })
+        .catch((err) => console.error('[slots] reap failed:', err.message));
+
       try {
         const docs = await collections
           .slots(db)

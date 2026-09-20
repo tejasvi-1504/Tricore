@@ -2903,6 +2903,10 @@ body:has(.cine) .hdr .nav.open > a:not(.nav-btn) { text-shadow: none; }
   transition: filter .2s var(--e);
 }
 .err-wa:hover { filter: brightness(1.08); }
+/* The same target is sometimes a button ("Check again") rather than a
+   link, and a <button> brings its own border and font with it. */
+button.err-wa { border: 0; cursor: pointer; font-family: inherit; }
+button.err-wa:disabled { opacity: .55; cursor: default; }
 .err-wa::before { content: '\1F4AC'; font-size: .95em; }
 
 /* ── footer legibility ──

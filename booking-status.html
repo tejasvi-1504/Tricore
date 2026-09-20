@@ -164,8 +164,8 @@ dd{font-size:.9rem;font-weight:600;color:var(--ink);text-align:right;font-varian
           setTimeout(poll, 2500);
           return;
         }
-        render('wait', 'Payment still processing',
-          'Your slot is held. We will confirm by email shortly — message us on WhatsApp if you do not hear back within an hour.');
+        render('wait', 'Not confirmed yet',
+          'Your slot is held for now. If the payment went through you will get a confirmation email — nothing is booked until then. Message us on WhatsApp with your reference if you are unsure.');
       })
       .catch(function (err) {
         render('fail', 'We could not check your booking',

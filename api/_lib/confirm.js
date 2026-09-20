@@ -117,10 +117,21 @@ export async function settleBooking(db, bookingId) {
 /* ── manual confirmation (admin panel) ────────────────────────────────────── */
 
 /**
- * Mark a manually-paid booking as confirmed and email the student.
+ * Record an off-gateway payment and confirm the booking.
  *
  * The seat was already reserved when the student submitted the form, so this
  * does not take a new one — it settles the booking that is already holding it.
+ *
+ * Two rules, both of them about not confirming something that was not paid:
+ *
+ *   1. A booking that went to a gateway belongs to that gateway. Confirming it
+ *      from the panel would stamp it PAID and email the student on nothing
+ *      more than a click, so we ask the gateway and refuse if the answer is
+ *      no. If the answer is yes, it is settled through the normal path so the
+ *      amount and payment id come from the gateway rather than the form.
+ *   2. A genuinely manual booking needs a real figure. It used to fall back to
+ *      the full amount when none was given, which recorded "paid in full" for
+ *      an admin who simply left the field empty.
  *
  * Idempotent by the same trick `settleBooking` uses: only the update that
  * actually flips the status sends mail, so a double-click cannot send twice.
@@ -138,8 +149,44 @@ export async function confirmManualBooking(db, bookingId, opts = {}) {
     return { found: true, booking: existing, changed: false, reason: 'cancelled' };
   }
 
-  const now = new Date();
+  const due = Number(existing.amount) || 0;
+
+  /* ── a gateway booking is the gateway's to settle ───────────────────── */
+  const provider = existing.payment?.provider;
+  const orderId = existing.payment?.orderId;
+  if (due > 0 && orderId && (provider === 'razorpay' || provider === 'cashfree')) {
+    let status;
+    try {
+      status = provider === 'razorpay'
+        ? await razorpay.getOrderStatus(orderId)
+        : await cashfree.getPaymentLinkStatus(orderId);
+    } catch (err) {
+      console.error(`[confirm] ${provider} lookup failed for ${bookingId}:`, err.message);
+      return { found: true, booking: existing, changed: false, reason: 'lookup_failed' };
+    }
+    if (!status.paid) {
+      return {
+        found: true, booking: existing, changed: false,
+        reason: 'not_paid', provider, gatewayStatus: status.status,
+      };
+    }
+    const settled = await settleBooking(db, bookingId);
+    return { ...settled, emailed: Boolean(settled.changed) };
+  }
+
+  /* ── an off-gateway payment has to be stated, and has to cover it ───── */
   const paid = Number(amountPaid);
+  if (due > 0) {
+    if (!Number.isFinite(paid) || paid <= 0) {
+      return { found: true, booking: existing, changed: false, reason: 'amount_required', due };
+    }
+    // A rupee of slack for rounding, nothing more.
+    if (paid + 1 < due) {
+      return { found: true, booking: existing, changed: false, reason: 'short_payment', due, paid };
+    }
+  }
+
+  const now = new Date();
 
   const result = await bookings.findOneAndUpdate(
     { bookingId, status: { $in: ['awaiting_confirmation', 'pending'] } },
@@ -149,7 +196,7 @@ export async function confirmManualBooking(db, bookingId, opts = {}) {
         'payment.provider': existing.payment?.provider || 'manual',
         'payment.status': 'PAID',
         'payment.method': method,
-        'payment.amountPaid': Number.isFinite(paid) && paid >= 0 ? paid : existing.amount,
+        'payment.amountPaid': Number.isFinite(paid) && paid >= 0 ? paid : due,
         'payment.paidAt': now,
         'payment.confirmedBy': by,
         ...(note ? { 'payment.note': note } : {}),
@@ -224,4 +271,85 @@ export async function cancelBooking(db, bookingId, opts = {}) {
   if (notify) emailed = await sendBookingCancelled(updated);
 
   return { found: true, booking: updated, changed: true, emailed };
+}
+
+/* ── stale holds ──────────────────────────────────────────────────────────── */
+
+/** How long a checkout may hold a seat before we go and ask about it. */
+const HOLD_MINUTES = 20;
+
+/**
+ * Release the seats behind abandoned checkouts.
+ *
+ * A booking goes `pending` and takes its seat the moment the form is
+ * submitted, which is right — two people must not be sold the same slot while
+ * one of them is inside Razorpay. But nothing ever gave the seat back when the
+ * student simply closed the window, so an unpaid booking held capacity for
+ * ever.
+ *
+ * Every stale one is checked against its own gateway rather than assumed dead:
+ * if it turns out to be paid, `settleBooking` confirms it and sends the email
+ * that a missing webhook would otherwise have cost the student. Only a gateway
+ * that does not say "paid" loses the seat.
+ *
+ * Called opportunistically while reading availability, so it costs nothing on
+ * a quiet day. Bounded, and never allowed to fail the request it rides on.
+ */
+export async function reapStaleHolds(db, { date, mode, plan, limit = 8 } = {}) {
+  const cutoff = new Date(Date.now() - HOLD_MINUTES * 60_000);
+  const query = { status: 'pending', createdAt: { $lt: cutoff } };
+  if (date) query.date = date;
+  if (mode) query.mode = mode;
+  if (plan) query.plan = plan;
+
+  let stale = [];
+  try {
+    stale = await collections.bookings(db)
+      .find(query, { projection: { bookingId: 1 } })
+      .limit(limit)
+      .toArray();
+  } catch (err) {
+    console.error('[confirm] stale lookup failed:', err.message);
+    return { checked: 0, released: 0, confirmed: 0 };
+  }
+
+  let released = 0;
+  let confirmed = 0;
+
+  for (const { bookingId } of stale) {
+    // Ask the gateway. Paid ones get confirmed here, not cancelled.
+    let out;
+    try {
+      out = await settleBooking(db, bookingId);
+    } catch (err) {
+      console.error(`[confirm] settle failed for ${bookingId}:`, err.message);
+      continue;
+    }
+    if (out.booking?.status === 'confirmed') { confirmed += 1; continue; }
+    if (out.error === 'lookup_failed') continue;   // unknown is not unpaid
+    if (out.booking?.status === 'cancelled') { released += 1; continue; }
+
+    // Still pending after the gateway was asked: it was never paid.
+    const result = await collections.bookings(db).findOneAndUpdate(
+      { bookingId, status: 'pending', createdAt: { $lt: cutoff } },
+      {
+        $set: {
+          status: 'cancelled',
+          cancelReason: 'hold_expired',
+          updatedAt: new Date(),
+        },
+      },
+      { returnDocument: 'after' }
+    );
+    const updated = result?.value ?? result;
+    if (updated) {
+      await releaseSeat(db, updated.slotId);
+      released += 1;
+    }
+  }
+
+  if (released || confirmed) {
+    console.log(`[confirm] stale holds: ${released} released, ${confirmed} confirmed late`);
+  }
+  return { checked: stale.length, released, confirmed };
 }

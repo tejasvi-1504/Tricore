@@ -1111,6 +1111,12 @@ document.addEventListener('DOMContentLoaded', () => {
      * it is posted to the server, which asks Razorpay directly whether the
      * order is actually paid before anything is confirmed.
      */
+    /** The checkout window should match whatever theme is on the page. */
+    function brandColour() {
+      const v = getComputedStyle(document.documentElement).getPropertyValue('--brand').trim();
+      return /^#[0-9a-f]{6}$/i.test(v) ? v : '#6d68ca';
+    }
+
     async function payWithRazorpay(data) {
       const ok = await loadRazorpay();
       if (!ok) {
@@ -1130,7 +1136,7 @@ document.addEventListener('DOMContentLoaded', () => {
         image: '/assets/logo-256.png',
         prefill: rp.prefill,
         notes: { bookingId: data.bookingId },
-        theme: { color: '#bd517b' },
+        theme: { color: brandColour() },
         modal: {
           ondismiss() {
             // They closed it — the booking is still held, so say so rather
@@ -1141,9 +1147,10 @@ document.addEventListener('DOMContentLoaded', () => {
             updateSummary();
           },
         },
-        handler(resp) {
-          confirmBtn.innerHTML = 'Confirming…';
-          verifyPayment(data.bookingId, resp);
+        handler() {
+          // Deliberately ignores the payload: it is the browser's word for it.
+          // The server asks Razorpay instead.
+          verifyPayment(data.bookingId);
         },
       });
 
@@ -1157,24 +1164,78 @@ document.addEventListener('DOMContentLoaded', () => {
       rz.open();
     }
 
-    /** Ask our server to confirm with Razorpay, then show the result. */
-    async function verifyPayment(bookingId, resp) {
-      try {
-        const r = await fetch('/api/booking-status?id=' + encodeURIComponent(bookingId), {
-          method: 'GET', headers: { accept: 'application/json' },
-        });
-        const out = await r.json().catch(() => ({}));
+    /**
+     * Ask our server to confirm with Razorpay, then show the result.
+     *
+     * Razorpay's handler firing means the checkout closed, not that the money
+     * moved. The only thing that decides the outcome is our server asking
+     * Razorpay for the order, so this waits for that answer and says nothing
+     * about the payment until it has one. It used to show the success panel
+     * with "Payment received" whenever the booking was not yet confirmed —
+     * including when the status check itself failed — which is a claim we had
+     * no way of standing behind.
+     */
+    async function verifyPayment(bookingId) {
+      confirmBtn.innerHTML = 'Checking your payment…';
 
-        if (out.status === 'confirmed') {
+      // Capture and our own webhook can each lag a second or two, so ask a
+      // few times before concluding anything.
+      for (let attempt = 0; attempt < 6; attempt++) {
+        if (attempt) await new Promise(r => setTimeout(r, attempt < 3 ? 1200 : 2500));
+
+        let out;
+        try {
+          const r = await fetch('/api/booking-status?id=' + encodeURIComponent(bookingId), {
+            method: 'GET', headers: { accept: 'application/json' }, cache: 'no-store',
+          });
+          out = await r.json().catch(() => ({}));
+        } catch {
+          continue;                       // network blip; try again
+        }
+
+        if (out.status === 'confirmed') { // Razorpay told our server it is paid
           showSuccess(out);
           window.kcConfetti?.();
           return;
         }
-        // Captured but not yet settled our side: the webhook will finish it.
-        showSuccess(out, null, 'Payment received. We are confirming it now — you will get an email within a few minutes.');
-      } catch {
-        showSuccess({ bookingId }, null, 'Payment received. We are confirming it now — you will get an email shortly.');
+        if (out.status === 'cancelled') {
+          showError('That payment did not go through, so the slot was released. '
+                  + 'Nothing has been charged — you can pick a time and try again.');
+          confirmBtn.innerHTML = 'Try payment again';
+          submitting = false;
+          updateSummary();
+          return;
+        }
       }
+
+      showUnconfirmed(bookingId);
+    }
+
+    /**
+     * We asked, and the answer is still not "paid". Say exactly that. The
+     * booking stays pending and no confirmation email goes out until Razorpay
+     * says otherwise, so the page must not imply one is coming.
+     */
+    function showUnconfirmed(bookingId) {
+      showError('We have not been able to confirm this payment yet. Your reference is '
+              + bookingId + '. Nothing is booked until it is confirmed — if the money did '
+              + 'leave your account, the confirmation email follows automatically. If it '
+              + 'did not, no charge was made.');
+
+      const again = document.createElement('button');
+      again.type = 'button';
+      again.className = 'err-wa';
+      again.textContent = 'Check again';
+      again.addEventListener('click', () => {
+        again.disabled = true;
+        verifyPayment(bookingId);
+      });
+      errorEl.appendChild(again);
+
+      confirmBtn.innerHTML = 'Awaiting confirmation';
+      submitting = false;
+      updateSummary();
+      confirmBtn.disabled = true;   // a second tap would start a second booking
     }
 
     function showSuccess(booking, waUrl, override) {

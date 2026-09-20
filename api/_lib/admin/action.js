@@ -61,10 +61,21 @@ export default async function handler(req, res) {
       if (!out.found) return json(res, 404, { error: 'No booking with that reference.' });
 
       if (!out.changed) {
-        const why = out.reason === 'cancelled'
-          ? 'That booking was cancelled — it cannot be confirmed.'
-          : 'That booking was already confirmed.';
-        return json(res, 409, { error: why, status: out.booking?.status, booking: out.booking });
+        // Each refusal says which one it is, so nobody has to guess why the
+        // button did nothing.
+        const rupees = (n) => '\u20b9' + Number(n || 0).toLocaleString('en-IN');
+        const why =
+          out.reason === 'cancelled'      ? 'That booking was cancelled \u2014 it cannot be confirmed.'
+        : out.reason === 'not_paid'       ? `${out.provider} says this is not paid (${out.gatewayStatus}). `
+                                          + 'It cannot be confirmed by hand \u2014 the gateway settles it once the money is in.'
+        : out.reason === 'lookup_failed'  ? 'Could not reach the payment gateway to check. Nothing was changed \u2014 try again shortly.'
+        : out.reason === 'amount_required'? `Enter how much was actually received. ${rupees(out.due)} is due.`
+        : out.reason === 'short_payment'  ? `${rupees(out.paid)} does not cover the ${rupees(out.due)} due, so this is not confirmed.`
+        : 'That booking was already confirmed.';
+        return json(res, 409, {
+          error: why, reason: out.reason || null,
+          status: out.booking?.status, booking: out.booking,
+        });
       }
 
       return json(res, 200, {
