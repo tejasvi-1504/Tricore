@@ -903,6 +903,9 @@ document.addEventListener('DOMContentLoaded', () => {
         showPlanPanel(card.dataset.plan);
         setPlan(card.dataset.plan);
       }));
+    // The plan comparison lives outside this closure; give it a way in.
+    window.kcSetPlan = (p) => { showPlanPanel(p); setPlan(p); };
+
     document.querySelectorAll('[data-plan-cta]').forEach(a =>
       a.addEventListener('click', () => {
         showPlanPanel(a.dataset.planCta);
@@ -1416,5 +1419,75 @@ window.kcConfetti = confetti;
         `perspective(900px) rotateX(${(-py * 5).toFixed(2)}deg) rotateY(${(px * 5).toFixed(2)}deg) translateY(-4px)`;
     });
     card.addEventListener('pointerleave', () => { card.style.transform = ''; });
+  });
+})();
+
+/* ══ PLAN COMPARISON ═════════════════════════════════════════════
+   Prices come from /api/slots rather than the markup, so an early-bird
+   change in the panel is reflected here without a redeploy. The
+   per-session figure is derived, not typed — it cannot drift out of
+   step with the price above it. ══════════════════════════════════ */
+(function planCompare() {
+  const box = document.getElementById('plans');
+  if (!box) return;
+
+  const rupees = n => '\u20b9' + Number(n).toLocaleString('en-IN');
+  const cta    = document.getElementById('planCta');
+  const ctaTxt = document.getElementById('planCtaText');
+
+  // Session counts, used only to derive the per-session figure.
+  const SESSIONS = { trial: 1, monthly: 8 };
+  const LABEL    = { trial: 'Book the trial', monthly: 'Enrol for the month' };
+
+  function paint(plan, price, listPrice) {
+    const el = box.querySelector(`[data-price="${plan}"]`);
+    if (!el || !price) return;
+    el.textContent = rupees(price);
+
+    const was = box.querySelector(`[data-was="${plan}"]`);
+    if (was) {
+      if (listPrice > price) { was.textContent = rupees(listPrice); was.hidden = false; }
+      else was.hidden = true;
+    }
+
+    const each = box.querySelector(`[data-each="${plan}"]`);
+    if (each) {
+      const n = SESSIONS[plan] || 1;
+      each.textContent = n > 1
+        ? 'about ' + rupees(Math.round(price / n)) + ' a session'
+        : rupees(price) + ' for the session';
+    }
+
+    // Savings badge, computed from the two real numbers.
+    if (plan === 'monthly') {
+      const chip = box.querySelector('[data-save]');
+      if (chip) chip.textContent = listPrice > price
+        ? 'Save ' + rupees(listPrice - price)
+        : 'Best value';
+    }
+  }
+
+  // One request per plan; they are cheap and cached at the edge.
+  ['trial', 'monthly'].forEach(plan => {
+    fetch(`/api/slots?plan=${plan}&mode=online`)
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => { if (d) paint(plan, d.price, d.listPrice); })
+      .catch(() => {});   // the markup already holds sensible numbers
+  });
+
+  // Selecting a card points the CTA — and the booking form — at that plan.
+  box.addEventListener('change', e => {
+    const plan = e.target.value;
+    if (!plan) return;
+    if (ctaTxt) ctaTxt.textContent = LABEL[plan] || 'Continue';
+    if (cta) cta.dataset.planCta = plan;
+  });
+
+  // Clicking the card scrolls on and carries the choice with it.
+  box.addEventListener('click', e => {
+    const label = e.target.closest('.plan');
+    if (!label) return;
+    const plan = label.dataset.plan;
+    if (typeof window.kcSetPlan === 'function') window.kcSetPlan(plan);
   });
 })();

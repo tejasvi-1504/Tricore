@@ -355,44 +355,65 @@ try { const t = localStorage.getItem('kc-site-theme'); if (t) document.documentE
       </div>
 
       <aside class="prog-price">
-        <div class="plan-pick" role="tablist" aria-label="Choose a plan">
-          <button type="button" class="pp-tab is-on" data-plan="trial" role="tab" aria-selected="true">Try it once</button>
-          <button type="button" class="pp-tab" data-plan="monthly" role="tab" aria-selected="false">Full month</button>
+        <!-- Both plans stay on screen. A tab switcher hid one of the two
+             things the visitor is here to compare. -->
+        <div class="plans" id="plans">
+
+          <label class="plan" data-plan="trial">
+            <input type="radio" name="planPick" value="trial" class="sr-only" checked>
+            <span class="plan-head">
+              <span class="plan-name">Try it once</span>
+              <span class="plan-chip">Start here</span>
+            </span>
+            <span class="plan-cost">
+              <b data-price="trial">&#8377;200</b>
+              <s data-was="trial" hidden></s>
+            </span>
+            <span class="plan-unit">one hour, one session</span>
+            <span class="plan-each" data-each="trial">&#8377;200 for the session</span>
+
+            <ul class="plan-list">
+              <li><svg class="ic"><use href="#i-check"/></svg> One full hour, one-to-one</li>
+              <li><svg class="ic"><use href="#i-check"/></svg> Any day that suits you</li>
+              <li><svg class="ic"><use href="#i-check"/></svg> Honest tech vs non-tech read</li>
+              <li class="plan-off"><svg class="ic"><use href="#i-x"/></svg> No written roadmap</li>
+              <li class="plan-off"><svg class="ic"><use href="#i-x"/></svg> No WhatsApp access</li>
+            </ul>
+            <span class="plan-go">Selected</span>
+          </label>
+
+          <label class="plan plan-best" data-plan="monthly">
+            <input type="radio" name="planPick" value="monthly" class="sr-only">
+            <span class="plan-head">
+              <span class="plan-name">Full month</span>
+              <span class="plan-chip plan-chip-hot" data-save>Best value</span>
+            </span>
+            <span class="plan-cost">
+              <b data-price="monthly">&#8377;1,499</b>
+              <s data-was="monthly">&#8377;3,000</s>
+            </span>
+            <span class="plan-unit">4 weekends &middot; 8 sessions</span>
+            <span class="plan-each" data-each="monthly">about &#8377;187 a session</span>
+
+            <ul class="plan-list">
+              <li><svg class="ic"><use href="#i-check"/></svg> 4 Saturday group sessions</li>
+              <li><svg class="ic"><use href="#i-check"/></svg> 4 Sunday 1:1 sessions</li>
+              <li><svg class="ic"><use href="#i-check"/></svg> Personal roadmap in writing</li>
+              <li><svg class="ic"><use href="#i-check"/></svg> Resume &amp; profile review</li>
+              <li><svg class="ic"><use href="#i-check"/></svg> WhatsApp access all month</li>
+            </ul>
+            <span class="plan-go">Selected</span>
+          </label>
         </div>
 
-        <!-- Trial -->
-        <div class="pp-panel is-on" data-panel="trial">
-          <span class="pp-ribbon pp-ribbon-trial">1-day trial</span>
-          <p class="pp-now"><span>₹</span>200</p>
-          <p class="pp-per">for 1 hour · one session</p>
-          <ul class="pp-list">
-            <li><svg class="ic"><use href="#i-check"/></svg> One full hour, one-to-one</li>
-            <li><svg class="ic"><use href="#i-check"/></svg> Any day that suits you</li>
-            <li><svg class="ic"><use href="#i-check"/></svg> Meerut in person, or online</li>
-            <li><svg class="ic"><use href="#i-check"/></svg> Honest tech vs non-tech read</li>
-            <li><svg class="ic"><use href="#i-check"/></svg> No commitment afterwards</li>
-          </ul>
-          <a href="#booking" class="btn btn-pri btn-full" data-plan-cta="trial">Book the trial <svg class="ic"><use href="#i-right"/></svg></a>
-        </div>
+        <a href="#booking" class="btn btn-pri btn-full plan-cta" id="planCta" data-plan-cta="trial">
+          <span id="planCtaText">Book the trial</span> <svg class="ic"><use href="#i-right"/></svg>
+        </a>
 
-        <!-- Monthly -->
-        <div class="pp-panel" data-panel="monthly" hidden>
-          <span class="pp-ribbon">Early bird</span>
-          <p class="pp-was">₹3,000</p>
-          <p class="pp-now"><span>₹</span><span class="counter" data-target="2000" data-fmt="in">0</span></p>
-          <p class="pp-per">for the full month</p>
-          <ul class="pp-list">
-            <li><svg class="ic"><use href="#i-check"/></svg> 4 Saturday learning sessions</li>
-            <li><svg class="ic"><use href="#i-check"/></svg> 4 Sunday 1:1 sessions</li>
-            <li><svg class="ic"><use href="#i-check"/></svg> Meerut in person, or online</li>
-            <li><svg class="ic"><use href="#i-check"/></svg> Personal roadmap in writing</li>
-            <li><svg class="ic"><use href="#i-check"/></svg> Resume &amp; profile review</li>
-            <li><svg class="ic"><use href="#i-check"/></svg> WhatsApp access through the month</li>
-          </ul>
-          <a href="#booking" class="btn btn-pri btn-full" data-plan-cta="monthly">Enrol for the month <svg class="ic"><use href="#i-right"/></svg></a>
-        </div>
-
-        <p class="pp-note"><svg class="ic"><use href="#i-wa"/></svg> Booking goes to WhatsApp — we confirm your slot and share payment details there.</p>
+        <p class="pp-note" id="payNote">
+          <svg class="ic"><use href="#i-shield"/></svg>
+          Secure payment by UPI, card or netbanking. Your seat is held while you pay.
+        </p>
       </aside>
     </div>
 
