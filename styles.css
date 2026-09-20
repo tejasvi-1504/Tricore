@@ -2793,13 +2793,21 @@ body, .hdr, .card, .btn, .ftr, .sec, section {
    so nothing can get out of step with the scroll position.
    ═══════════════════════════════════════════════════════════════════ */
 body:has(.cine) .hdr {
-  background: linear-gradient(to bottom, rgba(7,8,12,.72), rgba(7,8,12,.34) 70%, transparent);
-  backdrop-filter: blur(10px) saturate(1.1);
-  -webkit-backdrop-filter: blur(10px) saturate(1.1);
+  /* No band at all over the hero. A dark gradient on a dark clip just
+     reads as a grey stripe with a visible bottom edge, which is exactly
+     what it looked like. The hero's own scrim already darkens the top of
+     the frame, and a soft shadow carries the white type the rest of the
+     way, so the header can simply be glass-free and invisible. */
+  background: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   border-bottom-color: transparent;
   transition: background .35s var(--e), backdrop-filter .35s var(--e),
               border-color .3s var(--e), box-shadow .3s var(--e);
 }
+body:has(.cine) .hdr .wm,
+body:has(.cine) .hdr .nav > a:not(.nav-btn),
+body:has(.cine) .hdr .logo { text-shadow: 0 1px 14px rgba(0,0,0,.6); }
 body:has(.cine) .hdr .wm { color: #fff; }
 body:has(.cine) .hdr .nav > a:not(.nav-btn):not(.nav-cross) { color: rgba(255,255,255,.82); }
 body:has(.cine) .hdr .nav > a:not(.nav-btn):not(.nav-cross):hover { color: #fff; }
@@ -2842,51 +2850,53 @@ body:has(.cine) .hdr.stuck .burger span { background: var(--ink); }
   body:has(.cine) .hdr .nav.open > a:not(.nav-btn) { color: var(--body); }
 }
 
+/* Once it is solid again, or open as a drawer on a light surface,
+   the shadow would smear the dark type. */
+body:has(.cine) .hdr.stuck .wm,
+body:has(.cine) .hdr.stuck .nav > a:not(.nav-btn),
+body:has(.cine) .hdr.stuck .logo,
+body:has(.cine) .hdr .nav.open > a:not(.nav-btn) { text-shadow: none; }
+
 /* ═══════════════════════════════════════════════════════════════════
-   HERO COPY, PULLED LEFT
+   HERO COPY, CENTRED
 
-   Centred in a 1200px container, the text landed in the middle of the
-   frame and collided with the figure. It now hugs the left gutter with
-   its own measure, and a left-side wash keeps it readable over the
-   brighter part of the clip.
+   Pulling the copy into the left gutter squeezed the headline into a
+   narrow column and broke its three lines into five. It goes back to
+   the centre of the frame, on the page's own measure, where each line
+   lands whole.
    ═══════════════════════════════════════════════════════════════════ */
-.cine-stage {
-  max-width: none; width: 100%;
-  padding-inline: clamp(1.25rem, 5vw, 5.5rem);
-  margin-inline: 0;
+.cine-stage { text-align: center; }
+.cine-stage .lede {
+  /* Centred prose needs a shorter line than ranged-left prose before the
+     eye loses the start of the next one. */
+  max-width: 56ch; margin-inline: auto;
 }
-.cine-stage > * { max-width: 40ch; }
-.cine-stage .headline-mask { max-width: none; }
-.cine-stage .headline { max-width: 18ch; }
-.cine-stage .lede { max-width: 42ch; }
+.cine-cta, .cine-by { justify-content: center; }
+/* Long enough to break in a sensible place rather than orphaning the
+   last company onto a line of its own. */
+.cine-by { max-width: 64ch; margin-left: auto; margin-right: auto; }
 
-/* Darkens the left third only, so the artwork on the right is untouched. */
-.cine-scrim::after {
+/* An even wash instead of the old left-side one, since there is no
+   longer a side to favour. It sits on .cine-bg rather than .cine-scrim
+   so it covers the whole frame — the scrim is only the top band — and
+   the darkening at the foot hands the hero over to the dark section
+   below without a seam. */
+.cine-scrim::after { content: none; }
+.cine-bg::after {
   content: ''; position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(to right, rgba(4,12,24,.62) 0%, rgba(4,12,24,.28) 34%, transparent 62%);
+  background:
+    radial-gradient(ellipse 80% 70% at 50% 45%,
+      rgba(3,10,20,.58) 0%, rgba(3,10,20,.32) 54%, rgba(3,10,20,0) 100%),
+    linear-gradient(to bottom,
+      rgba(3,10,20,.20) 0%, rgba(3,10,20,.04) 42%, rgba(3,10,20,.38) 100%);
 }
 
-@media (min-width: 1500px) {
-  /* Past the design frame, keep the copy near the text rather than letting
-     it drift out to the edge of a very wide monitor. */
-  .cine-stage { padding-inline: max(clamp(1.25rem, 5vw, 5.5rem), calc((100vw - 1600px) / 2 + 3rem)); }
-}
 @media (max-aspect-ratio: 5/4) {
-  .cine-stage > * { max-width: none; }
-  .cine-stage .headline { max-width: 15ch; }
-  .cine-scrim::after {
-    background: linear-gradient(to right, rgba(4,12,24,.5) 0%, rgba(4,12,24,.3) 55%, rgba(4,12,24,.12) 100%);
+  /* Portrait: the clip fills more of the frame behind the type. */
+  .cine-bg::after {
+    background:
+      radial-gradient(ellipse 110% 62% at 50% 42%,
+        rgba(3,10,20,.60) 0%, rgba(3,10,20,.38) 58%, rgba(3,10,20,.16) 100%),
+      linear-gradient(to bottom, rgba(3,10,20,.24), rgba(3,10,20,.42));
   }
 }
-
-/* Named rather than counted. Four companies is a number; the names are
-   the actual credential. */
-.named { list-style: none; padding: 0; margin: 1.1rem 0 0; display: grid; gap: .7rem; }
-.named li { display: flex; flex-direction: column; gap: .1rem; }
-.named span {
-  font-size: .6875rem; font-weight: 700; letter-spacing: .1em;
-  text-transform: uppercase; color: var(--muted);
-}
-.named b { font-size: .9375rem; font-weight: 600; color: var(--ink); line-height: 1.45; }
-.sec.dk .named span { color: rgba(255,255,255,.5); }
-.sec.dk .named b { color: #fff; }
