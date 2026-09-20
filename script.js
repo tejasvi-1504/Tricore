@@ -556,6 +556,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let listPrice  = 3000;
     // The code the visitor typed, and whatever the server made of it.
     let promoCode  = '';
+    // Until the server says otherwise, assume the introductory price applies.
+    let firstCall  = true;
+    let sessionRate = null;
     let payMode    = null;   // unknown until /api/slots answers
     let discounts  = [];
     let seatsByDate = new Map();
@@ -734,6 +737,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         price = data.price != null ? data.price : price;
         listPrice = data.listPrice != null ? data.listPrice : listPrice;
+        firstCall = data.firstCall !== false;
+        sessionRate = data.sessionRate != null ? data.sessionRate : sessionRate;
         discounts = data.discounts || [];
         if (data.paymentMode) payMode = data.paymentMode;
         if (promoCode) showPromoResult(data);
@@ -795,6 +800,20 @@ document.addEventListener('DOMContentLoaded', () => {
       sumPrice.innerHTML = price < listPrice
         ? '<s>' + rupees(listPrice) + '</s> ' + rupees(price)
         : rupees(price);
+
+      // The introductory price is for a first call only. When it no longer
+      // applies, say so next to the number rather than leaving a changed
+      // figure unexplained.
+      const rateNote = document.getElementById('sumRateNote');
+      if (rateNote) {
+        const show = planKey === 'trial' && !firstCall;
+        rateNote.hidden = !show;
+        if (show) {
+          rateNote.textContent = 'You have had your first call, so this one is at the '
+            + 'standard session rate' + (sessionRate ? ' of ' + rupees(sessionRate) : '')
+            + ' \u2014 the same as a weekend on the monthly plan.';
+        }
+      }
 
       // What is still missing, if anything. A greyed-out button that says
       // "Continue" tells the visitor nothing; it has to name the step it is
@@ -924,6 +943,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function setPlan(next) {
       if (!RULES.plans[next]) return;
       planKey = next;
+      firstCall = true;                 // re-established by the next quote
       planBtns.forEach(b => b.classList.toggle('is-on', b.dataset.plan === next));
       // The valid days differ between a trial and the monthly batch.
       startDate = null;
@@ -1288,6 +1308,20 @@ document.addEventListener('DOMContentLoaded', () => {
       updateSummary();
       form.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
+
+    // The price depends on whether this address has been on a call before,
+    // so it cannot be settled until the address is typed.
+    const emailField = document.getElementById('bkEmail');
+    if (emailField) {
+      let lastQuoted = '';
+      emailField.addEventListener('blur', () => {
+        const v = (emailField.value || '').trim().toLowerCase();
+        if (v === lastQuoted) return;
+        if (v && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) return;
+        lastQuoted = v;
+        loadBatches();
+      });
+    }
 
     // Keep the WhatsApp fallback in step with the current selection.
     form.addEventListener('change', () => {

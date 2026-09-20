@@ -12,12 +12,16 @@
  * price was — otherwise anyone could edit the form and pay ₹1.
  */
 import { collections } from './db.js';
-import { priceForPlan, listPriceForPlan } from './availability.js';
+import { priceForPlan, listPriceForPlan, sessionRate } from './availability.js';
 
 const DOC_ID = 'site';
 
 export const DEFAULT_OFFERS = {
-  earlyBird: { active: true, monthly: 1499, trial: null },
+  // Off by default. It was overriding PRICE_MONTHLY=2000 down to 1499, so the
+  // site advertised a price the configuration did not hold — and 1499 over
+  // four weekends came to 375 a session against a 200 trial. Switch it on
+  // from the admin panel for a real promotion.
+  earlyBird: { active: false, monthly: null, trial: null },
   referral:  { active: true, discount: 200, reward: 200 },
 };
 
@@ -168,14 +172,46 @@ export async function getCredit(db, email) {
  * should say out loud — a rejected code must never fail silently and leave
  * someone believing they got a discount.
  */
+/**
+ * Has this address been on a call before?
+ *
+ * Only settled bookings count — a pending one that was never paid must not
+ * cost someone their introductory price.
+ */
+export async function hasBookedBefore(db, email) {
+  if (!email) return false;
+  try {
+    const found = await collections.bookings(db).findOne(
+      { email: String(email).toLowerCase(), status: 'confirmed' },
+      { projection: { _id: 1 } }
+    );
+    return Boolean(found);
+  } catch (err) {
+    console.error('[pricing] history read failed:', err.message);
+    return false;   // never charge the higher rate on a failed lookup
+  }
+}
+
 export async function quote(db, { plan, coupon, referral, email, useCredit = true } = {}) {
   const offers = await getOffers(db);
-  const listPrice = listPriceForPlan(plan);
+  let listPrice = listPriceForPlan(plan);
 
   let base = priceForPlan(plan);
   let earlyBird = false;
 
-  const ebPrice = offers.earlyBird[plan === 'monthly' ? 'monthly' : 'trial'];
+  // The introductory price is for the first call only. After that a single
+  // session costs the weekly rate the monthly programme works out at, so
+  // booking one at a time is never cheaper than committing to the month.
+  let firstCall = true;
+  if (plan === 'trial') {
+    firstCall = !(await hasBookedBefore(db, email));
+    if (!firstCall) {
+      base = sessionRate();
+      listPrice = base;
+    }
+  }
+
+  const ebPrice = firstCall ? offers.earlyBird[plan === 'monthly' ? 'monthly' : 'trial'] : null;
   if (offers.earlyBird.active && Number.isFinite(ebPrice) && ebPrice !== null && ebPrice < base) {
     base = ebPrice;
     earlyBird = true;
@@ -228,6 +264,8 @@ export async function quote(db, { plan, coupon, referral, email, useCredit = tru
 
   return {
     plan,
+    firstCall,
+    sessionRate: sessionRate(),
     creditAvailable,
     creditUsed: lines.find((l) => l.kind === 'credit')?.amount || 0,
     listPrice,

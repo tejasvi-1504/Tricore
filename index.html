@@ -51,7 +51,7 @@
     "availableLanguage": ["en", "hi"]
   },
   "makesOffer": [
-    { "@type": "Offer", "name": "1-Day Trial", "price": "200", "priceCurrency": "INR",
+    { "@type": "Offer", "name": "First 1:1 call", "price": "300", "priceCurrency": "INR",
       "itemOffered": { "@type": "Service", "name": "Career consulting trial session" } },
     { "@type": "Offer", "name": "Monthly Programme", "price": "2000", "priceCurrency": "INR",
       "itemOffered": { "@type": "Service", "name": "Weekend career mentoring programme" } }
@@ -373,8 +373,8 @@ try {
           <span class="sp-name">One session</span>
           <span class="sp-tag">Start here</span>
         </span>
-        <span class="sp-cost" data-price="trial">&#8377;200</span>
-        <span class="sp-unit">one hour, one-to-one</span>
+        <span class="sp-cost" data-price="trial">&#8377;300</span>
+        <span class="sp-unit">one hour, one-to-one &middot; first call</span>
         <span class="sp-go">Book a call <svg class="ic"><use href="#i-right"/></svg></span>
       </a>
 
@@ -383,8 +383,8 @@ try {
           <span class="sp-name">Full month</span>
           <span class="sp-tag sp-tag-hot" data-save>Best value</span>
         </span>
-        <span class="sp-cost"><b data-price="monthly">&#8377;1,499</b><s data-was="monthly">&#8377;3,000</s></span>
-        <span class="sp-unit" data-each="monthly">4 weekends &middot; 8 sessions</span>
+        <span class="sp-cost"><b data-price="monthly">&#8377;2,000</b><s data-was="monthly" hidden></s></span>
+        <span class="sp-unit" data-each="monthly">4 weekends &middot; 8 sessions &middot; &#8377;500 a weekend</span>
         <span class="sp-go">See the month <svg class="ic"><use href="#i-right"/></svg></span>
       </a>
     </div>
@@ -407,7 +407,7 @@ try {
     <header class="sec-hd reveal">
       <span class="tagline"><span class="tag-n">05</span> Book</span>
       <h2>Pick a day that works</h2>
-      <p class="sec-sub">&#8377;200 for one session. Start there &mdash; the month is
+      <p class="sec-sub">&#8377;300 for your first call. Start there &mdash; the month is
          waiting if it helps.</p>
     </header>
 <div class="book reveal" id="booking">
@@ -429,7 +429,7 @@ try {
           <div class="types types-2">
             <button type="button" class="type is-on" data-plan="trial">
               <span class="type-ic"><svg class="ic"><use href="#i-spark"/></svg></span>
-              <span class="type-c"><strong>1-Day Trial · ₹200</strong><span>One hour, one session, no commitment</span></span>
+              <span class="type-c"><strong>One call · ₹300</strong><span>One hour, one-to-one, no commitment</span></span>
               <span class="type-tick"></span>
             </button>
             <button type="button" class="type" data-plan="monthly">
@@ -527,6 +527,7 @@ try {
             <div><dt>Starts</dt><dd id="sumDate" class="pending">Select a Saturday</dd></div>
             <div><dt>Ends</dt><dd id="sumTime" class="pending">—</dd></div>
             <div id="sumDiscounts"></div>
+            <p class="sum-note" id="sumRateNote" hidden></p>
             <div class="sum-amt"><dt>You pay</dt><dd id="sumPrice">₹200</dd></div>
           </dl>
           <p class="alert" id="bkError" role="alert" hidden></p>
@@ -561,7 +562,7 @@ try {
     <div class="faq-list reveal">
       <details class="faq-item">
         <summary>What does the programme cost?<svg class="ic fq"><use href="#i-down"/></svg></summary>
-        <div class="faq-a"><p>One session is <strong>₹200</strong>. The full month covers all four weekends; the current price is on the panel above.</p></div>
+        <div class="faq-a"><p>Your first call is <strong>₹300</strong>. The full month is <strong>₹2,000</strong> — four weekends, which works out at ₹500 each. A single session after the first one is that same ₹500, so booking one at a time never costs less than the month.</p></div>
       </details>
       <details class="faq-item">
         <summary>I&rsquo;m in first year. Should I wait?<svg class="ic fq"><use href="#i-down"/></svg></summary>

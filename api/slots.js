@@ -85,6 +85,10 @@ export default async function handler(req, res) {
         basePrice: q.basePrice,
         listPrice: q.listPrice,
         earlyBird: q.earlyBird,
+        // Whether the introductory price still applies to this address, and
+        // what a session costs once it does not.
+        firstCall: q.firstCall,
+        sessionRate: q.sessionRate,
         discounts: q.discounts,
         totalDiscount: q.totalDiscount,
         notices: q.notices,

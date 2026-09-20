@@ -2929,3 +2929,9 @@ button.err-wa:disabled { opacity: .55; cursor: default; }
       rgba(234,227,222,.66) 100%);
   }
 }
+
+/* A line under the total for when the price needs a sentence, such as the
+   introductory rate no longer applying. */
+.sum-note {
+  margin: .6rem 0 0; font-size: .8rem; line-height: 1.5; color: var(--muted);
+}
