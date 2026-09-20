@@ -2001,26 +2001,7 @@ body, .hdr, .card, .btn, .ftr, .sec, section {
 .fit-no h3 .ic { color: var(--muted); }
 .fit-no li::before { background: var(--line); }
 
-/* ── weekend rhythm ── */
-.rhythm { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; align-items: stretch; max-width: 860px; }
-.rh { background: var(--white); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 1.6rem 1.5rem; }
-.rh-day {
-  display: inline-block; font-size: .6875rem; font-weight: 800; letter-spacing: .09em;
-  text-transform: uppercase; border-radius: 100px; padding: .25rem .75rem; margin-bottom: .9rem;
-}
-.rh-sat { border-top: 3px solid var(--brand); }
-.rh-sat .rh-day { background: var(--brand-100); color: var(--brand-600); }
-.rh-sun { border-top: 3px solid var(--violet); }
-.rh-sun .rh-day { background: var(--violet-100); color: var(--violet-600); }
-.rh h3 { font-size: 1.125rem; margin-bottom: .45rem; letter-spacing: -.01em; }
-.rh p { font-size: .9375rem; color: var(--body); line-height: 1.6; margin: 0; }
-.rh-join { align-self: center; width: 2px; height: 42px; border-radius: 2px;
-           background: linear-gradient(var(--brand), var(--violet)); }
 
-@media (max-width: 760px) {
-  .rhythm { grid-template-columns: 1fr; }
-  .rh-join { width: 42px; height: 2px; justify-self: center; }
-}
 @media (prefers-reduced-motion: reduce) {
   .sym:hover, .change-list li:hover { transform: none; }
 }
@@ -2662,4 +2643,153 @@ body, .hdr, .card, .btn, .ftr, .sec, section {
   .sym:hover, .fit-col:hover, .rh:hover, .svc-card:hover,
   .work-card:hover, .price-card:hover, .cl-card:hover { transform: none; }
   .sym-grid.in .sym, .change-list.in li { animation: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   DARK NARRATIVE RUN
+
+   The hero was cinematic and everything after it dropped to white, so
+   the page fell apart at the first scroll. The narrative sections —
+   the symptoms, what changes, who it suits, the mentor, the rhythm —
+   now share the hero's dark ground and carry their own footage.
+
+   The booking section deliberately returns to light. A form with a
+   calendar, inputs and a payment step is easier to fill in on white,
+   and the switch marks the point where the page stops persuading and
+   starts working.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* One glass recipe, used by every raised surface on the dark run. */
+.glass {
+  position: relative; overflow: hidden;
+  background: rgba(255,255,255,.03);
+  backdrop-filter: blur(10px) saturate(1.1);
+  -webkit-backdrop-filter: blur(10px) saturate(1.1);
+  border: none;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.10);
+}
+/* A hairline that catches light at the top and bottom edges, the way a
+   real pane of glass does. Masked so it sits on the border only. */
+.glass::before {
+  content: ''; position: absolute; inset: 0; border-radius: inherit;
+  padding: 1.4px; pointer-events: none;
+  background: linear-gradient(180deg,
+    rgba(255,255,255,.45) 0%, rgba(255,255,255,.15) 20%,
+    rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%,
+    rgba(255,255,255,.15) 80%, rgba(255,255,255,.45) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+}
+
+.sec.dk {
+  position: relative; background: #07080c; color: rgba(255,255,255,.72);
+  overflow: hidden;
+}
+.sec.dk::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 55% at 12% 0%, rgba(var(--brand-rgb), .16), transparent 62%),
+    radial-gradient(ellipse 50% 50% at 90% 100%, rgba(var(--violet-rgb), .12), transparent 60%);
+}
+.sec.dk > * { position: relative; }
+.sec.dk h2, .sec.dk h3 { color: #fff; }
+.sec.dk .sec-sub, .sec.dk p { color: rgba(255,255,255,.66); }
+.sec.dk .tagline {
+  background: rgba(255,255,255,.07); color: rgba(255,255,255,.78);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.12);
+}
+
+/* The hero now runs straight into the dark, so no seam is needed. */
+.cine + .sec.dk::after { content: none; }
+.cine + .sec::before { content: none; }
+
+/* ── symptom + fit cards on glass ── */
+.sec.dk .sym, .sec.dk .fit-col, .sec.dk .change-list li {
+  background: rgba(255,255,255,.03); border: none;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.10);
+  backdrop-filter: blur(10px);
+}
+.sec.dk .sym:hover, .sec.dk .fit-col:hover, .sec.dk .change-list li:hover {
+  background: rgba(255,255,255,.06);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.18), 0 22px 48px rgba(0,0,0,.4);
+}
+.sec.dk .sym-n {
+  background: rgba(255,255,255,.08); color: #fff;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.16);
+}
+.sec.dk .ch-i {
+  background: rgba(var(--violet-rgb), .22); color: #fff;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.16);
+}
+.sec.dk .fit-col li { color: rgba(255,255,255,.7); }
+.sec.dk .fit-no li::before { background: rgba(255,255,255,.22); }
+.sec.dk .fit-yes { box-shadow: inset 0 1px 1px rgba(110,231,183,.28); }
+
+/* ── mentor: copy beside moving footage ── */
+.split {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(1.25rem, 3vw, 2.5rem); align-items: center;
+}
+.split-media {
+  position: relative; border-radius: 22px; overflow: hidden;
+  aspect-ratio: 4 / 3; background: #0b0d14;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.12);
+}
+.split-vid { width: 100%; height: 100%; object-fit: cover; display: block;
+             opacity: 0; transition: opacity .8s linear; }
+.split-vid.is-on { opacity: 1; }
+.split-wash {
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(to top, rgba(7,8,12,.55), transparent 58%);
+}
+.split-copy .mentor { background: none; border: 0; box-shadow: none; padding: 0; }
+.split-copy .mentor-photo, .split-copy .mentor-fallback { display: none; }
+.split-copy p { color: rgba(255,255,255,.7); }
+.split-copy .mentor-stats dt { color: #fff; }
+.split-copy .mentor-stats dd { color: rgba(255,255,255,.55); }
+
+/* ── the weekend pair ── */
+.duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+       gap: clamp(1rem, 2.4vw, 1.75rem); }
+.duo-card {
+  position: relative; border-radius: 24px; overflow: hidden;
+  background: rgba(255,255,255,.03); backdrop-filter: blur(10px);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.10);
+  transition: transform .3s var(--e), box-shadow .3s var(--e);
+}
+.duo-card:hover { transform: translateY(-4px);
+                  box-shadow: inset 0 1px 1px rgba(255,255,255,.2), 0 26px 56px rgba(0,0,0,.45); }
+.duo-media { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: #0b0d14; }
+.duo-media video { width: 100%; height: 100%; object-fit: cover; display: block;
+                   opacity: 0; transition: opacity .8s linear, transform .7s var(--e); }
+.duo-media video.is-on { opacity: 1; }
+.duo-card:hover .duo-media video { transform: scale(1.05); }
+.duo-wash { position: absolute; inset: 0; pointer-events: none;
+            background: linear-gradient(to top, rgba(7,8,12,.62), transparent 56%); }
+.duo-body { padding: clamp(1.25rem, 2.6vw, 1.75rem); }
+.duo-tag {
+  display: inline-block; font-size: .6875rem; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase; border-radius: 100px;
+  padding: .25rem .75rem; margin-bottom: .75rem;
+  background: rgba(var(--brand-rgb), .3); color: #fff;
+}
+.duo-tag-alt { background: rgba(var(--violet-rgb), .34); }
+.duo-body h3 { font-size: 1.25rem; margin-bottom: .45rem; letter-spacing: -.01em; }
+.duo-body p { font-size: .9375rem; line-height: 1.62; margin: 0; }
+
+/* ── handing back to the light half ── */
+.summit { border-radius: 28px 28px 0 0; margin-top: -1px; }
+.sec.book-sec {
+  position: relative; background: var(--soft);
+  border-radius: 28px 28px 0 0; margin-top: -28px; z-index: 1;
+}
+
+@media (max-width: 860px) {
+  .split { grid-template-columns: 1fr; }
+  .split-media { aspect-ratio: 16 / 10; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .duo-card:hover { transform: none; }
+  .duo-card:hover .duo-media video { transform: none; }
+  .split-vid, .duo-media video { opacity: 1; }
 }
