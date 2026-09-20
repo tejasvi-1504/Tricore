@@ -518,47 +518,63 @@ try { const t = localStorage.getItem('kc-site-theme'); if (t) document.documentE
 <footer class="ftr">
   <div class="wrap ftr-top">
     <div class="ftr-brand">
-      <a href="#" class="logo logo-ftr">
+      <a href="/" class="logo logo-ftr">
         <img class="logo-mk" src="assets/logo-96.png"
              srcset="assets/logo-96.png 1x, assets/logo-256.png 2x"
              alt="" aria-hidden="true" width="40" height="40" loading="lazy" decoding="async">
         <span class="wm">Kanishka <b>Creates</b></span>
       </a>
-      <p>Career consulting for students, and custom software for Indian businesses.</p>
-      <a href="https://wa.me/919410891738" target="_blank" rel="noopener" class="btn btn-pri btn-sm"><svg class="ic"><use href="#i-wa"/></svg> Chat on WhatsApp</a>
+      <p>Honest career guidance for B.Tech students, and custom software for
+         businesses that would rather not be sold a template.</p>
+
+      <ul class="ftr-contact">
+        <li>
+          <svg class="ic" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+          <a href="mailto:itskanishka1202@gmail.com">itskanishka1202@gmail.com</a>
+        </li>
+        <li>
+          <svg class="ic"><use href="#i-wa"/></svg>
+          <a href="https://wa.me/919410891738" target="_blank" rel="noopener">+91 94108 91738</a>
+        </li>
+        <li>
+          <svg class="ic" viewBox="0 0 24 24"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          <span>Meerut, Uttar Pradesh &middot; and online</span>
+        </li>
+      </ul>
     </div>
-    <nav class="ftr-col" aria-label="Consulting">
-      <h4>Consulting</h4>
-      <a href="/#consulting">Career direction</a>
-      <a href="/#consulting">Tech vs non-tech</a>
-      <a href="/#consulting">Mock interviews</a>
-      <a href="/#consulting">Profile building</a>
-      <a href="/#booking">Book a session</a>
-    </nav>
-    <nav class="ftr-col" aria-label="Services">
-      <h4>For business</h4>
-      <a href="#pricing">Basic website</a>
-      <a href="#pricing">E-commerce store</a>
-      <a href="#pricing">Basic CRM</a>
-      <a href="#services">Management systems</a>
-      <a href="#services">UI/UX design</a>
-    </nav>
-    <nav class="ftr-col" aria-label="Company">
-      <h4>Company</h4>
-      <a href="#why">Why Kanishka</a>
-      <a href="#work">Our work</a>
-      <a href="#clients">Clients</a>
-      <a href="#faq">FAQ</a>
-      <a href="#contact">Contact</a>
-    </nav>
-  </div>
-  <div class="wrap ftr-btm">
-    <p>© 2026 Kanishka Creates. All rights reserved.</p>
-    <p class="ftr-social">
-      <a href="https://www.linkedin.com/in/kanishka-sde102/" target="_blank" rel="noopener me">LinkedIn</a>
+
+    <nav class="ftr-col" aria-label="For students">
+      <h4>For students</h4>
+      <a href="/#you">Is this me?</a>
+      <a href="/#mentor">Your mentor</a>
+      <a href="/#pricing">Pricing</a>
+      <a href="/#book">Book a call</a>
       <a href="/history.html">Your bookings</a>
-    </p>
-    <p>Made in India 🇮🇳</p>
+    </nav>
+
+    <nav class="ftr-col" aria-label="For business">
+      <h4>For business</h4>
+      <a href="/business.html#services">Services</a>
+      <a href="/business.html#work">Our work</a>
+      <a href="/business.html#pricing">Prices</a>
+      <a href="/business.html#contact">Start a project</a>
+    </nav>
+
+    <div class="ftr-cta">
+      <h4>Have a project in mind?</h4>
+      <p>Tell us what you need. You get a fixed price and a delivery
+         date before any work starts.</p>
+      <a href="/business.html#contact" class="btn btn-pri btn-full">Start a project <svg class="ic"><use href="#i-right"/></svg></a>
+      <a class="ftr-li" href="https://www.linkedin.com/in/kanishka-sde102/" target="_blank" rel="noopener me">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M4.5 3.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM3 9h3v12H3zM9 9h2.9v1.7h.05a3.2 3.2 0 0 1 2.87-1.5c3.07 0 3.64 1.95 3.64 4.5V21h-3v-5.6c0-1.34-.03-3.06-1.9-3.06-1.9 0-2.19 1.45-2.19 2.96V21H9z" fill="currentColor" stroke="none"/></svg>
+        Kanishka on LinkedIn
+      </a>
+    </div>
+  </div>
+
+  <div class="wrap ftr-btm">
+    <p>&copy; 2026 Kanishka Creates. All rights reserved.</p>
+    <p class="ftr-made">Built in Meerut <span aria-hidden="true">&middot;</span> Made in India &#127470;&#127475;</p>
   </div>
 </footer>
 

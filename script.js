@@ -1491,3 +1491,105 @@ window.kcConfetti = confetti;
     if (typeof window.kcSetPlan === 'function') window.kcSetPlan(plan);
   });
 })();
+
+/* ══ HERO VIDEO ══════════════════════════════════════════════════
+   The clip is ~30MB. On a phone on mobile data that is a genuinely
+   rude thing to autoload for decoration, so it is fetched only when
+   the screen is wide, the connection is not metered or slow, and the
+   visitor has not asked for reduced motion. Everyone else gets the
+   poster still, which is what paints first in every case anyway.
+
+   Looping is manual rather than the `loop` attribute so the clip can
+   fade at both ends — a hard cut back to frame one is the thing that
+   makes a background video look cheap. ═══════════════════════════ */
+(function heroVideo() {
+  const vid = document.getElementById('heroVid');
+  if (!vid || !vid.dataset.src) return;
+
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!matchMedia('(min-width: 900px)').matches) return;
+
+  const net = navigator.connection;
+  if (net && (net.saveData || /^(slow-)?2g$/.test(net.effectiveType || ''))) return;
+
+  const FADE = 0.5;            // seconds at each end
+  let raf = 0;
+
+  function frame() {
+    const { currentTime: t, duration: d } = vid;
+    if (d && isFinite(d)) {
+      const into = Math.min(t / FADE, 1);
+      const left = Math.min((d - t) / FADE, 1);
+      vid.style.opacity = String(Math.max(0, Math.min(into, left)));
+    }
+    raf = requestAnimationFrame(frame);
+  }
+
+  vid.addEventListener('ended', () => {
+    vid.style.opacity = '0';
+    setTimeout(() => { vid.currentTime = 0; vid.play().catch(() => {}); }, 100);
+  });
+
+  // Only start downloading once the hero is actually on screen.
+  const begin = () => {
+    vid.src = vid.dataset.src;
+    vid.load();
+    vid.play().then(() => {
+      vid.classList.add('is-on');
+      raf = requestAnimationFrame(frame);
+    }).catch(() => { cancelAnimationFrame(raf); });
+  };
+
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some(e => e.isIntersecting)) { io.disconnect(); begin(); }
+    }, { rootMargin: '200px' });
+    io.observe(vid);
+  } else {
+    begin();
+  }
+
+  // Stop burning frames and bandwidth on a tab nobody is looking at.
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { vid.pause(); cancelAnimationFrame(raf); }
+    else if (vid.src) { vid.play().catch(() => {}); raf = requestAnimationFrame(frame); }
+  });
+})();
+
+/* ══ PRICING PANEL ═══════════════════════════════════════════════
+   Same live prices as everywhere else; nothing here is typed. ════ */
+(function summitPrices() {
+  const box = document.querySelector('.summit-plans');
+  if (!box) return;
+
+  const rupees = n => '\u20b9' + Number(n).toLocaleString('en-IN');
+
+  ['trial', 'monthly'].forEach(plan => {
+    fetch(`/api/slots?plan=${plan}&mode=online`)
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => {
+        if (!d || !d.price) return;
+        const el = box.querySelector(`[data-price="${plan}"]`);
+        if (el) el.textContent = rupees(d.price);
+
+        const was = box.querySelector(`[data-was="${plan}"]`);
+        if (was) {
+          if (d.listPrice > d.price) { was.textContent = rupees(d.listPrice); was.hidden = false; }
+          else was.hidden = true;
+        }
+        if (plan === 'monthly') {
+          const chip = box.querySelector('[data-save]');
+          if (chip && d.listPrice > d.price) chip.textContent = 'Save ' + rupees(d.listPrice - d.price);
+          const unit = box.querySelector('[data-each="monthly"]');
+          if (unit) unit.textContent = '8 sessions \u00b7 about ' + rupees(Math.round(d.price / 8)) + ' each';
+        }
+      })
+      .catch(() => {});
+  });
+
+  // Carry the choice into the booking form, like the cards further down.
+  box.addEventListener('click', e => {
+    const card = e.target.closest('[data-plan]');
+    if (card && typeof window.kcSetPlan === 'function') window.kcSetPlan(card.dataset.plan);
+  });
+})();
