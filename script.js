@@ -21,16 +21,34 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('scroll', onScroll, { passive: true });
   }
 
+  /* ══ SCROLL LOCK ═════════════════════════════════════════════════
+     Counted, because the drawer and the booking dialog can both be open
+     at once: tapping "Book a call" inside the drawer opens the dialog and
+     then closes the drawer, and a plain remove() in the second of those
+     unlocked the page underneath the first. ═══════════════════════════ */
+  const lock = (() => {
+    let held = 0;
+    return {
+      on() { held += 1; document.body.classList.add('lock'); },
+      off() { held = Math.max(0, held - 1); if (!held) document.body.classList.remove('lock'); },
+    };
+  })();
+  window.kcScrollLock = lock;
+
   /* ══ MOBILE NAV ══════════════════════════════════════════════════ */
   const burger = document.getElementById('burger');
   const nav = document.getElementById('nav');
 
   function closeNav() {
+    // Every nav link calls this, including on desktop where the drawer was
+    // never open. Releasing a lock it never took would free the page from
+    // under whatever else is holding it.
+    if (!nav || !nav.classList.contains('open')) return;
     nav.classList.remove('open');
     burger.classList.remove('on');
     burger.setAttribute('aria-expanded', 'false');
     burger.setAttribute('aria-label', 'Open menu');
-    document.body.classList.remove('lock');
+    lock.off();
   }
   if (burger && nav) {
     burger.addEventListener('click', () => {
@@ -38,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
       burger.classList.toggle('on', open);
       burger.setAttribute('aria-expanded', String(open));
       burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-      document.body.classList.toggle('lock', open);
+      if (open) lock.on(); else lock.off();
     });
     nav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeNav));
     document.addEventListener('keydown', e => {
@@ -986,6 +1004,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }));
     // The plan comparison lives outside this closure; give it a way in.
     window.kcSetPlan = (p) => { showPlanPanel(p); setPlan(p); };
+    // Read by the step controller, which must not duplicate the rules
+    // about when a step is complete.
+    window.kcBookingState = () => ({ date: startDate, time: chosenTime, needsTime: timed() });
+    window.kcBookingError = (msg) => showError(msg);
 
     document.querySelectorAll('[data-plan-cta]').forEach(a =>
       a.addEventListener('click', () => {
@@ -1261,6 +1283,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function showSuccess(booking, waUrl, override) {
       form.hidden = true;
       successEl.hidden = false;
+      window.kcBookingDone?.();
 
       const title = document.getElementById('bkSuccessTitle');
       if (title) title.textContent = waUrl
@@ -1301,12 +1324,12 @@ document.addEventListener('DOMContentLoaded', () => {
       slotData = [];
       successEl.hidden = true;
       form.hidden = false;
+      window.kcBookingRestart?.();
       showError('');
       loadBatches();
       renderCalendar();
       renderWeekends();
       updateSummary();
-      form.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
 
     // The price depends on whether this address has been on a call before,
@@ -1886,59 +1909,152 @@ window.kcConfetti = confetti;
    JavaScript the section is simply there, which is also what a crawler
    sees, so nothing is hidden from anyone who cannot open it.
    ══════════════════════════════════════════════════════════════ */
-(function bookingOnDemand() {
+(function bookingDialog() {
   const sec = document.getElementById('book');
   if (!sec) return;
 
-  const LINK = 'a[href="#book"], a[href="#booking"], a[href="/#book"], a[href="/#booking"]';
-  let shown = false;
+  const card   = document.getElementById('booking');
+  const form   = document.getElementById('bookingForm');
+  const steps  = document.getElementById('bkSteps');
+  const back   = document.getElementById('bkBack');
+  const next   = document.getElementById('bkNext');
+  const closeB = document.getElementById('bkClose');
+  const panes  = [...sec.querySelectorAll('.bk-pane')];
+  const LINK   = 'a[href="#book"], a[href="#booking"], a[href="/#book"], a[href="/#booking"]';
 
-  const stow = () => {
+  let open = false;
+  let step = 1;
+  let restoreFocus = null;
+
+  /* ── the three panes ─────────────────────────────────────────────── */
+
+  /** What is still missing before this step can be left behind. */
+  function blocking(n) {
+    if (n === 1) {
+      if (!window.kcBookingState) return null;
+      const st = window.kcBookingState();
+      if (!st.date) return 'Pick a day to carry on.';
+      if (st.needsTime && !st.time) return 'Pick a time to carry on.';
+      return null;
+    }
+    if (n === 2) {
+      const v = (id) => (document.getElementById(id)?.value || '').trim();
+      if (v('bkName').length < 2) return 'Please enter your full name.';
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v('bkEmail'))) return 'Please enter a valid email address.';
+      if (v('bkPhone').replace(/\D/g, '').length < 10) return 'Please enter a valid 10-digit mobile number.';
+      return null;
+    }
+    return null;
+  }
+
+  function show(n) {
+    step = Math.min(3, Math.max(1, n));
+    panes.forEach((p) => { p.hidden = Number(p.dataset.pane) !== step; });
+    steps?.querySelectorAll('li').forEach((li) => {
+      const i = Number(li.dataset.step);
+      li.classList.toggle('is-on', i === step);
+      li.classList.toggle('is-done', i < step);
+    });
+    back.hidden = step === 1;
+    // The last step's action is the pay button inside the pane, not this one.
+    next.hidden = step === 3;
+    next.textContent = step === 1 ? 'Continue' : 'Continue to payment';
+    card?.scrollTo?.({ top: 0, behavior: 'smooth' });
+  }
+
+  next?.addEventListener('click', () => {
+    const why = blocking(step);
+    if (why) { window.kcBookingError?.(why); return; }
+    window.kcBookingError?.('');
+    show(step + 1);
+  });
+  back?.addEventListener('click', () => { window.kcBookingError?.(''); show(step - 1); });
+
+  steps?.addEventListener('click', (e) => {
+    const li = e.target.closest('li');
+    if (!li) return;
+    const want = Number(li.dataset.step);
+    // Forward only through steps that are already satisfied; back is free.
+    if (want <= step) { show(want); return; }
+    for (let n = step; n < want; n++) {
+      const why = blocking(n);
+      if (why) { window.kcBookingError?.(why); show(n); return; }
+    }
+    show(want);
+  });
+
+  /* ── the dialog ──────────────────────────────────────────────────── */
+
+  function openDialog() {
+    if (open) return;
+    open = true;
+    restoreFocus = document.activeElement;
+    sec.classList.remove('is-stowed');
+    sec.classList.add('as-modal');
+    sec.removeAttribute('aria-hidden');
+    card?.setAttribute('role', 'dialog');
+    card?.setAttribute('aria-modal', 'true');
+    window.kcScrollLock?.on();
+    sec.querySelectorAll('video[data-src]').forEach((v) => {
+      if (!v.src) window.kcStartClip?.(v);
+    });
+    show(1);
+    requestAnimationFrame(() => {
+      (card?.querySelector('.type.is-on') || closeB)?.focus();
+    });
+  }
+
+  function closeDialog() {
+    if (!open) return;
+    open = false;
+    sec.classList.remove('as-modal');
     sec.classList.add('is-stowed');
     sec.setAttribute('aria-hidden', 'true');
-  };
+    window.kcScrollLock?.off();
+    if (location.hash === '#book' || location.hash === '#booking') {
+      history.replaceState(null, '', location.pathname + location.search);
+    }
+    restoreFocus?.focus?.();
+  }
 
-  const reveal = () => {
-    if (shown) return;
-    shown = true;
-    sec.classList.remove('is-stowed');
-    sec.removeAttribute('aria-hidden');
-    // The clip behind it was skipped while the section had no size.
-    sec.querySelectorAll('video[data-src]').forEach((v) => {
-      if (!v.src && typeof window.kcStartClip === 'function') window.kcStartClip(v);
-    });
-  };
+  sec.classList.add('is-stowed');
+  sec.setAttribute('aria-hidden', 'true');
 
-  const scrollTo = () => {
-    const target = document.getElementById('booking') || sec;
-    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
+  closeB?.addEventListener('click', closeDialog);
+  // The backdrop is the section itself; the card sits on top of it.
+  sec.addEventListener('mousedown', (e) => { if (e.target === sec) closeDialog(); });
+  addEventListener('keydown', (e) => {
+    if (!open) return;
+    if (e.key === 'Escape') { closeDialog(); return; }
+    if (e.key !== 'Tab') return;
+    // Keep tabbing inside the dialog.
+    const f = [...card.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])')]
+      .filter((el) => el.offsetParent !== null);
+    if (!f.length) return;
+    const first = f[0];
+    const last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
 
-  stow();
-
-  // Capture, so the section has its height back before anything else
-  // reacts to the click and tries to scroll to it.
   document.addEventListener('click', (e) => {
     const a = e.target.closest?.(LINK);
     if (!a) return;
-    const first = !shown;
-    reveal();
-    if (first) {
-      // The browser cannot jump to an anchor that had no box a moment ago.
-      e.preventDefault();
-      requestAnimationFrame(scrollTo);
-    }
+    e.preventDefault();
+    openDialog();
   }, true);
 
-  // Arriving on /#book from another page, or on a shared link.
-  if (/^#(book|booking)$/.test(location.hash)) {
-    reveal();
-    requestAnimationFrame(scrollTo);
-  }
+  if (/^#(book|booking)$/.test(location.hash)) openDialog();
   addEventListener('hashchange', () => {
-    if (/^#(book|booking)$/.test(location.hash)) { reveal(); }
+    if (/^#(book|booking)$/.test(location.hash)) openDialog();
   });
 
-  // Anything else that needs the form on screen — choosing a plan, say.
-  window.kcRevealBooking = () => { const first = !shown; reveal(); return first; };
+  window.kcRevealBooking = () => { openDialog(); return true; };
+  window.kcBookingStep = show;
+  // Submitting lands on the confirmation, which replaces the form; the step
+  // bar would be claiming a step that is no longer on screen.
+  window.kcBookingDone = () => { steps?.setAttribute('hidden', ''); back.hidden = true; next.hidden = true; };
+  window.kcBookingRestart = () => { steps?.removeAttribute('hidden'); show(1); };
+  form?.addEventListener('submit', () => { /* handled in the booking module */ });
 })();

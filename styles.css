@@ -2943,3 +2943,96 @@ button.err-wa:disabled { opacity: .55; cursor: default; }
    the attribute is what the success panel inside it uses and the two would
    fight. */
 .sec.book-sec.is-stowed { display: none; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   BOOKING DIALOG
+
+   The booking section is not on the landing page. It opens as a dialog
+   from any "Book" control, and walks through three panes: when, who,
+   pay. The section element is the backdrop and the .book card is the
+   dialog, so no markup has to move — which keeps every listener and
+   every id exactly where the booking module expects them.
+   ═══════════════════════════════════════════════════════════════════ */
+.sec.book-sec.is-stowed { display: none; }
+
+.sec.book-sec.as-modal {
+  position: fixed; inset: 0; z-index: 400;
+  display: grid; place-items: center;
+  margin: 0; padding: clamp(.5rem, 3vh, 2.5rem) clamp(.5rem, 3vw, 2rem);
+  border-radius: 0; background: rgba(6, 10, 18, .62);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  overflow: hidden;
+  animation: bk-fade .22s var(--e) both;
+}
+/* The section's own clip and heading belong to the page version of it. */
+.sec.book-sec.as-modal > .book-bg,
+.sec.book-sec.as-modal .sec-hd { display: none; }
+.sec.book-sec.as-modal > .wrap {
+  max-width: 760px; width: 100%; max-height: 100%;
+  padding: 0; display: flex;
+}
+.sec.book-sec.as-modal .book {
+  margin: 0; width: 100%; max-height: 100%;
+  overflow-y: auto; overscroll-behavior: contain;
+  box-shadow: 0 40px 90px rgba(0, 0, 0, .5);
+  animation: bk-rise .28s var(--e) both;
+}
+@keyframes bk-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes bk-rise {
+  from { opacity: 0; transform: translateY(14px) scale(.985); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── the way out ── */
+.book-x {
+  position: absolute; top: 1rem; right: 1rem;
+  width: 36px; height: 36px; border-radius: 50%;
+  display: grid; place-items: center; cursor: pointer;
+  background: #fff; border: 1px solid var(--line); color: var(--body);
+  transition: background .2s var(--e), color .2s var(--e);
+}
+.book-x:hover { background: var(--tint); color: var(--ink); }
+.book-x .ic { width: 18px; height: 18px; }
+.book-hd { position: relative; padding-right: 3.5rem; }
+
+/* ── where you are ── */
+.bk-steps {
+  display: flex; align-items: center; gap: .35rem;
+  list-style: none; margin: 0; padding: 1rem clamp(1.1rem, 3vw, 2.25rem) 0;
+}
+.bk-steps li {
+  display: flex; align-items: center; gap: .5rem; cursor: pointer;
+  flex: 1; min-width: 0;
+  font-size: .8125rem; font-weight: 600; color: var(--muted);
+  padding: .45rem .3rem; border-radius: var(--r-sm);
+  border-bottom: 2px solid var(--line);
+  transition: color .2s var(--e), border-color .2s var(--e);
+}
+.bk-steps li b {
+  width: 22px; height: 22px; flex-shrink: 0; border-radius: 50%;
+  display: grid; place-items: center; font-size: .72rem;
+  background: var(--tint); color: var(--muted);
+  transition: background .2s var(--e), color .2s var(--e);
+}
+.bk-steps li.is-on { color: var(--ink); border-bottom-color: var(--brand); }
+.bk-steps li.is-on b { background: var(--brand); color: #fff; }
+.bk-steps li.is-done { color: var(--body); border-bottom-color: var(--brand-100); }
+.bk-steps li.is-done b { background: var(--brand-100); color: var(--brand-600); }
+
+/* ── forward and back ── */
+.bk-nav {
+  display: flex; gap: .75rem; align-items: center;
+  padding: 0 clamp(1.1rem, 3vw, 2.25rem) clamp(1.25rem, 3vw, 2rem);
+}
+.bk-nav .btn { flex: 1; justify-content: center; }
+.bk-nav #bkBack { flex: 0 0 auto; min-width: 104px; }
+
+@media (max-width: 560px) {
+  .sec.book-sec.as-modal { padding: 0; }
+  .sec.book-sec.as-modal > .wrap { max-width: none; height: 100%; }
+  .sec.book-sec.as-modal .book { border-radius: 0; max-height: none; height: 100%; }
+  .bk-steps li span, .bk-steps li { font-size: .75rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sec.book-sec.as-modal, .sec.book-sec.as-modal .book { animation: none; }
+}

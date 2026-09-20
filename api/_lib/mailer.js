@@ -67,7 +67,7 @@ function shell(title, rows, footer = '') {
   <div style="font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#f4f6fb;padding:28px">
     <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:14px;overflow:hidden;
                 border:1px solid #e4e8f3">
-      <div style="background:linear-gradient(135deg,#6366f1,#8b5cf6,#ec4899);padding:22px 26px">
+      <div style="background:linear-gradient(135deg,#6d68ca,#26226d);padding:22px 26px">
         <div style="color:#fff;font-size:19px;font-weight:700;letter-spacing:.3px">Kanishka Creates</div>
         <div style="color:rgba(255,255,255,.86);font-size:13px;margin-top:3px">${esc(title)}</div>
       </div>
@@ -160,12 +160,21 @@ export function sendBookingConfirmation(booking, meetLink = '') {
     row('Reference', booking.bookingId),
   ].join('');
 
+  // This email only ever goes out once the gateway has confirmed the money,
+  // so it can open by congratulating them without hedging.
+  const first = String(booking.name || '').trim().split(/\s+/)[0];
+  const hello = `<p style="font-size:15px;line-height:1.6;color:#1f2547;margin:18px 0 0;font-weight:600">
+      Congratulations${first ? ', ' + esc(first) : ''} — you're in.
+    </p>`;
+
   const body = trial
-    ? `<p style="font-size:13px;line-height:1.7;color:#4a5378;margin:18px 0 0">
-         Your trial hour is booked and your payment is confirmed. Bring whatever
+    ? `${hello}
+       <p style="font-size:13px;line-height:1.7;color:#4a5378;margin:8px 0 0">
+         Your hour is booked and your payment is confirmed. Bring whatever
          you're stuck on — a CV, a decision, a shortlist — and we'll work on it.
        </p>`
-    : `<p style="font-size:13px;line-height:1.7;color:#4a5378;margin:18px 0 0">
+    : `${hello}
+       <p style="font-size:13px;line-height:1.7;color:#4a5378;margin:8px 0 0">
          You're enrolled and your payment is confirmed. Every <strong>Saturday</strong>
          is the group learning session and every <strong>Sunday</strong> is your 1:1
          time, for four weekends.
@@ -176,12 +185,13 @@ export function sendBookingConfirmation(booking, meetLink = '') {
   const calUrl = googleCalendarUrl(booking, meetLink);
   const actions = (meetLink || calUrl)
     ? `<div style="margin:22px 0 4px">
-         ${meetLink ? button(meetLink, 'Join with Google Meet', '#bd517b') : ''}
-         ${calUrl ? button(calUrl, 'Add to Google Calendar', '#ffffff', '#95375b') : ''}
+         ${meetLink ? button(meetLink, 'Join with Google Meet', '#6d68ca') : ''}
+         ${calUrl ? button(calUrl, 'Add to Google Calendar', '#ffffff', '#26226d') : ''}
        </div>
        <p style="font-size:12px;color:#7b86a8;margin:4px 0 0">
          ${meetLink
-            ? 'The same link works for every session — save it.'
+            ? `The same link works for every session — save it.<br>
+               <span style="color:#4a5378">${esc(meetLink)}</span>`
             : 'A calendar invite is attached too, for Apple Calendar and Outlook.'}
        </p>`
     : '';

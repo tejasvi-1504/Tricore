@@ -421,11 +421,21 @@ try {
           <span><svg class="ic"><use href="#i-user"/></svg> <b>Sunday</b> 1:1 interaction</span>
           <span class="hours-tz">Batches start on a Saturday</span>
         </div>
+        <button type="button" class="book-x" id="bkClose" aria-label="Close booking">
+          <svg class="ic"><use href="#i-x"/></svg>
+        </button>
       </header>
 
+      <ol class="bk-steps" id="bkSteps">
+        <li data-step="1" class="is-on"><b>1</b> When</li>
+        <li data-step="2"><b>2</b> Your details</li>
+        <li data-step="3"><b>3</b> Pay</li>
+      </ol>
+
       <form class="book-body" id="bookingForm" novalidate>
+        <div class="bk-pane" data-pane="1">
         <div class="bk-block bk-plan">
-          <p class="stp"><span class="stp-n">1</span> What are you booking?</p>
+          <p class="stp">What are you booking?</p>
           <div class="types types-2">
             <button type="button" class="type is-on" data-plan="trial">
               <span class="type-ic"><svg class="ic"><use href="#i-spark"/></svg></span>
@@ -441,7 +451,7 @@ try {
         </div>
 
         <div class="bk-block bk-type">
-          <p class="stp"><span class="stp-n">2</span> How do you want to attend?</p>
+          <p class="stp">How do you want to attend?</p>
           <div class="types">
             <button type="button" class="type is-on" data-session="online">
               <span class="type-ic"><svg class="ic"><use href="#i-globe"/></svg></span>
@@ -457,7 +467,7 @@ try {
         </div>
 
         <div class="bk-block bk-cal">
-          <p class="stp"><span class="stp-n">3</span> Pick your start Saturday</p>
+          <p class="stp">Pick your start Saturday</p>
           <div class="cal" id="calendar">
             <div class="cal-hd">
               <span class="cal-mo" id="calMonth">Month</span>
@@ -473,13 +483,15 @@ try {
         </div>
 
         <div class="bk-block bk-time">
-          <p class="stp"><span class="stp-n">4</span> Your four weekends</p>
+          <p class="stp">Your four weekends</p>
           <div class="slots" id="timeSlots" aria-live="polite"></div>
           <p class="slots-msg" id="slotsMsg">Pick a start date to see your weekend dates.</p>
         </div>
+        </div><!-- /pane 1 -->
 
+        <div class="bk-pane" data-pane="2" hidden>
         <div class="bk-block bk-details">
-          <p class="stp"><span class="stp-n">5</span> Your details</p>
+          <p class="stp">Your details</p>
           <div class="fields">
             <div class="fld"><label for="bkName">Full name <i>*</i></label><input type="text" id="bkName" placeholder="Your name" autocomplete="name" required></div>
             <div class="fld"><label for="bkPhone">WhatsApp number <i>*</i></label><input type="tel" id="bkPhone" placeholder="98765 43210" autocomplete="tel" required></div>
@@ -499,8 +511,11 @@ try {
           </div>
         </div>
 
+        </div><!-- /pane 2 -->
+
+        <div class="bk-pane" data-pane="3" hidden>
         <div class="bk-block bk-confirm">
-          <p class="stp"><span class="stp-n">6</span> Confirm</p>
+          <p class="stp">Confirm and pay</p>
 
           <div class="promo">
             <button type="button" class="promo-toggle" id="bkPromoToggle"
@@ -534,6 +549,12 @@ try {
           <button type="submit" class="btn btn-pri btn-full" id="bkConfirm" disabled><span id="bkConfirmText">Continue</span></button>
           <a href="https://wa.me/919410891738?text=Hi%2C%20I%20want%20to%20enrol%20in%20the%20Kanishka%20Creates%20weekend%20programme" target="_blank" rel="noopener" class="bk-wa" id="bkWhatsapp"><svg class="ic"><use href="#i-wa"/></svg> Questions first? Message us</a>
           <p class="fine" id="bkPayNote">Pay securely by UPI, card or netbanking. Your slot is held while you pay.</p>
+        </div>
+        </div><!-- /pane 3 -->
+
+        <div class="bk-nav">
+          <button type="button" class="btn btn-ghost" id="bkBack" hidden>Back</button>
+          <button type="button" class="btn btn-pri" id="bkNext">Continue</button>
         </div>
       </form>
 
