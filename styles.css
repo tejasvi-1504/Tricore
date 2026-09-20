@@ -2938,3 +2938,8 @@ button.err-wa:disabled { opacity: .55; cursor: default; }
 .sum-note {
   margin: .6rem 0 0; font-size: .8rem; line-height: 1.5; color: var(--muted);
 }
+
+/* The booking section before it has been asked for. Not `hidden`, because
+   the attribute is what the success panel inside it uses and the two would
+   fight. */
+.sec.book-sec.is-stowed { display: none; }

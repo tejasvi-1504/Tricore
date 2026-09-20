@@ -1686,7 +1686,12 @@ window.kcConfetti = confetti;
           const chip = box.querySelector('[data-save]');
           if (chip && d.listPrice > d.price) chip.textContent = 'Save ' + rupees(d.listPrice - d.price);
           const unit = box.querySelector('[data-each="monthly"]');
-          if (unit) unit.textContent = '8 sessions \u00b7 about ' + rupees(Math.round(d.price / 8)) + ' each';
+          // Per weekend, not per session. "about 250 each" divided the month by
+          // its eight sessions, which reads as the price of a single call --
+          // and a single call after the first is 500, the weekend rate.
+          if (unit && d.sessionRate) {
+            unit.textContent = '4 weekends · 8 sessions · ' + rupees(d.sessionRate) + ' a weekend';
+          }
         }
       })
       .catch(() => {});
@@ -1695,7 +1700,9 @@ window.kcConfetti = confetti;
   // Carry the choice into the booking form, like the cards further down.
   box.addEventListener('click', e => {
     const card = e.target.closest('[data-plan]');
-    if (card && typeof window.kcSetPlan === 'function') window.kcSetPlan(card.dataset.plan);
+    if (!card) return;
+    window.kcRevealBooking?.();
+    if (typeof window.kcSetPlan === 'function') window.kcSetPlan(card.dataset.plan);
   });
 })();
 
@@ -1782,6 +1789,10 @@ window.kcConfetti = confetti;
     v.play().then(() => fade(v, 1)).catch(() => {});
   };
 
+  // Exposed so a section that was not in the document flow when this ran
+  // can start its own clip once it is.
+  window.kcStartClip = (v) => { if (!v.src) start(v); };
+
   clips.forEach((v) => {
     if ('IntersectionObserver' in window) {
       const io = new IntersectionObserver((e) => {
@@ -1864,4 +1875,70 @@ window.kcConfetti = confetti;
     if (last && last.finished) last.finished.then(done).catch(done);
     else done();
   }
+})();
+
+/* ══ BOOKING ON DEMAND ════════════════════════════════════════════
+   A calendar, five fields and a payment step are a lot to scroll past
+   for somebody still deciding. The whole section waits until they ask
+   for it — from the nav, the hero, the pricing panel or the footer.
+
+   Stowed from here rather than in the markup on purpose: without
+   JavaScript the section is simply there, which is also what a crawler
+   sees, so nothing is hidden from anyone who cannot open it.
+   ══════════════════════════════════════════════════════════════ */
+(function bookingOnDemand() {
+  const sec = document.getElementById('book');
+  if (!sec) return;
+
+  const LINK = 'a[href="#book"], a[href="#booking"], a[href="/#book"], a[href="/#booking"]';
+  let shown = false;
+
+  const stow = () => {
+    sec.classList.add('is-stowed');
+    sec.setAttribute('aria-hidden', 'true');
+  };
+
+  const reveal = () => {
+    if (shown) return;
+    shown = true;
+    sec.classList.remove('is-stowed');
+    sec.removeAttribute('aria-hidden');
+    // The clip behind it was skipped while the section had no size.
+    sec.querySelectorAll('video[data-src]').forEach((v) => {
+      if (!v.src && typeof window.kcStartClip === 'function') window.kcStartClip(v);
+    });
+  };
+
+  const scrollTo = () => {
+    const target = document.getElementById('booking') || sec;
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  stow();
+
+  // Capture, so the section has its height back before anything else
+  // reacts to the click and tries to scroll to it.
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest?.(LINK);
+    if (!a) return;
+    const first = !shown;
+    reveal();
+    if (first) {
+      // The browser cannot jump to an anchor that had no box a moment ago.
+      e.preventDefault();
+      requestAnimationFrame(scrollTo);
+    }
+  }, true);
+
+  // Arriving on /#book from another page, or on a shared link.
+  if (/^#(book|booking)$/.test(location.hash)) {
+    reveal();
+    requestAnimationFrame(scrollTo);
+  }
+  addEventListener('hashchange', () => {
+    if (/^#(book|booking)$/.test(location.hash)) { reveal(); }
+  });
+
+  // Anything else that needs the form on screen — choosing a plan, say.
+  window.kcRevealBooking = () => { const first = !shown; reveal(); return first; };
 })();
