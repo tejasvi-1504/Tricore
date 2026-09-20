@@ -2715,11 +2715,11 @@ body, .hdr, .card, .btn, .ftr, .sec, section {
 /* ── mentor: copy beside moving footage ── */
 .split {
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: clamp(1.25rem, 3vw, 2.5rem); align-items: center;
+  gap: clamp(1.25rem, 3vw, 2.5rem); align-items: stretch;
 }
 .split-media {
   position: relative; border-radius: 22px; overflow: hidden;
-  aspect-ratio: 4 / 3; background: #0b0d14;
+  background: #0b0d14; min-height: clamp(320px, 34vw, 460px);
   box-shadow: inset 0 1px 1px rgba(255,255,255,.12);
 }
 .split-vid { width: 100%; height: 100%; object-fit: cover; display: block;
@@ -2729,7 +2729,14 @@ body, .hdr, .card, .btn, .ftr, .sec, section {
   position: absolute; inset: 0; pointer-events: none;
   background: linear-gradient(to top, rgba(7,8,12,.55), transparent 58%);
 }
-.split-copy .mentor { background: none; border: 0; box-shadow: none; padding: 0; }
+/* .mentor is a 340px photo column plus the body. Reused here with the
+   photo hidden, the body was being forced into that fixed 340px track and
+   overflowing it — which is why the quote wrapped so narrowly and the
+   column ran so tall. Inside the split it is just a block. */
+.split-copy .mentor {
+  display: block; gap: 0; margin-bottom: 0;
+  background: none; border: 0; box-shadow: none; padding: 0;
+}
 .split-copy .mentor-photo, .split-copy .mentor-fallback { display: none; }
 .split-copy p { color: rgba(255,255,255,.7); }
 .split-copy .mentor-stats dt { color: #fff; }
@@ -2773,7 +2780,7 @@ body, .hdr, .card, .btn, .ftr, .sec, section {
 
 @media (max-width: 860px) {
   .split { grid-template-columns: 1fr; }
-  .split-media { aspect-ratio: 16 / 10; }
+  .split-media { aspect-ratio: 16 / 10; min-height: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .duo-card:hover { transform: none; }
@@ -2900,3 +2907,10 @@ body:has(.cine) .hdr .nav.open > a:not(.nav-btn) { text-shadow: none; }
       linear-gradient(to bottom, rgba(3,10,20,.24), rgba(3,10,20,.42));
   }
 }
+
+/* The mentor column stacked five blocks of near-identical information and
+   ran far taller than the panel beside it. With the copy trimmed, the
+   spacing comes in to match. */
+.split-copy .mentor-quote { margin-bottom: 1.25rem; }
+.split-copy .mentor-stats { margin-bottom: 1.1rem; }
+.split-copy .named { margin-bottom: 1.35rem; }
