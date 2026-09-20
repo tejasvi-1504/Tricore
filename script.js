@@ -880,10 +880,44 @@ document.addEventListener('DOMContentLoaded', () => {
       promoInput.addEventListener('blur', applyPromo);
     }
 
-    function showError(msg) {
-      errorEl.textContent = msg;
+    function showError(msg, rescueUrl) {
+      errorEl.textContent = msg || '';
       errorEl.hidden = !msg;
-      if (msg) errorEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      if (!msg) return;
+      // Built as a node rather than interpolated markup: the link carries the
+      // visitor's own name and email, which must never be parsed as HTML.
+      if (rescueUrl) {
+        const a = document.createElement('a');
+        a.className = 'err-wa';
+        a.href = rescueUrl;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.textContent = 'Send these details on WhatsApp instead';
+        errorEl.appendChild(a);
+      }
+      errorEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    /**
+     * The whole booking as a WhatsApp message. Used only when the server
+     * cannot be reached: the visitor has already typed everything, and losing
+     * it to an outage they cannot do anything about is the worst outcome
+     * available. Kanishka gets the same details either way.
+     */
+    function rescueUrl(p) {
+      const when = fmt(p.date) + (p.time ? ' at ' + toTimeLabel(p.time) : '');
+      const msg = [
+        'Hi Kanishka Creates, the booking page could not reach the server, so I am sending my details here.',
+        '',
+        'Plan: ' + RULES.plans[p.plan].label + ' (' + RULES.modes[p.mode].label + ')',
+        'Starting: ' + when,
+        'Name: ' + p.name,
+        'Email: ' + p.email,
+        'Phone: ' + p.phone,
+        p.college ? 'College: ' + p.college : '',
+        p.year ? 'Year: ' + p.year : ''
+      ].filter(Boolean).join('\n');
+      return 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(msg);
     }
 
     /* ── plan ────────────────────────────────────────────────────────── */
@@ -1001,12 +1035,23 @@ document.addEventListener('DOMContentLoaded', () => {
       const original = confirmBtn.innerHTML;
       confirmBtn.innerHTML = 'Reserving your slot…';
 
+      // An outage is not the visitor's fault and not something tapping the
+      // button again will fix. A refusal — a taken slot, a bad field — is.
+      // Only the first kind gets the WhatsApp escape hatch.
+      let outage = false;
+
       try {
-        const res = await fetch('/api/bookings', {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
+        let res;
+        try {
+          res = await fetch('/api/bookings', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+        } catch {
+          outage = true;
+          throw new Error('We could not reach the server. Check your connection, or send your details across instead.');
+        }
         const data = await res.json().catch(() => ({}));
 
         if (!res.ok) {
@@ -1014,6 +1059,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (timed()) chosenTime = null; else startDate = null;
             loadBatches();
           }
+          if (res.status >= 500) outage = true;
           throw new Error(data.error || 'We could not complete your enrolment.');
         }
 
@@ -1039,7 +1085,8 @@ document.addEventListener('DOMContentLoaded', () => {
         showSuccess(data.booking || {});
         window.kcConfetti?.();
       } catch (err) {
-        showError(err.message || 'Something went wrong. Please try again or message us on WhatsApp.');
+        showError(err.message || 'Something went wrong. Please try again.',
+                  outage ? rescueUrl(payload) : null);
         confirmBtn.innerHTML = original;
       } finally {
         submitting = false;

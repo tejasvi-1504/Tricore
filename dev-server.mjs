@@ -13,7 +13,27 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
+import dns from 'node:dns';
 import { pathToFileURL } from 'node:url';
+
+/* ── DNS ──────────────────────────────────────────────────────────────────
+ * A mongodb+srv:// URI is resolved with dns.resolveSrv(), which uses Node's
+ * own resolver rather than the OS one. On a machine where Node has picked up
+ * a loopback nameserver — a VPN client, a local DNS proxy, or one that has
+ * since been uninstalled — nothing is listening on 127.0.0.1:53, so every
+ * lookup fails with ECONNREFUSED and Atlas is unreachable even though the
+ * browser and every other program resolve names perfectly well.
+ *
+ * Only the loopback-only case is touched, and only here: Vercel runs the real
+ * functions and never loads this file.
+ */
+const resolvers = dns.getServers();
+const loopbackOnly = resolvers.length > 0 &&
+  resolvers.every((a) => /^127\./.test(a) || a === '::1' || a === '[::1]');
+if (loopbackOnly) {
+  dns.setServers(['1.1.1.1', '8.8.8.8']);
+  console.log(`DNS: Node was pointed at ${resolvers.join(', ')} with nothing there — using 1.1.1.1, 8.8.8.8`);
+}
 
 const ROOT = path.resolve(import.meta.dirname);
 const PORT = Number(process.env.PORT || 3000);

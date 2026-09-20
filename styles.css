@@ -2995,3 +2995,15 @@ body:has(.cine) .hdr .nav.open > a:not(.nav-btn) { text-shadow: none; }
   display: flex; justify-content: space-between; gap: 1rem;
   padding: .8rem 1rem; border-bottom: 1px solid var(--line);
 }
+
+/* The escape hatch inside an error panel: a real target, not a word in a
+   sentence, because the visitor has just been told something failed. */
+.err-wa {
+  display: inline-flex; align-items: center; gap: .45rem;
+  margin-top: .7rem; padding: .5rem .9rem; border-radius: 100px;
+  background: var(--green, #12703a); color: #fff;
+  font-size: .82rem; font-weight: 600; text-decoration: none;
+  transition: filter .2s var(--e);
+}
+.err-wa:hover { filter: brightness(1.08); }
+.err-wa::before { content: '\1F4AC'; font-size: .95em; }

@@ -80,7 +80,10 @@ export default async function handler(req, res) {
       });
     }
     console.error('[bookings] db error:', err.message);
-    return json(res, 503, { error: 'We could not reach the booking system. Please try again.' });
+    return json(res, 503, {
+      error: 'The booking system is temporarily unavailable. Your details are safe — '
+           + 'send them across and we will book you in.',
+    });
   }
 
   /* ── take a seat atomically ────────────────────────────────────────────── */
