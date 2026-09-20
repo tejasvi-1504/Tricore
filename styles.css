@@ -2795,17 +2795,20 @@ body, .hdr, .card, .btn, .ftr, .sec, section {
    business page's framed hero sits on light grey, where white-on-glass
    nav would be unreadable.
 
-   Transparent while the hero is behind it, solid once you scroll past.
-   The transition is on the header itself rather than a second element,
-   so nothing can get out of step with the scroll position.
+   A wash of the hero's own blue while the hero is behind it, a solid
+   deep blue once you scroll past. The transition is on the header itself
+   rather than a second element, so nothing can get out of step with the
+   scroll position.
    ═══════════════════════════════════════════════════════════════════ */
 body:has(.cine) .hdr {
-  /* No band at all over the hero. A dark gradient on a dark clip just
-     reads as a grey stripe with a visible bottom edge, which is exactly
-     what it looked like. The hero's own scrim already darkens the top of
-     the frame, and a soft shadow carries the white type the rest of the
-     way, so the header can simply be glass-free and invisible. */
-  background: none;
+  /* Blue, in the hero's own hue. rgba(4,20,32) is the exact colour
+     .cine-scrim already uses, so the header's wash and the hero's stack
+     into one continuous darkening with no edge to find — which is what
+     "merges" means here. The earlier neutral rgba(7,8,12) was the
+     problem: a grey film over blue footage reads as a separate band.
+     No backdrop-filter, because a frost line is an edge too. */
+  background: linear-gradient(to bottom,
+    rgba(4,20,32,.78) 0%, rgba(4,20,32,.42) 55%, rgba(4,20,32,0) 100%);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   border-bottom-color: transparent;
@@ -2834,31 +2837,39 @@ body:has(.cine) .hdr .acct:hover { border-color: rgba(255,255,255,.55); color: #
 body:has(.cine) .hdr .acct-av { background: rgba(255,255,255,.18); color: #fff; }
 body:has(.cine) .hdr .burger span { background: #fff; }
 
-/* Past the hero it becomes the ordinary solid bar again. */
+/* Past the hero it settles into a solid deep blue rather than flipping
+   to white. The sections below it are near-black, so a white bar was a
+   hard bright line across a dark page; this one is a shade of the same
+   thing. The type stays white, so nothing has to change colour on
+   scroll — only the panel behind it firms up. */
 body:has(.cine) .hdr.stuck {
-  background: rgba(255,255,255,.9);
-  border-bottom-color: var(--line); box-shadow: var(--sh-xs);
+  background: rgba(7,24,39,.94);
+  backdrop-filter: saturate(140%) blur(14px);
+  -webkit-backdrop-filter: saturate(140%) blur(14px);
+  border-bottom-color: rgba(120,180,225,.16);
+  box-shadow: 0 10px 30px rgba(0,0,0,.38);
 }
-body:has(.cine) .hdr.stuck .wm { color: var(--ink); }
-body:has(.cine) .hdr.stuck .nav > a:not(.nav-btn):not(.nav-cross) { color: var(--body); }
-body:has(.cine) .hdr.stuck .nav > a:not(.nav-btn):not(.nav-cross):hover { color: var(--brand); }
-body:has(.cine) .hdr.stuck .nav > a::after { background: var(--brand); }
-body:has(.cine) .hdr.stuck .nav-cross { border-color: var(--line); color: var(--muted); }
-body:has(.cine) .hdr.stuck .acct {
-  background: #fff; border-color: var(--line); color: var(--body);
-}
-body:has(.cine) .hdr.stuck .acct-av { background: var(--brand-100); color: var(--brand-600); }
-body:has(.cine) .hdr.stuck .burger span { background: var(--ink); }
+body:has(.cine) .hdr.stuck .nav > a:not(.nav-btn):not(.nav-cross):hover { color: #fff; }
+body:has(.cine) .hdr.stuck .acct { background: rgba(255,255,255,.12); }
 
-/* The mobile drawer is its own surface and must stay legible either way. */
+/* The mobile drawer stays a white surface whatever the bar above it is
+   doing, so everything inside it goes back to dark-on-light. The account
+   chip needs its fill and its avatar too — white-on-white was a white
+   icon on a white drawer. */
 @media (max-width: 900px) {
   body:has(.cine) .hdr .nav > a:not(.nav-btn):not(.nav-cross),
   body:has(.cine) .hdr .nav-cross { color: var(--body); }
   body:has(.cine) .hdr .nav.open > a:not(.nav-btn) { color: var(--body); }
+  body:has(.cine) .hdr .nav-cross { border-color: var(--line); }
+  body:has(.cine) .hdr .acct,
+  body:has(.cine) .hdr.stuck .acct {
+    background: #fff; border-color: var(--line); color: var(--body);
+  }
+  body:has(.cine) .hdr .acct-av { background: var(--brand-100); color: var(--brand-600); }
 }
 
-/* Once it is solid again, or open as a drawer on a light surface,
-   the shadow would smear the dark type. */
+/* On the solid bar the shadow is doing nothing, and in the drawer —
+   which stays a white surface on mobile — it would smear the dark type. */
 body:has(.cine) .hdr.stuck .wm,
 body:has(.cine) .hdr.stuck .nav > a:not(.nav-btn),
 body:has(.cine) .hdr.stuck .logo,
