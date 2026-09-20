@@ -199,6 +199,15 @@ header.bar.stuck{border-bottom-color:var(--line)}
   font-style: normal; color: var(--muted); line-height: 1.45; }
 .price-read { margin: 1rem 0 0; font-size: .82rem; color: var(--muted); line-height: 1.6; }
 .price-read b { color: var(--ink); font-weight: 600; }
+.pay-state {
+  margin: .7rem 0 0; padding: .6rem .8rem; border-radius: 8px;
+  font-size: .78rem; line-height: 1.55;
+  background: var(--soft); border: 1px solid var(--line); color: var(--muted);
+}
+.pay-state b { color: var(--ink); }
+.pay-state.warn { background: #fff6e5; border-color: #f3d9a6; color: #7a5200; }
+.pay-state.warn b { color: #5c3d00; }
+
 .price-warn {
   margin: .7rem 0 0; padding: .6rem .8rem; border-radius: 8px;
   font-size: .78rem; line-height: 1.5;
@@ -481,6 +490,7 @@ header.bar h1{font-size:15px;font-weight:600;color:var(--muted);flex:1;min-width
       </div>
     </form>
     <p class="price-read" id="prRead">&mdash;</p>
+    <p class="pay-state" id="payState" hidden></p>
     <p class="price-warn" id="prWarn" hidden></p>
   </section>
 
@@ -1217,7 +1227,24 @@ $('#cpnList').addEventListener('click', async (e) => {
 });
 
 /* ── Google Meet room ────────────────────────────────────────────────── */
+function renderPayments(d) {
+  const el = $('#payState');
+  const p = d && d.payments;
+  if (!el) return;
+  if (!p) { el.hidden = true; return; }
+
+  const LABEL = { razorpay: 'Razorpay', cashfree: 'Cashfree', manual: 'WhatsApp, by hand' };
+  // Manual while a gateway sits configured is the case worth shouting about:
+  // it means bookings are being taken without money.
+  const bad = p.mode === 'manual' || (p.mode === 'razorpay' && !p.razorpayConfigured);
+  el.hidden = false;
+  el.className = 'pay-state' + (bad ? ' warn' : '');
+  el.innerHTML = 'Payments: <b>' + esc(LABEL[p.mode] || p.mode) + '</b> &mdash; ' + esc(p.why);
+}
+
 function renderMeet(d) {
+  renderPayments(d);
+
   // The server is the source of truth; adopt it if this browser disagrees.
   if (d.theme && d.theme !== document.documentElement.dataset.theme) {
     applyTheme(d.theme, { save: false });

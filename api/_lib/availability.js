@@ -292,8 +292,47 @@ export function isEarlyBird(planKey) {
  * the volume justifies automating it.
  */
 export function paymentMode() {
-  const m = process.env.PAYMENT_MODE;
-  return m === 'razorpay' || m === 'cashfree' ? m : 'manual';
+  const m = String(process.env.PAYMENT_MODE || '').trim().toLowerCase();
+  if (m === 'razorpay' || m === 'cashfree' || m === 'manual') return m;
+
+  // Nothing said, so take whichever gateway is actually configured. The old
+  // fallback was 'manual' outright, which meant a deployment holding working
+  // Razorpay keys still sent every booking to WhatsApp and took no money —
+  // exactly what production was doing while local was charging cards.
+  if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) return 'razorpay';
+  if (process.env.CASHFREE_APP_ID && process.env.CASHFREE_SECRET_KEY) return 'cashfree';
+  return 'manual';
+}
+
+/**
+ * Why the mode is what it is, for the admin panel.
+ *
+ * "It says manual and I do not know why" is answerable from here without
+ * anyone reading environment variables off a dashboard.
+ */
+export function paymentModeReason() {
+  const m = String(process.env.PAYMENT_MODE || '').trim().toLowerCase();
+  const rzp = Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET);
+  const cf = Boolean(process.env.CASHFREE_APP_ID && process.env.CASHFREE_SECRET_KEY);
+  const mode = paymentMode();
+
+  let why;
+  if (m === 'razorpay' || m === 'cashfree' || m === 'manual') {
+    why = `PAYMENT_MODE is set to "${m}".`;
+  } else if (rzp) {
+    why = 'PAYMENT_MODE is not set, and Razorpay keys are present.';
+  } else if (cf) {
+    why = 'PAYMENT_MODE is not set, and Cashfree keys are present.';
+  } else {
+    why = 'PAYMENT_MODE is not set and no gateway keys are present.';
+  }
+  if (mode === 'manual' && rzp) {
+    why += ' Razorpay is configured but not being used — clear PAYMENT_MODE, or set it to razorpay.';
+  }
+  if (mode === 'razorpay' && !rzp) {
+    why += ' Razorpay is selected but its keys are missing, so bookings will be refused.';
+  }
+  return { mode, razorpayConfigured: rzp, cashfreeConfigured: cf, why };
 }
 
 /** The WhatsApp number bookings are sent to. */
