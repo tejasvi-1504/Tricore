@@ -175,13 +175,23 @@ try { const t = localStorage.getItem('kc-site-theme'); if (t) document.documentE
 
 <section class="sec sec-soft" id="services">
   <div class="wrap">
-    <header class="sec-hd reveal">
-      <span class="tagline"><span class="tag-n">02</span> For Business</span>
-      <h2>Software, stores and websites</h2>
-      <p>We also build for businesses — from a first website to a full CRM, priced openly.</p>
-    </header>
+    <div class="rail-hd">
+      <header class="sec-hd reveal">
+        <span class="tagline"><span class="tag-n">02</span> For Business</span>
+        <h2>Software, stores and websites</h2>
+        <p>We also build for businesses — from a first website to a full CRM, priced openly.</p>
+      </header>
+      <div class="rail-nav">
+        <button class="car-btn" type="button" id="svcPrev" aria-label="Previous services" aria-controls="svcRail">
+          <svg class="ic"><use href="#i-left"/></svg>
+        </button>
+        <button class="car-btn" type="button" id="svcNext" aria-label="More services" aria-controls="svcRail">
+          <svg class="ic"><use href="#i-right"/></svg>
+        </button>
+      </div>
+    </div>
 
-    <div class="cards">
+    <div class="cards cards-rail" id="svcRail" tabindex="0" role="group" aria-label="What we build">
       <article class="card reveal">
         <span class="card-ic"><svg class="ic"><use href="#i-crm"/></svg></span>
         <h3>Custom CRM</h3>

@@ -2173,3 +2173,31 @@ window.kcConfetti = confetti;
   window.kcBookingRestart = () => { steps?.removeAttribute('hidden'); show(1); };
   form?.addEventListener('submit', () => { /* handled in the booking module */ });
 })();
+
+/* ══ SERVICE RAIL ════════════════════════════════════════════════
+   Three cards at a time. The arrows move by whatever is actually on
+   screen rather than a hardcoded card count, so the same code serves
+   the three-up, two-up and one-up layouts. ══════════════════════ */
+(function serviceRail() {
+  const rail = document.getElementById('svcRail');
+  const prev = document.getElementById('svcPrev');
+  const next = document.getElementById('svcNext');
+  if (!rail || !prev || !next) return;
+
+  const page = () => Math.max(rail.clientWidth * 0.9, 240);
+
+  const sync = () => {
+    // A couple of pixels of slack: sub-pixel widths mean scrollLeft rarely
+    // lands exactly on the end, and a button that never enables is worse
+    // than one that enables a moment early.
+    const end = rail.scrollWidth - rail.clientWidth - 2;
+    prev.disabled = rail.scrollLeft <= 2;
+    next.disabled = rail.scrollLeft >= end;
+  };
+
+  prev.addEventListener('click', () => rail.scrollBy({ left: -page() }));
+  next.addEventListener('click', () => rail.scrollBy({ left: page() }));
+  rail.addEventListener('scroll', () => requestAnimationFrame(sync), { passive: true });
+  addEventListener('resize', sync);
+  sync();
+})();

@@ -3136,3 +3136,53 @@ button.err-wa:disabled { opacity: .55; cursor: default; }
 .cl-scope-crm { color: var(--violet-600); background: var(--violet-100); }
 /* The name block is pushed to the foot of the card by the margin above. */
 .cl-card .cl-who { margin-top: 1.75rem; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   SERVICE RAIL
+
+   Six services in two rows of three asked for a scroll past three cards
+   nobody had chosen to see. Three at a time now, the other three a swipe
+   away, with the arrows in the heading rather than floating over the
+   cards — at the top right, where they are next to the thing they act on
+   and never sit on top of it.
+   ═══════════════════════════════════════════════════════════════════ */
+.rail-hd {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 2rem; margin-bottom: 2.5rem;
+}
+/* The heading stops being centred once something sits beside it. */
+.rail-hd .sec-hd { text-align: left; margin: 0; max-width: 46ch; }
+.rail-hd .sec-hd h2::after { margin-left: 0; }
+.rail-nav { display: flex; gap: .6rem; flex-shrink: 0; padding-bottom: .35rem; }
+
+.cards-rail {
+  display: flex; gap: 1.5rem;
+  overflow-x: auto; overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory; scroll-behavior: smooth;
+  /* Room for the hover lift and the focus ring, which a clipped scroller
+     would otherwise cut off. */
+  padding: 4px 4px 1rem;
+  scrollbar-width: none;
+}
+.cards-rail::-webkit-scrollbar { display: none; }
+.cards-rail:focus-visible { outline: 2px solid var(--brand); outline-offset: 4px; border-radius: var(--r); }
+.cards-rail > .card {
+  flex: 0 0 calc((100% - 3rem) / 3);
+  min-width: 0; scroll-snap-align: start;
+}
+.car-btn[disabled] { opacity: .35; cursor: default; }
+.car-btn[disabled]:hover { border-color: var(--line); color: inherit; transform: none; }
+
+@media (max-width: 900px) {
+  .rail-hd { flex-direction: column; align-items: stretch; gap: 1.25rem; }
+  .rail-hd .sec-hd { max-width: none; }
+  .rail-nav { justify-content: flex-end; padding-bottom: 0; }
+  .cards-rail > .card { flex-basis: calc((100% - 1.5rem) / 2); }
+}
+@media (max-width: 620px) {
+  .cards-rail { gap: 1rem; }
+  .cards-rail > .card { flex-basis: 82%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cards-rail { scroll-behavior: auto; }
+}
