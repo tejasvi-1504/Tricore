@@ -1401,7 +1401,7 @@ function confetti({ count = 130, duration = 2600 } = {}) {
   const palette = ['--brand', '--violet', '--accent', '--green']
     .map(v => css.getPropertyValue(v).trim())
     .filter(Boolean);
-  if (!palette.length) palette.push('#bd517b', '#8b60c7', '#f5a524');
+  if (!palette.length) palette.push('#6d68ca', '#9e691a', '#16a34a');
 
   // Two side cannons rather than a top-down drizzle — it reads as celebration.
   const pieces = Array.from({ length: count }, (_, i) => {
