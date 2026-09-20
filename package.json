@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "node dev-server.mjs",
     "check": "node --check script.js",
+    "reset:test-data": "node scripts/reset-test-data.mjs",
     "dev:vercel": "vercel dev"
   },
   "dependencies": {
