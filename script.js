@@ -550,6 +550,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let listPrice  = 3000;
     // The code the visitor typed, and whatever the server made of it.
     let promoCode  = '';
+    let payMode    = 'manual';
     let discounts  = [];
     let seatsByDate = new Map();
     let request    = 0;
@@ -728,6 +729,7 @@ document.addEventListener('DOMContentLoaded', () => {
         price = data.price != null ? data.price : price;
         listPrice = data.listPrice != null ? data.listPrice : listPrice;
         discounts = data.discounts || [];
+        if (data.paymentMode) payMode = data.paymentMode;
         if (promoCode) showPromoResult(data);
         if (data.slots) slotData = data.slots;
         if (data.batches) seatsByDate = new Map(data.batches.map(b => [b.date, b]));
@@ -788,7 +790,13 @@ document.addEventListener('DOMContentLoaded', () => {
         ? '<s>' + rupees(listPrice) + '</s> ' + rupees(price)
         : rupees(price);
 
-      confirmText.textContent = 'Book on WhatsApp · ' + rupees(price);
+      // Say what the next tap does. "Book on WhatsApp" was left over from
+      // manual mode and is simply wrong once a gateway is live.
+      confirmText.textContent =
+        price <= 0            ? 'Confirm booking'
+        : payMode === 'razorpay' ? 'Pay ' + rupees(price) + ' securely'
+        : payMode === 'cashfree' ? 'Pay ' + rupees(price)
+        : 'Book on WhatsApp · ' + rupees(price);
       confirmBtn.disabled = submitting || !startDate ||
                             (timed() && !chosenTime);
     }
@@ -826,6 +834,18 @@ document.addEventListener('DOMContentLoaded', () => {
       promoCode = code;
       if (!code) { promoMsg.hidden = true; discounts = []; }
       loadBatches();
+    }
+
+    const promoToggle = document.getElementById('bkPromoToggle');
+    const promoPanel  = document.getElementById('bkPromoPanel');
+    if (promoToggle && promoPanel) {
+      promoToggle.addEventListener('click', () => {
+        const open = promoPanel.hidden;
+        promoPanel.hidden = !open;
+        promoToggle.setAttribute('aria-expanded', String(open));
+        promoToggle.classList.toggle('is-open', open);
+        if (open) promoInput.focus();
+      });
     }
 
     if (promoBtn) {
