@@ -274,9 +274,13 @@ export async function quote(db, { plan, coupon, referral, email, useCredit = tru
   let firstCall = true;
   if (plan === 'monthly') {
     base = rates.monthly;
-    // Never strike through a number below what is being charged, which is
-    // what a stale PRICE_REGULAR would otherwise do after a rise.
-    listPrice = Math.max(listPriceForPlan('monthly'), base);
+    // What the month sells for with no offer on it — which, once a price has
+    // been set in the panel, is that price. PRICE_REGULAR is only a fallback
+    // for a deployment that has never set one, and letting it win produced a
+    // 1499 struck through 2000 when the month had been set to 1999.
+    listPrice = rates.stored.monthly != null
+      ? base
+      : Math.max(listPriceForPlan('monthly'), base);
   } else {
     firstCall = !(await hasBookedBefore(db, email));
     base = firstCall ? rates.firstCall : rates.session;
