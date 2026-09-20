@@ -2,6 +2,18 @@
   "buildCommand": null,
   "outputDirectory": ".",
   "framework": null,
+
+  "_comment_env": [
+    "PAYMENT_MODE is not a secret, so it lives here rather than only in a",
+    "dashboard where nobody can see it in a diff. Production was running",
+    "'manual' while local ran 'razorpay', which meant every live booking was",
+    "handed a WhatsApp link and no money was taken.",
+    "Keys stay in the dashboard: RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET,",
+    "RAZORPAY_WEBHOOK_SECRET, MONGODB_URI, SMTP_PASS, ADMIN_PASSWORD."
+  ],
+  "env": {
+    "PAYMENT_MODE": "razorpay"
+  },
   "headers": [
     {
       "source": "/(.*)",
