@@ -649,6 +649,7 @@ document.addEventListener('DOMContentLoaded', () => {
             renderStep3();
             updateSummary();
             if (timed()) loadBatches();   // live times for this day
+            nudgeTo('.bk-time');
           });
         } else {
           btn.classList.add('off');
@@ -980,7 +981,10 @@ document.addEventListener('DOMContentLoaded', () => {
       updateSummary();
       loadBatches();
     }
-    planBtns.forEach(btn => btn.addEventListener('click', () => setPlan(btn.dataset.plan)));
+    planBtns.forEach(btn => btn.addEventListener('click', () => {
+      setPlan(btn.dataset.plan);
+      nudgeTo('.bk-cal');
+    }));
 
     /* The pricing panel above mirrors the same choice. */
     const ppTabs = document.querySelectorAll('.pp-tab');
@@ -1006,6 +1010,23 @@ document.addEventListener('DOMContentLoaded', () => {
       }));
     // The plan comparison lives outside this closure; give it a way in.
     window.kcSetPlan = (p) => { showPlanPanel(p); setPlan(p); };
+
+    /**
+     * Choosing a plan or a mode answers one question and asks the next one,
+     * which is several hundred pixels further down a scrolling pane. Move to
+     * it rather than leaving them looking at what they just answered.
+     */
+    function nudgeTo(sel) {
+      const el = document.querySelector(sel);
+      const pane = el?.closest('.bk-pane');
+      if (!el || !pane || pane.scrollHeight <= pane.clientHeight) return;
+      const smooth = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+      pane.scrollTo({
+        top: Math.max(0, el.offsetTop - pane.offsetTop - 8),
+        behavior: smooth ? 'smooth' : 'auto',
+      });
+    }
+    window.kcNudgeTo = nudgeTo;
     // Read by the step controller, which must not duplicate the rules
     // about when a step is complete.
     window.kcBookingState = () => ({ date: startDate, time: chosenTime, needsTime: timed() });
@@ -1032,6 +1053,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderStep3();
         updateSummary();
         loadBatches();
+        nudgeTo('.bk-cal');
       });
     });
 
