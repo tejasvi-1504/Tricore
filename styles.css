@@ -2409,77 +2409,7 @@ body, .hdr, .card, .btn, .ftr, .sec, section {
 }
 .frame-cta-i .ic { width: 15px; height: 15px; }
 
-/* ── dashboard tray ── */
-.tray {
-  background: #f5f2ee; border-radius: 24px 24px 0 0;
-  padding: clamp(1rem, 2.4vw, 1.5rem) clamp(1rem, 2.4vw, 1.5rem) 0;
-  width: 100%; max-width: 880px; margin: auto auto 0;
-}
-.tray-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: clamp(.75rem, 1.6vw, 1rem);
-}
-.dash {
-  background: #fff; border-radius: 16px; padding: 1.15rem 1.15rem 1.25rem;
-  text-align: left; display: flex; flex-direction: column;
-  box-shadow: 0 1px 2px rgba(0,0,0,.05);
-}
-.dash-hd { display: flex; align-items: baseline; justify-content: space-between; font-size: .8125rem; }
-.dash-hd b { color: var(--violet); font-weight: 600; }
-.dash-hd span { color: var(--muted); }
-.dash-n {
-  font-family: var(--f-h); font-size: 1.75rem; font-weight: 600; color: var(--ink);
-  margin: .55rem 0 0; display: flex; align-items: center; gap: .5rem; letter-spacing: -.02em;
-}
-.dash-pill {
-  display: inline-flex; align-items: center; gap: .25rem;
-  font-family: var(--f-b); font-size: .6875rem; font-weight: 600;
-  border-radius: 100px; padding: .15rem .5rem;
-}
-.dash-pill svg { width: 12px; height: 12px; }
-.dash-pill.up { background: var(--green-100); color: var(--green); }
-.dash-pill.flat { background: var(--tint); color: var(--muted); }
-.dash-cap { font-size: .6875rem; color: var(--muted); margin: .3rem 0 0; }
-.dash-goal { font-size: .6875rem; color: var(--muted); text-align: center; margin: .9rem 0 .2rem; }
-
-.gauge { width: 100%; max-width: 260px; margin: 0 auto; display: block; }
-.gauge line { stroke-width: 2.5; stroke-linecap: round; }
-.g-on { stroke: var(--violet); }
-.g-on.g-grey { stroke: #9ca3af; }
-.g-off { stroke: #d4d4d8; }
-.gauge text { font-family: var(--f-h); font-size: 22px; font-weight: 600; fill: var(--ink); }
-.g-ends { display: flex; justify-content: space-between; font-size: .6875rem; color: var(--muted); margin-top: -.4rem; }
-
-.dash-tabs {
-  display: flex; background: var(--tint); border-radius: 100px; padding: .25rem;
-  margin-top: auto; font-size: .75rem; font-weight: 500;
-}
-.dash-tabs span { flex: 1; text-align: center; padding: .35rem .5rem; border-radius: 100px; color: var(--muted); }
-.dash-tabs .on { background: #fff; color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
-
-.dash-f { display: block; margin-bottom: .7rem; }
-.dash-f > span { display: block; font-size: .75rem; color: var(--body); margin-bottom: .3rem; }
-.dash-f button, .dash-in {
-  display: flex; align-items: center; justify-content: space-between; width: 100%;
-  border: 1px solid var(--line); border-radius: 9px; background: #fff;
-  padding: .5rem .7rem; font-size: .8125rem; color: var(--ink); text-align: left;
-}
-.dash-f button svg { width: 15px; height: 15px; color: var(--muted); flex-shrink: 0; }
-.dash-in { justify-content: flex-start; gap: .5rem; }
-.dash-in i { font-style: normal; color: var(--muted); }
-.dash-foot { display: flex; align-items: center; gap: .9rem; margin-top: auto; padding-top: .5rem; font-size: .8125rem; }
-.dash-save { background: var(--violet); color: #fff; border-radius: 9px; padding: .45rem 1.1rem; font-weight: 600; }
-.dash-cancel { text-decoration: underline; color: var(--body); }
-.dash-x { width: 16px; height: 16px; color: var(--muted); margin-left: auto; }
-
-@media (max-width: 900px) { .tray-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 620px) {
-  .tray-grid { grid-template-columns: 1fr; }
-  .frame-in { min-height: 0; }
-  /* On one column the tray would run for screens, so only the first card
-     shows — the preview is a taste, not a spec sheet. */
-  .tray-grid .dash:nth-child(n+2) { display: none; }
-}
+@media (max-width: 620px) { .frame-in { min-height: 0; } }
 @media (prefers-reduced-motion: reduce) {
   .frame-vid { display: none; }
   .frame-cta:hover { transform: none; }
@@ -2620,4 +2550,116 @@ body, .hdr, .card, .btn, .ftr, .sec, section {
   .cta:hover { transform: none; }
   .js-enter .eyebrow-c, .js-enter .lede, .js-enter .cine-cta, .js-enter .cine-by { opacity: 1; }
   .js-enter .headline { transform: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION LIFT
+
+   The heroes are cinematic and everything under them was flat white,
+   which made the page feel like it gave up after the first screen.
+   This gives the body sections the same vocabulary — depth, a warm
+   ground, an accent rail on every heading — without restructuring
+   anything.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Hero bleeds into the first section instead of stopping at a hard edge. */
+.cine + .sec, .frame + .sec { position: relative; }
+.cine + .sec::before, .frame + .sec::before {
+  content: ''; position: absolute; left: 0; right: 0; top: 0; height: 180px;
+  pointer-events: none; z-index: 0;
+  background: linear-gradient(to bottom, rgba(var(--brand-rgb), .07), transparent);
+}
+.cine + .sec > *, .frame + .sec > * { position: relative; z-index: 1; }
+
+/* ── headings get a rail, so a section announces itself ── */
+.sec-hd { position: relative; }
+.tagline {
+  display: inline-flex; align-items: center; gap: .55rem;
+  font-size: .75rem; font-weight: 700; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--brand-600);
+  background: var(--brand-100); border-radius: 100px;
+  padding: .3rem .85rem; margin-bottom: .9rem;
+}
+.tag-n { font-variant-numeric: tabular-nums; opacity: .62; }
+.sec-hd h2 { max-width: 20ch; }
+.sec-hd .sec-sub { max-width: 58ch; color: var(--body); line-height: 1.65; }
+/* Centred section heads keep their rail centred too. */
+.sec-hd[style*="center"], .summit-in .sec-hd { text-align: center; }
+
+/* ── one card treatment, used everywhere ── */
+.sym, .fit-col, .rh, .change-list li,
+.svc-card, .work-card, .price-card, .cl-card, .prin div {
+  position: relative; overflow: hidden;
+  background: var(--white); border: 1px solid var(--line);
+  transition: transform .26s var(--e), box-shadow .26s var(--e), border-color .26s var(--e);
+}
+/* A hairline of accent along the top edge, revealed on hover. */
+.sym::after, .fit-col::after, .rh::after,
+.svc-card::after, .work-card::after, .price-card::after {
+  content: ''; position: absolute; left: 0; right: 0; top: 0; height: 2px;
+  background: linear-gradient(90deg, var(--brand), var(--violet));
+  transform: scaleX(0); transform-origin: left center;
+  transition: transform .34s var(--e);
+}
+.sym:hover::after, .fit-col:hover::after, .rh:hover::after,
+.svc-card:hover::after, .work-card:hover::after, .price-card:hover::after { transform: scaleX(1); }
+
+.sym:hover, .fit-col:hover, .rh:hover,
+.svc-card:hover, .work-card:hover, .price-card:hover, .cl-card:hover {
+  transform: translateY(-4px); box-shadow: var(--sh-lg); border-color: transparent;
+}
+
+/* ── alternating grounds, with a soft wash so they are not flat ── */
+.sec-soft, .fit, .sec.how {
+  position: relative; background: var(--tint);
+}
+.sec-soft::before, .fit::before, .sec.how::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 50% 60% at 8% 0%, rgba(var(--brand-rgb), .07), transparent 60%),
+    radial-gradient(ellipse 45% 55% at 92% 100%, rgba(var(--violet-rgb), .06), transparent 58%);
+}
+.sec-soft > *, .fit > *, .sec.how > * { position: relative; }
+
+/* ── reveal, with a little stagger between siblings ── */
+.reveal { opacity: 0; transform: translate3d(0, 18px, 0); }
+.reveal.in {
+  opacity: 1; transform: none;
+  transition: opacity .7s var(--e-out), transform .7s var(--e-out);
+}
+.sym-grid.in .sym, .change-list.in li {
+  animation: liftIn .6s var(--e-out) both;
+}
+.sym-grid.in .sym:nth-child(2), .change-list.in li:nth-child(2) { animation-delay: .07s; }
+.sym-grid.in .sym:nth-child(3), .change-list.in li:nth-child(3) { animation-delay: .14s; }
+.sym-grid.in .sym:nth-child(4), .change-list.in li:nth-child(4) { animation-delay: .21s; }
+@keyframes liftIn { from { opacity: 0; transform: translate3d(0,16px,0); }
+                    to   { opacity: 1; transform: none; } }
+
+/* ── business hero proof row, replacing the invented dashboard ── */
+.proof {
+  list-style: none; padding: clamp(1.1rem, 2.4vw, 1.5rem) clamp(1.1rem, 2.4vw, 1.6rem);
+  margin: auto auto 0; width: 100%; max-width: 880px;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(.75rem, 2vw, 1.5rem);
+  background: rgba(255,255,255,.82); backdrop-filter: blur(16px) saturate(1.1);
+  border: 1px solid rgba(255,255,255,.7); border-bottom: 0;
+  border-radius: 20px 20px 0 0; text-align: left;
+}
+.proof li { display: flex; flex-direction: column; gap: .15rem; }
+.proof b {
+  font-family: 'Instrument Serif', Georgia, serif; font-weight: 400;
+  font-size: clamp(1.4rem, 2.6vw, 2.05rem); line-height: 1.1;
+  color: var(--ink); letter-spacing: -.01em;
+}
+.proof span { font-size: .8125rem; color: var(--muted); line-height: 1.4; }
+
+@media (max-width: 760px) {
+  .proof { grid-template-columns: 1fr 1fr; gap: 1rem 1.25rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; }
+  .sym:hover, .fit-col:hover, .rh:hover, .svc-card:hover,
+  .work-card:hover, .price-card:hover, .cl-card:hover { transform: none; }
+  .sym-grid.in .sym, .change-list.in li { animation: none; }
 }
