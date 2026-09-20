@@ -3165,53 +3165,62 @@ button.err-wa:disabled { opacity: .55; cursor: default; }
 /* ═══════════════════════════════════════════════════════════════════
    CLIENT FEEDBACK CARDS
 
-   A round badge breaking out of the card's left edge, the name and role
-   beside it, the note beneath. One corner is square so the cards do not
-   read as four identical pills, and a second quote mark sits faint in
-   the opposite corner — which is where the badge's weight needs
-   answering.
+   The reference shape: four different corner radii so the card reads as
+   drawn rather than stamped, a round badge breaking out of the left
+   edge, everything centred under it, and a second quote mark sitting
+   faint in the bottom-right to answer the badge's weight.
    ═══════════════════════════════════════════════════════════════════ */
 .fb-card {
   position: relative; flex: 0 0 calc((100% - 3rem) / 3); min-width: 0;
-  display: flex; gap: 1.1rem;
-  background: #fff; border: 1px solid var(--line);
-  border-radius: 26px 26px 26px 6px;
-  padding: 1.6rem 1.5rem 1.6rem 2.4rem;
-  box-shadow: var(--sh-sm);
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  background: #fff; border: 0;
+  /* Four radii, largest away from the badge. */
+  border-radius: 46px 72px 64px 34px;
+  padding: 2.5rem 1.9rem 2.6rem;
+  box-shadow: 0 18px 40px rgba(var(--shadow-rgb), .10);
   transition: transform .3s var(--e), box-shadow .3s var(--e);
 }
-.fb-card:hover { transform: translateY(-4px); box-shadow: var(--sh-md); }
+.fb-card:hover { transform: translateY(-5px); box-shadow: 0 26px 54px rgba(var(--shadow-rgb), .16); }
 
 .fb-badge {
-  position: absolute; left: -26px; top: 1.6rem;
-  width: 54px; height: 54px; border-radius: 50%;
-  display: grid; place-items: center; flex-shrink: 0;
+  position: absolute; left: -28px; top: 1.9rem;
+  width: 74px; height: 74px; border-radius: 50%;
+  display: grid; place-items: center;
   background: var(--fb, var(--brand)); color: #fff;
-  box-shadow: 0 8px 20px rgba(var(--shadow-rgb), .18);
+  box-shadow: 0 10px 24px rgba(var(--shadow-rgb), .18);
 }
-.fb-badge .ic { width: 1.5em; height: 1.5em; fill: currentColor; stroke: none; }
-/* Three tones, so a row of them has rhythm. */
-.fb-a { --fb: var(--brand); }
-.fb-b { --fb: var(--violet); }
-.fb-c { --fb: var(--green); }
-.fb-cta { --fb: var(--accent); background: var(--brand-100); border-color: var(--brand-100); }
+.fb-badge .ic { width: 2em; height: 2em; fill: currentColor; stroke: none; }
+/* A different tone per card, as in the reference. */
+.fb-a { --fb: var(--green); }
+.fb-b { --fb: var(--brand); }
+.fb-c { --fb: var(--accent); }
+.fb-cta { --fb: var(--violet); background: var(--brand-100); }
 
-.fb-body { min-width: 0; }
-.fb-body h3 { font-size: 1.05rem; letter-spacing: -.01em; margin: 0; line-height: 1.3; }
-.fb-role { font-size: .8rem; color: var(--muted); margin: .15rem 0 0; }
-.fb-note { font-size: .875rem; line-height: 1.65; color: var(--body); margin: .9rem 0 0; }
-.fb-cta .btn { margin-top: 1rem; }
+.fb-card h3 {
+  font-size: 1.3rem; letter-spacing: -.02em; line-height: 1.25;
+  margin: 0; padding-left: 1.6rem;   /* clears the badge on the first line */
+}
+.fb-role { font-size: .85rem; color: var(--muted); margin: .25rem 0 0; padding-left: 1.6rem; }
 
-/* The answering mark, behind everything. */
+.fb-stars { display: flex; gap: .22rem; margin: 1rem 0 0; }
+.fb-stars .ic { width: 1.1em; height: 1.1em; fill: var(--accent); stroke: none; }
+
+.fb-note {
+  font-size: .9rem; line-height: 1.75; color: var(--body);
+  margin: 1rem 0 0; max-width: 30ch;
+}
+.fb-cta .btn { margin-top: 1.25rem; }
+
 .fb-mark {
-  position: absolute; right: .9rem; bottom: .5rem; pointer-events: none;
-  color: var(--fb, var(--brand)); opacity: .1;
+  position: absolute; right: 1.4rem; bottom: 1rem; pointer-events: none;
+  color: var(--ink); opacity: .07;
 }
-.fb-mark .ic { width: 3.4em; height: 3.4em; fill: currentColor; stroke: none; }
-
-/* The heading's second word takes the accent, as in the reference. */
-.cl-sec h2 em, .sec-hd h2 em { font-style: normal; color: var(--brand); }
+.fb-mark .ic { width: 3.6em; height: 3.6em; fill: currentColor; stroke: none; }
 
 @media (max-width: 900px) { .fb-card { flex-basis: calc((100% - 1.5rem) / 2); } }
-@media (max-width: 620px) { .fb-card { flex-basis: 88%; } }
+@media (max-width: 620px) {
+  .fb-card { flex-basis: 88%; border-radius: 38px 58px 52px 28px; padding: 2.2rem 1.4rem 2.3rem; }
+  .fb-badge { width: 62px; height: 62px; left: -22px; }
+  .fb-card h3, .fb-role { padding-left: 1.2rem; }
+}
 @media (prefers-reduced-motion: reduce) { .fb-card:hover { transform: none; } }
