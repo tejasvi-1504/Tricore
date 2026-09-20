@@ -353,9 +353,12 @@ try { const t = localStorage.getItem('kc-site-theme'); if (t) document.documentE
      Full-bleed, text over artwork. The numbers come from the API like
      everywhere else — nothing about the price is typed into this markup. -->
 <section class="summit" id="pricing">
-  <div class="summit-bg" aria-hidden="true">
-    <img src="assets/summit-900.jpg" srcset="assets/summit-900.jpg 900w, assets/summit-1600.jpg 1600w"
-         sizes="100vw" alt="" loading="lazy" decoding="async">
+  <div class="summit-bg">
+    <img class="summit-still" src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/693205bf-8048-456a-879e-4e0a1b85a098.webp" alt="" loading="lazy" decoding="async" aria-hidden="true">
+    <video class="summit-vid" id="summitVid" muted loop playsinline preload="none" poster="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/693205bf-8048-456a-879e-4e0a1b85a098.webp"
+           data-src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260826_123836_11a3c5e0-713f-4bef-a8e9-7dd93bdea3b0.mp4"
+           aria-label="Painted alpine panorama: a lone hiker with a pink backpack faces a snow-capped peak above a sea of clouds"></video>
+    <span class="summit-scrim" aria-hidden="true"></span>
   </div>
 
   <div class="wrap summit-in">

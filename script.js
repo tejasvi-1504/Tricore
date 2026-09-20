@@ -1530,14 +1530,16 @@ window.kcConfetti = confetti;
   });
 })();
 
-/* ══ FRAMED HERO VIDEO (business page) ═══════════════════════════
-   31MB clip. Same rule as anywhere else: the poster paints first and
-   the video is only fetched on a wide screen with a connection that
-   is not metered, and only once the frame is near the viewport.
-   Native loop, so no per-frame work once it is running. ══════════ */
-(function framedVideo() {
-  const vid = document.getElementById('bizVid');
-  if (!vid || !vid.dataset.src) return;
+/* ══ BACKGROUND VIDEO ════════════════════════════════════════════
+   One loader for every decorative clip on the site. The poster always
+   paints first; the video is fetched only when the screen is wide
+   enough to warrant it, the connection is not metered or 2g, reduced
+   motion is off, and the section is actually near the viewport. It
+   pauses on a hidden tab. Decoration must never cost someone their
+   data allowance. ═══════════════════════════════════════════════ */
+(function backgroundVideos() {
+  const clips = document.querySelectorAll('video[data-src]');
+  if (!clips.length) return;
 
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   if (!matchMedia('(min-width: 900px)').matches) return;
@@ -1545,24 +1547,29 @@ window.kcConfetti = confetti;
   const net = navigator.connection;
   if (net && (net.saveData || /^(slow-)?2g$/.test(net.effectiveType || ''))) return;
 
-  const start = () => {
-    vid.loop = true;
-    vid.src = vid.dataset.src;
-    vid.load();
-    vid.play().then(() => vid.classList.add('is-on')).catch(() => {});
+  const start = (v) => {
+    v.loop = true;
+    v.src = v.dataset.src;
+    v.load();
+    v.play().then(() => v.classList.add('is-on')).catch(() => {});
   };
 
-  if ('IntersectionObserver' in window) {
-    const io = new IntersectionObserver(e => {
-      if (e.some(x => x.isIntersecting)) { io.disconnect(); start(); }
-    }, { rootMargin: '200px' });
-    io.observe(vid);
-  } else {
-    start();
-  }
+  clips.forEach((v) => {
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((e) => {
+        if (e.some(x => x.isIntersecting)) { io.disconnect(); start(v); }
+      }, { rootMargin: '250px' });
+      io.observe(v);
+    } else {
+      start(v);
+    }
+  });
 
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) vid.pause();
-    else if (vid.src) vid.play().catch(() => {});
+    clips.forEach((v) => {
+      if (!v.src) return;
+      if (document.hidden) v.pause();
+      else v.play().catch(() => {});
+    });
   });
 })();
