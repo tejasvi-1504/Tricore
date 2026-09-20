@@ -2773,9 +2773,44 @@ body, .hdr, .card, .btn, .ftr, .sec, section {
 
 /* ── handing back to the light half ── */
 .summit { border-radius: 28px 28px 0 0; margin-top: -1px; }
+/* ── the booking step, on footage ──
+   The rest of the dark run persuades; this is where it starts working, so
+   the clip stays well back behind a heavy wash and the form itself keeps
+   its solid white card. A calendar, five inputs and a payment step are
+   not things to read through glass. */
 .sec.book-sec {
-  position: relative; background: var(--soft);
+  position: relative; background: #07080c;   /* the floor before the clip loads */
   border-radius: 28px 28px 0 0; margin-top: -28px; z-index: 1;
+}
+.book-bg {
+  position: absolute; inset: 0; overflow: hidden; border-radius: inherit;
+  pointer-events: none;
+}
+.book-vid {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  opacity: 0; transition: opacity .9s linear;
+}
+.book-vid.is-on { opacity: 1; }
+.book-wash {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 0%, rgba(var(--brand-rgb), .14), transparent 66%),
+    linear-gradient(to bottom, rgba(4,20,32,.80) 0%, rgba(4,20,32,.90) 100%);
+}
+.book-sec > .wrap { position: relative; z-index: 1; }
+
+/* Only the section's own heading turns white. Setting colour on the
+   section would leak into the form card, which is white on white. */
+.book-sec .sec-hd h2 { color: #fff; }
+.book-sec .sec-hd .sec-sub { color: rgba(255,255,255,.68); }
+.book-sec .sec-hd .tagline {
+  background: rgba(255,255,255,.07); color: rgba(255,255,255,.78);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.12);
+}
+/* Lifted off the clip rather than sitting flat on it. */
+.book-sec .book {
+  background: #fff; border-color: rgba(255,255,255,.14);
+  box-shadow: 0 36px 80px rgba(0,0,0,.5);
 }
 
 @media (max-width: 860px) {
