@@ -2800,6 +2800,13 @@ body, .hdr, .card, .btn, .ftr, .sec, section {
    rather than a second element, so nothing can get out of step with the
    scroll position.
    ═══════════════════════════════════════════════════════════════════ */
+body:has(.cine) .cine {
+  margin-top: -75px;                     /* 74px bar + its 1px border */
+  min-height: min(840px, 100svh);        /* it owns the whole viewport now */
+  /* The copy is flex-centred in the padding box, so giving the bar its
+     75px back keeps the eyebrow clear of the nav on short viewports. */
+  padding-top: calc(75px + 70 * var(--u));
+}
 body:has(.cine) .hdr {
   /* Blue, in the hero's own hue. rgba(4,20,32) is the exact colour
      .cine-scrim already uses, so the header's wash and the hero's stack
@@ -2808,7 +2815,7 @@ body:has(.cine) .hdr {
      problem: a grey film over blue footage reads as a separate band.
      No backdrop-filter, because a frost line is an edge too. */
   background: linear-gradient(to bottom,
-    rgba(4,20,32,.78) 0%, rgba(4,20,32,.42) 55%, rgba(4,20,32,0) 100%);
+    rgba(4,20,32,.82) 0%, rgba(4,20,32,.46) 52%, rgba(4,20,32,0) 100%);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   border-bottom-color: transparent;
@@ -2925,3 +2932,20 @@ body:has(.cine) .hdr .nav.open > a:not(.nav-btn) { text-shadow: none; }
 .split-copy .mentor-quote { margin-bottom: 1.25rem; }
 .split-copy .mentor-stats { margin-bottom: 1.1rem; }
 .split-copy .named { margin-bottom: 1.35rem; }
+
+/* Wider than the page measure, because the hero is the one place where a
+   long line is an asset: the same words take two lines instead of four
+   and the block stops running down the screen. */
+.cine-stage { max-width: min(1340px, 92vw); }
+.headline { font-size: clamp(34px, calc(82 * var(--u)), 82px); }
+.cine-stage .lede {
+  max-width: 74ch;
+  font-size: clamp(15px, calc(18.5 * var(--u)), 19px);
+}
+
+@media (max-width: 900px) {
+  /* Narrow screens have no width to spend, so the measure comes back in
+     and the type comes back down. */
+  .cine-stage { max-width: none; }
+  .cine-stage .lede { max-width: 42ch; }
+}
