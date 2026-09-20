@@ -13,7 +13,7 @@ export const THEMES = ['slate', 'lavender', 'emerald', 'pistachio', 'teal', 'ind
 
 /** Public-site palettes. Separate list: the site has no neutral "slate", and
  *  the panel has no "plum" — they are different surfaces. */
-export const SITE_THEMES = ['rose', 'emerald', 'lavender', 'indigo', 'teal', 'pistachio', 'amber', 'plum'];
+export const SITE_THEMES = ['rose', 'indigo', 'emerald', 'slate', 'plum', 'teal', 'sand', 'forest'];
 
 /** Only accept a real Google Meet / Zoom style https link. */
 export function cleanMeetLink(value) {

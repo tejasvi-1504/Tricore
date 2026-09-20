@@ -268,6 +268,22 @@ body::before{content:'';position:fixed;inset:0 0 auto;height:340px;z-index:-1;
   animation:bob 3.2s ease-in-out infinite}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 
+/* ── website palette picker ── */
+#siteSwatches{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:10px}
+.site-sw{border:1px solid var(--line);border-radius:11px;padding:7px;background:#fff;
+  text-align:center;transition:border-color .2s var(--e),transform .2s var(--e),box-shadow .2s var(--e)}
+.site-sw:hover{transform:translateY(-2px);box-shadow:var(--sh-sm);border-color:var(--brand)}
+.site-sw:focus-visible{outline:none;box-shadow:0 0 0 3px var(--brand-100)}
+.site-sw.on{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.site-sw .bars{display:flex;gap:3px;align-items:flex-end;justify-content:center;
+  height:30px;border-radius:7px;padding:5px}
+.site-sw .bars i{display:block;width:9px;height:100%;border-radius:3px}
+.site-sw .bars i:last-child{height:66%}
+.site-sw b{display:block;font-size:11px;font-weight:600;margin-top:5px;
+  color:var(--muted);text-transform:capitalize}
+.site-sw.on b{color:var(--ink)}
+@media(max-width:560px){#siteSwatches{grid-template-columns:repeat(2,1fr)}}
+
 .kbd{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;background:var(--tint);
   border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 5px;
   color:var(--muted)}
@@ -650,16 +666,29 @@ function applyTheme(name, { save = true } = {}) {
 }
 
 const SITE_THEMES = [
-  ['rose', '#bd517b'], ['emerald', '#2a8469'], ['lavender', '#8763bf'], ['indigo', '#6d69bf'],
-  ['teal', '#287d8a'], ['pistachio', '#567f39'], ['amber', '#9f6728'], ['plum', '#8a4a7d'],
+  ['rose', '#bc4e78', '#8760be', '#f8f4f7', 'Warm, personal — closest to your logo'],
+  ['indigo', '#6f6bc2', '#3a79a6', '#f4f5f8', 'Calm and technical — safest for business work'],
+  ['emerald', '#30826a', '#367d8c', '#f4f8f8', 'Fresh and credible — reads as growth'],
+  ['slate', '#5777a2', '#7a6ba8', '#f4f6f8', 'Restrained and corporate — lets the work speak'],
+  ['plum', '#a558ad', '#7e64b9', '#f8f4f8', 'Richer than rose, still warm'],
+  ['teal', '#31808c', '#358266', '#f4f7f8', 'Clean and modern, slightly clinical'],
+  ['sand', '#9b6936', '#b5584a', '#f8f6f4', 'Warm ochre and terracotta — editorial'],
+  ['forest', '#398454', '#567f39', '#f4f8f6', 'Deep and grounded — natural'],
 ];
 
 function buildSiteSwatches(active) {
   const box = document.getElementById('siteSwatches');
   if (!box) return;
-  box.innerHTML = SITE_THEMES.map(([name, colour]) =>
-    `<button class="sw ${name === active ? 'on' : ''}" type="button" data-site-theme="${name}"
-             title="${name}" style="background:${colour}"><span>${name}</span></button>`).join('');
+  // Each swatch previews the actual palette — accent, partner and ground —
+  // because a single dot cannot tell emerald from forest.
+  box.innerHTML = SITE_THEMES.map(([name, brand, partner, ground, blurb]) =>
+    `<button class="site-sw ${name === active ? 'on' : ''}" type="button"
+             data-site-theme="${name}" title="${esc(blurb)}">
+       <span class="bars" style="background:${ground}">
+         <i style="background:${brand}"></i><i style="background:${partner}"></i>
+       </span>
+       <b>${esc(name)}</b>
+     </button>`).join('');
 }
 
 function buildSwatches() {
