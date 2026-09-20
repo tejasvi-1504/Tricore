@@ -1716,11 +1716,70 @@ window.kcConfetti = confetti;
   const net = navigator.connection;
   if (net && (net.saveData || /^(slow-)?2g$/.test(net.effectiveType || ''))) return;
 
+  const FADE_MS = 500;
+  /* Begin fading out while this much of the clip is left. Long enough to
+     reach zero before the last frame, short enough that the fade is not the
+     thing you notice. */
+  const TAIL_S = 0.55;
+
+  /**
+   * Fade a clip's opacity over FADE_MS, in JavaScript rather than CSS.
+   *
+   * A CSS transition cannot be interrupted and resumed from where it got to —
+   * retargeting it mid-flight snaps. These fades start from whatever opacity
+   * the element currently has, and each one cancels the frame loop of the one
+   * before it, so a fade-in landing on top of an unfinished fade-out picks up
+   * smoothly instead of jumping.
+   */
+  const fade = (v, to) => {
+    cancelAnimationFrame(v._kcFade);
+    const from = Number(v.style.opacity || 0);
+    if (from === to) return;
+    const t0 = performance.now();
+    const step = (now) => {
+      const k = Math.min(1, (now - t0) / FADE_MS);
+      v.style.opacity = String(from + (to - from) * k);
+      if (k < 1) v._kcFade = requestAnimationFrame(step);
+    };
+    v._kcFade = requestAnimationFrame(step);
+  };
+
+  /**
+   * Loop without the cut.
+   *
+   * `loop` on the element restarts on the last frame, and because these clips
+   * do not begin and end on the same image that shows as a jump. Looping by
+   * hand instead means the picture can be taken to black just before the end
+   * and brought back after the reset, so the seam has nothing to see.
+   */
   const start = (v) => {
-    v.loop = true;
+    v.loop = false;                 // the fade below is the loop
+    v.style.opacity = '0';
+    v.classList.add('is-on');       // hands opacity over from CSS to us
+
+    let fadingOut = false;
+
+    v.addEventListener('timeupdate', () => {
+      if (fadingOut || !v.duration || !Number.isFinite(v.duration)) return;
+      if (v.duration - v.currentTime <= TAIL_S) {
+        fadingOut = true;
+        fade(v, 0);
+      }
+    });
+
+    v.addEventListener('ended', () => {
+      cancelAnimationFrame(v._kcFade);
+      v.style.opacity = '0';
+      // A beat on black, so the reset itself is never on screen.
+      setTimeout(() => {
+        v.currentTime = 0;
+        v.play().then(() => { fadingOut = false; fade(v, 1); }).catch(() => {});
+      }, 100);
+    });
+
     v.src = v.dataset.src;
     v.load();
-    v.play().then(() => v.classList.add('is-on')).catch(() => {});
+    v.play().then(() => fade(v, 1)).catch(() => {});
   };
 
   clips.forEach((v) => {

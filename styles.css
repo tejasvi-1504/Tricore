@@ -2300,8 +2300,12 @@ body, .hdr, .card, .btn, .sec, section {
   position: absolute; right: 0; bottom: 0; width: 100%; height: 100%;
   object-fit: cover; object-position: right bottom; filter: saturate(.86);
 }
-.cine-vid { opacity: 0; transition: opacity .8s linear; }
-.cine-vid.is-on { opacity: 1; }
+/* Opacity starts at 0 and is handed to the loop fader in script.js once
+   the clip is playing; the CSS transition would fight it. */
+.cine-vid { opacity: 0; }
+.cine-vid.is-on { transition: none; }
+/* The frame's subject sits low, so the top of it is the part to lose. */
+.cine-vid { object-position: center 78%; }
 
 /* Scrim strength follows aspect ratio: a wide viewport shows more sky
    above the peak, and white type needs more help there. */
@@ -2319,7 +2323,7 @@ body, .hdr, .card, .btn, .sec, section {
     background: linear-gradient(180deg, rgba(4,20,32,.58) 0, rgba(4,20,32,.31) 52%, rgba(4,20,32,0) 100%); }
 }
 @media (min-aspect-ratio: 21/10) {
-  .cine-still, .cine-vid { object-position: right 76%; }
+  .cine-still, .cine-vid { object-position: center 74%; }
   .cine-scrim { height: calc(480 * var(--u));
     background: linear-gradient(180deg, rgba(4,20,32,.56) 0, rgba(4,20,32,.30) 52%, rgba(4,20,32,0) 100%); }
 }
@@ -2398,7 +2402,7 @@ body, .hdr, .card, .btn, .sec, section {
 @media (max-aspect-ratio: 5/4) {
   .cine { --u: calc(100vw / 780); min-height: 0;
           padding: clamp(3rem, 9vh, 5rem) 0 clamp(2.5rem, 7vh, 4rem); }
-  .cine-still, .cine-vid { object-position: 80% bottom; }
+  .cine-still, .cine-vid { object-position: center 82%; }
   .cine-scrim { height: min(56vh, calc(560 * var(--u)));
     background: linear-gradient(180deg, rgba(6,22,34,.42) 0, rgba(6,22,34,.26) 52%, rgba(6,22,34,0) 100%); }
   .headline { font-size: clamp(32px, 9.4vw, 56px); }
@@ -2620,8 +2624,8 @@ body, .hdr, .card, .btn, .sec, section {
   box-shadow: inset 0 1px 1px rgba(255,255,255,.12);
 }
 .split-vid { width: 100%; height: 100%; object-fit: cover; display: block;
-             opacity: 0; transition: opacity .8s linear; }
-.split-vid.is-on { opacity: 1; }
+             opacity: 0; }
+.split-vid.is-on { transition: none; }
 .split-wash {
   position: absolute; inset: 0; pointer-events: none;
   background: linear-gradient(to top, rgba(7,8,12,.55), transparent 58%);
@@ -2652,8 +2656,8 @@ body, .hdr, .card, .btn, .sec, section {
                   box-shadow: inset 0 1px 1px rgba(255,255,255,.2), 0 26px 56px rgba(0,0,0,.45); }
 .duo-media { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: #0b0d14; }
 .duo-media video { width: 100%; height: 100%; object-fit: cover; display: block;
-                   opacity: 0; transition: opacity .8s linear, transform .7s var(--e); }
-.duo-media video.is-on { opacity: 1; }
+                   opacity: 0; transition: transform .7s var(--e); }
+.duo-media video.is-on { transition: transform .7s var(--e); }
 .duo-card:hover .duo-media video { transform: scale(1.05); }
 .duo-wash { position: absolute; inset: 0; pointer-events: none;
             background: linear-gradient(to top, rgba(7,8,12,.62), transparent 56%); }
@@ -2685,9 +2689,9 @@ body, .hdr, .card, .btn, .sec, section {
 }
 .book-vid {
   width: 100%; height: 100%; object-fit: cover; display: block;
-  opacity: 0; transition: opacity .9s linear;
+  opacity: 0;
 }
-.book-vid.is-on { opacity: 1; }
+.book-vid.is-on { transition: none; }
 .book-wash {
   position: absolute; inset: 0;
   background:
@@ -2717,7 +2721,6 @@ body, .hdr, .card, .btn, .sec, section {
 @media (prefers-reduced-motion: reduce) {
   .duo-card:hover { transform: none; }
   .duo-card:hover .duo-media video { transform: none; }
-  .split-vid, .duo-media video { opacity: 1; }
 }
 
 /* ═══════════════════════════════════════════════════════════════════
