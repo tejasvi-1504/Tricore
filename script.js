@@ -450,8 +450,11 @@ document.addEventListener('DOMContentLoaded', () => {
       startHour: 10,
       sessionMins: 60,
       plans: {
-        trial:   { label: '1-Day Trial',       price: 200,  needsTime: true  },
-        monthly: { label: 'Monthly Programme', price: 2000, needsTime: false }
+        // No prices here. They live on the server and arrive with the quote;
+        // a copy in this table is a copy that goes stale, which is exactly
+        // what put 200 under a 149 button.
+        trial:   { label: '1-Day Trial',       needsTime: true  },
+        monthly: { label: 'Monthly Programme', needsTime: false }
       },
       modes: {
         online: { label: 'Online', scheduling: 'daily' },
@@ -749,18 +752,34 @@ document.addEventListener('DOMContentLoaded', () => {
      * either being typed into the markup.
      */
     const chipCache = {};
+
+    /**
+     * Every figure on the page, from the quote.
+     *
+     * The plan chips and the FAQ both used to carry their own copy of the
+     * price. One painter fills them all, so there is nowhere left for a
+     * stale number to hide.
+     */
     function paintChips(data) {
-      if (data && data.plan && data.price != null) chipCache[data.plan] = data.price;
+      if (data && data.plan && data.price != null) {
+        chipCache[data.plan] = data.price;
+        if (data.sessionRate != null) chipCache.session = data.sessionRate;
+      }
       document.querySelectorAll('[data-chip-price]').forEach((el) => {
         const p = chipCache[el.dataset.chipPrice];
-        el.textContent = p == null ? '\u2014' : '\u00b7 ' + rupees(p);
+        el.textContent = p == null ? '—' : '· ' + rupees(p);
+      });
+      document.querySelectorAll('[data-live]').forEach((el) => {
+        const p = chipCache[el.dataset.live];
+        if (p != null) el.textContent = rupees(p);
       });
     }
-    (function otherChip() {
-      for (const p of ['trial', 'monthly']) {
-        fetch('/api/slots?plan=' + p + '&mode=online')
+
+    (function livePrices() {
+      for (const plan of ['trial', 'monthly']) {
+        fetch('/api/slots?plan=' + plan + '&mode=online')
           .then((r) => (r.ok ? r.json() : null))
-          .then((d) => { if (d && d.price != null) { chipCache[p] = d.price; paintChips(); } })
+          .then((d) => { if (d && d.price != null) paintChips(d); })
           .catch(() => {});
       }
     })();
@@ -1008,10 +1027,6 @@ document.addEventListener('DOMContentLoaded', () => {
       startDate = null;
       chosenTime = null;
       slotData = [];
-      price = RULES.plans[next].price;
-      // Clear the old plan's list price so nothing is struck through until
-      // the server confirms a real discount for THIS plan.
-      listPrice = price;
       discounts = [];
       updateStepLabels();
       renderCalendar();
