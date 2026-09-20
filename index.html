@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Career Consulting for B.Tech Students — Kanishka Creates</title>
+<title>Career Guidance for B.Tech Students — Kanishka Creates</title>
 <meta name="description" content="Career consulting for B.Tech students by Kanishka Sharma — SDE at BharatPe, 9,000+ DSA problems, interviewed at Google, Uber and ServiceNow. Plus custom CRMs, e-commerce stores and websites for Indian businesses.">
 <meta name="theme-color" content="#faeff4">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -115,18 +115,17 @@ try { const t = localStorage.getItem('kc-site-theme'); if (t) document.documentE
       <span class="wm">Kanishka <b>Creates</b></span>
     </a>
 
-        <nav class="nav" id="nav" aria-label="Primary">
-      <a href="#consulting">The programme</a>
-      <a href="#booking">Book</a>
+            <nav class="nav" id="nav" aria-label="Primary">
+      <a href="#you">Is this me?</a>
+      <a href="#mentor">Your mentor</a>
+      <a href="#book">Book</a>
       <a href="#faq">FAQ</a>
       <a href="/business.html" class="nav-cross"><svg class="ic"><use href="#i-crm"/></svg> For Business</a>
       <a href="/history.html" class="acct" id="acct" title="See your bookings">
-        <span class="acct-av" id="acctAv" aria-hidden="true">
-          <svg class="ic"><use href="#i-user"/></svg>
-        </span>
+        <span class="acct-av" id="acctAv" aria-hidden="true"><svg class="ic"><use href="#i-user"/></svg></span>
         <span class="acct-nm" id="acctNm">My bookings</span>
       </a>
-      <a href="#booking" class="btn btn-pri nav-btn">Book a session</a>
+      <a href="#book" class="btn btn-pri nav-btn">Book a call</a>
     </nav>
 
     <button class="burger" id="burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav">
@@ -137,54 +136,141 @@ try { const t = localStorage.getItem('kc-site-theme'); if (t) document.documentE
 
 <main id="main">
 
-<!-- ══ STUDENT HERO ══ -->
-<section class="shero">
-  <div class="hero-blob hero-blob-1" aria-hidden="true"></div>
-  <div class="hero-blob hero-blob-2" aria-hidden="true"></div>
-  <div class="hero-mesh" aria-hidden="true"></div>
+<!-- HERO
+     Recognition, not a service description. Someone who has never started
+     will not see themselves here, which is the point. -->
+<section class="hero">
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="wrap hero-in">
+    <span class="eyebrow"><svg class="ic"><use href="#i-cap"/></svg> Career guidance &middot; B.Tech</span>
 
-  <div class="wrap shero-in">
-    <span class="eyebrow"><svg class="ic"><use href="#i-cap"/></svg> Career Consulting · B.Tech Students</span>
-    <h1>Pick the right path in <em>your first year</em></h1>
-    <p class="shero-lead">Tech or non-tech? Get an honest answer from someone doing the job —
-       then the skills, interview practice and profile to back it up.</p>
+    <h1>You&rsquo;ve done the courses.<br>Started the projects.<br><em>Still not sure any of it counts.</em></h1>
 
-    <!-- The two things a student is here to do, side by side and nothing else. -->
-    <div class="pick">
-      <a class="pick-card" href="#booking" data-plan="trial">
-        <span class="pick-tag">Start here</span>
-        <h2>Try one hour</h2>
-        <p class="pick-price">₹200</p>
-        <p class="pick-note">One session. Bring whatever you're stuck on and see if this is worth your time.</p>
-        <span class="pick-go">Book a call <svg class="ic"><use href="#i-right"/></svg></span>
-      </a>
+    <p class="hero-lead">
+      Most students don&rsquo;t fall behind from laziness. They fall behind
+      spreading themselves across six things that never add up to one.
+      Let&rsquo;s work out what you should stop doing.
+    </p>
 
-      <a class="pick-card pick-main" href="#booking" data-plan="monthly">
-        <span class="pick-tag pick-tag-hot">Most students pick this</span>
-        <h2>Monthly programme</h2>
-        <p class="pick-price" id="heroMonthly">₹1,499<s id="heroMonthlyWas">₹3,000</s></p>
-        <p class="pick-note">Four weekends. Saturday is the group session, Sunday is your own 1:1 time.</p>
-        <span class="pick-go">See what's covered <svg class="ic"><use href="#i-right"/></svg></span>
-      </a>
+    <div class="hero-cta">
+      <a href="#book" class="btn btn-pri btn-lg">Book a call <svg class="ic"><use href="#i-right"/></svg></a>
+      <a href="#you" class="btn btn-ghost btn-lg">Is this me?</a>
     </div>
 
-    <ul class="shero-marks">
-      <li><svg class="ic"><use href="#i-check"/></svg> Taught by an SDE at BharatPe</li>
-      <li><svg class="ic"><use href="#i-check"/></svg> Interviewed at Google, Uber, ServiceNow</li>
-      <li><svg class="ic"><use href="#i-check"/></svg> Online, or in person in Meerut</li>
-    </ul>
+    <p class="hero-by">
+      <img src="assets/mentor-420.jpg" alt="" width="34" height="34" loading="lazy" decoding="async">
+      Taught by <b>Kanishka Sharma</b> &middot; SDE at BharatPe &middot; interviewed at Google, Uber and ServiceNow
+    </p>
   </div>
 </section>
-<section class="sec" id="consulting">
+
+<!-- IS THIS YOU -->
+<section class="sec you" id="you">
   <div class="wrap">
     <header class="sec-hd reveal">
-      <span class="tagline"><span class="tag-n">01</span> Career Consulting</span>
-      <h2>Guidance for B.Tech first years</h2>
-      <p>The choices you make in first year decide the next four. We help you pick a direction, build the right skills and walk into interviews prepared.</p>
+      <span class="tagline"><span class="tag-n">01</span> Sound familiar?</span>
+      <h2>Four things that quietly waste a year</h2>
+      <p class="sec-sub">If two or more are true, an hour with someone who has
+         been through it is worth more than another tutorial.</p>
     </header>
 
-    <!-- ── MENTOR CARD ── -->
-    <div class="mentor reveal">
+    <div class="sym-grid reveal">
+      <article class="sym">
+        <span class="sym-n">01</span>
+        <h3>You keep starting, not finishing</h3>
+        <p>Three courses at 40%. Two projects at &ldquo;almost done&rdquo;. Each one felt
+           like the right call on the day you started it.</p>
+      </article>
+      <article class="sym">
+        <span class="sym-n">02</span>
+        <h3>You measure yourself against the loudest person in class</h3>
+        <p>Someone posted an internship. Now your plan feels wrong &mdash; even
+           though you never had one written down.</p>
+      </article>
+      <article class="sym">
+        <span class="sym-n">03</span>
+        <h3>You don&rsquo;t know what companies actually check</h3>
+        <p>So you prepare for everything, badly, instead of three things
+           properly.</p>
+      </article>
+      <article class="sym">
+        <span class="sym-n">04</span>
+        <h3>Nobody has seen your work and told you the truth</h3>
+        <p>Friends say it looks good. Nobody who has sat on the other side of
+           an interview table has looked at it.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT CHANGES -->
+<section class="sec change">
+  <div class="wrap">
+    <header class="sec-hd reveal">
+      <span class="tagline"><span class="tag-n">02</span> After a month</span>
+      <h2>What is actually different by the end</h2>
+    </header>
+
+    <ol class="change-list reveal">
+      <li>
+        <span class="ch-i"><svg class="ic"><use href="#i-route"/></svg></span>
+        <div><h3>One path, written down</h3>
+        <p>Not a list of everything. The specific next three months &mdash; and
+           permission to ignore the rest.</p></div>
+      </li>
+      <li>
+        <span class="ch-i"><svg class="ic"><use href="#i-file"/></svg></span>
+        <div><h3>A profile that survives a real look</h3>
+        <p>Resume, GitHub and LinkedIn reviewed by someone who has screened
+           them, not against a template.</p></div>
+      </li>
+      <li>
+        <span class="ch-i"><svg class="ic"><use href="#i-mic"/></svg></span>
+        <div><h3>You have been interviewed properly, once</h3>
+        <p>Mock rounds where the feedback is specific and occasionally
+           uncomfortable, which is the only kind that works.</p></div>
+      </li>
+      <li>
+        <span class="ch-i"><svg class="ic"><use href="#i-check"/></svg></span>
+        <div><h3>You know what you are not doing</h3>
+        <p>The hardest part, and the most valuable. Most students are stuck
+           because they will not drop anything.</p></div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- WHO IT IS NOT FOR
+     Turning people away builds more trust than claiming to help everyone. -->
+<section class="sec fit">
+  <div class="wrap fit-in">
+    <div class="fit-col fit-yes reveal">
+      <h3><svg class="ic"><use href="#i-check"/></svg> This is for you if</h3>
+      <ul>
+        <li>You are in 2nd or 3rd year &mdash; or 1st year and already exploring</li>
+        <li>You have tried things and they have not added up yet</li>
+        <li>You want an honest read, not encouragement</li>
+        <li>You will act on a plan once you have one</li>
+      </ul>
+    </div>
+    <div class="fit-col fit-no reveal">
+      <h3><svg class="ic"><use href="#i-x"/></svg> This is not for you if</h3>
+      <ul>
+        <li>You have not written a line of code yet &mdash; start free, come back</li>
+        <li>You want a job guarantee. Nobody honest sells one</li>
+        <li>You want someone to do the work for you</li>
+        <li>You are in final year expecting a placement in three weeks</li>
+      </ul>
+    </div>
+  </div>
+</section>
+<section class="sec mentor-sec" id="mentor">
+  <div class="wrap">
+    <header class="sec-hd reveal">
+      <span class="tagline"><span class="tag-n">03</span> Who you will be sitting with</span>
+      <h2>Someone who took the same route, recently</h2>
+    </header>
+<div class="mentor reveal">
       <div class="mentor-photo">
         <!-- Photo: assets/mentor.jpeg — .jpg/.png/.webp are tried too, see assets/README.md -->
         <img id="mentorImg" src="assets/mentor-420.jpg"
@@ -227,198 +313,47 @@ try { const t = localStorage.getItem('kc-site-theme'); if (t) document.documentE
         </div>
       </div>
     </div>
+  </div>
+</section>
 
-    <!-- ── CREDENTIALS ── -->
-    <div class="creds reveal">
-      <div class="cred-block">
-        <h4><svg class="ic"><use href="#i-route"/></svg> The path so far</h4>
-        <ol class="journey">
-          <li>
-            <span class="jn-pin" aria-hidden="true">1</span>
-            <span class="jn-body"><b>KIET Koders Korner</b><span>Coding Club Lead · K3</span></span>
-          </li>
-          <li>
-            <span class="jn-pin" aria-hidden="true">2</span>
-            <span class="jn-body"><b>Microsoft MLSA</b><span>Web Lead</span></span>
-          </li>
-          <li>
-            <span class="jn-pin" aria-hidden="true">3</span>
-            <span class="jn-body"><b>Yatra</b><span>Intern</span></span>
-          </li>
-          <li>
-            <span class="jn-pin" aria-hidden="true">4</span>
-            <span class="jn-body"><b>Snabbit</b><span>Intern</span></span>
-          </li>
-          <li>
-            <span class="jn-pin" aria-hidden="true">5</span>
-            <span class="jn-body"><b>Frax</b><span>Intern</span></span>
-          </li>
-          <li class="jn-now">
-            <span class="jn-pin" aria-hidden="true">6</span>
-            <span class="jn-body"><b>BharatPe</b><span>SDE · now</span></span>
-          </li>
-        </ol>
-      </div>
+<!-- HOW IT RUNS -->
+<section class="sec how">
+  <div class="wrap">
+    <header class="sec-hd reveal">
+      <span class="tagline"><span class="tag-n">04</span> The rhythm</span>
+      <h2>Two days a week, for four weekends</h2>
+      <p class="sec-sub">Weekdays stay yours. The work happens when you
+         actually have time for it.</p>
+    </header>
 
-      <div class="cred-block">
-        <h4><svg class="ic"><use href="#i-mic"/></svg> Interviewed at</h4>
-        <!-- Rendered server-side names are the fallback; script.js replaces them
-             with the admin-managed list when /api/companies answers. -->
-        <ul class="co-chips" id="coChips">
-          <li>Google</li>
-          <li>Uber</li>
-          <li>ServiceNow</li>
-          <li>CuddlyNest</li>
-          <li class="co-more">+ many more</li>
-        </ul>
-        <p class="cred-note">And many more product-based companies. Every round, every question format — you get the real version, not a guess.</p>
-      </div>
-    </div>
-
-    <!-- ── TECH VS NON-TECH ── -->
-    <div class="vs reveal">
-      <div class="vs-side">
-        <h3><span class="vs-k">A</span> Tech path</h3>
-        <ul>
-          <li><svg class="ic"><use href="#i-check"/></svg> SDE, full stack, data, DevOps, AI/ML</li>
-          <li><svg class="ic"><use href="#i-check"/></svg> DSA and development roadmap</li>
-          <li><svg class="ic"><use href="#i-check"/></svg> Language and stack selection</li>
-          <li><svg class="ic"><use href="#i-check"/></svg> Projects and open source</li>
-        </ul>
-      </div>
-      <span class="vs-or">VS</span>
-      <div class="vs-side vs-b">
-        <h3><span class="vs-k">B</span> Non-tech path</h3>
-        <ul>
-          <li><svg class="ic"><use href="#i-check"/></svg> Product, marketing, sales, consulting</li>
-          <li><svg class="ic"><use href="#i-check"/></svg> MBA / CAT versus an early job</li>
-          <li><svg class="ic"><use href="#i-check"/></svg> Business and analytics skills</li>
-          <li><svg class="ic"><use href="#i-check"/></svg> Internships that actually count</li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- ── WHAT YOU GET ── -->
-    <div class="cards cards-4">
-      <article class="card reveal">
-        <span class="card-ic"><svg class="ic"><use href="#i-route"/></svg></span>
-        <h3>Direction</h3>
-        <p>An honest tech vs non-tech breakdown mapped to your interests and college, plus a four-year plan.</p>
+    <div class="rhythm reveal">
+      <article class="rh rh-sat">
+        <span class="rh-day">Saturday</span>
+        <h3>Learning session</h3>
+        <p>Group teaching &mdash; DSA, development, and the reasoning behind
+           both. You leave with something to build.</p>
       </article>
-      <article class="card reveal">
-        <span class="card-ic ic-2"><svg class="ic"><use href="#i-cap"/></svg></span>
-        <h3>Teaching</h3>
-        <p>Real teaching, not just advice. Programming and DSA basics, web development, projects you can show.</p>
-      </article>
-      <article class="card reveal">
-        <span class="card-ic ic-3"><svg class="ic"><use href="#i-mic"/></svg></span>
-        <h3>Interviews</h3>
-        <p>Mock interviews with feedback — technical rounds, HR rounds, and the resume questions everyone fumbles.</p>
-      </article>
-      <article class="card reveal">
-        <span class="card-ic ic-4"><svg class="ic"><use href="#i-file"/></svg></span>
-        <h3>Profile</h3>
-        <p>A profile recruiters stop on — ATS-ready resume, LinkedIn, GitHub and a portfolio that proves you build.</p>
+      <span class="rh-join" aria-hidden="true"></span>
+      <article class="rh rh-sun">
+        <span class="rh-day">Sunday</span>
+        <h3>Your 1:1 hour</h3>
+        <p>Your doubts, your code, your resume, your decisions. Nobody else
+           in the room.</p>
       </article>
     </div>
+  </div>
+</section>
 
-    <!-- ── PROGRAMME + PRICING ── -->
-    <div class="prog reveal">
-      <div class="prog-l">
-        <span class="tagline">The programme</span>
-        <h3>One month. Four weekends. Every one of them useful.</h3>
-        <p class="prog-lead">A fixed weekly rhythm so you always know what's next — group teaching on Saturday, your own 1:1 time on Sunday.</p>
-
-        <div class="week">
-          <div class="week-day">
-            <span class="wd-tag">Saturday</span>
-            <h4><svg class="ic"><use href="#i-cap"/></svg> Learning session</h4>
-            <p>Group teaching — DSA, development and the concepts behind them, taught properly rather than skimmed.</p>
-          </div>
-          <div class="week-day wd-sun">
-            <span class="wd-tag">Sunday</span>
-            <h4><svg class="ic"><use href="#i-user"/></svg> 1:1 interaction</h4>
-            <p>Your own time. Doubts, mock interviews, resume and profile review — whatever you actually need that week.</p>
-          </div>
-        </div>
-
-        <div class="modes">
-          <div class="mode-card">
-            <span class="mode-ic"><svg class="ic"><use href="#i-users"/></svg></span>
-            <div><h4>Join at Meerut</h4><p>In person, small room, full attention.</p></div>
-          </div>
-          <div class="mode-card">
-            <span class="mode-ic ic-2"><svg class="ic"><use href="#i-globe"/></svg></span>
-            <div><h4>Or enrol online</h4><p>Same programme, same weekends, from anywhere.</p></div>
-          </div>
-        </div>
-      </div>
-
-      <aside class="prog-price">
-        <!-- Both plans stay on screen. A tab switcher hid one of the two
-             things the visitor is here to compare. -->
-        <div class="plans" id="plans">
-
-          <label class="plan" data-plan="trial">
-            <input type="radio" name="planPick" value="trial" class="sr-only" checked>
-            <span class="plan-head">
-              <span class="plan-name">Try it once</span>
-              <span class="plan-chip">Start here</span>
-            </span>
-            <span class="plan-cost">
-              <b data-price="trial">&#8377;200</b>
-              <s data-was="trial" hidden></s>
-            </span>
-            <span class="plan-unit">one hour, one session</span>
-            <span class="plan-each" data-each="trial">&#8377;200 for the session</span>
-
-            <ul class="plan-list">
-              <li><svg class="ic"><use href="#i-check"/></svg> One full hour, one-to-one</li>
-              <li><svg class="ic"><use href="#i-check"/></svg> Any day that suits you</li>
-              <li><svg class="ic"><use href="#i-check"/></svg> Honest tech vs non-tech read</li>
-              <li class="plan-off"><svg class="ic"><use href="#i-x"/></svg> No written roadmap</li>
-              <li class="plan-off"><svg class="ic"><use href="#i-x"/></svg> No WhatsApp access</li>
-            </ul>
-            <span class="plan-go">Selected</span>
-          </label>
-
-          <label class="plan plan-best" data-plan="monthly">
-            <input type="radio" name="planPick" value="monthly" class="sr-only">
-            <span class="plan-head">
-              <span class="plan-name">Full month</span>
-              <span class="plan-chip plan-chip-hot" data-save>Best value</span>
-            </span>
-            <span class="plan-cost">
-              <b data-price="monthly">&#8377;1,499</b>
-              <s data-was="monthly">&#8377;3,000</s>
-            </span>
-            <span class="plan-unit">4 weekends &middot; 8 sessions</span>
-            <span class="plan-each" data-each="monthly">about &#8377;187 a session</span>
-
-            <ul class="plan-list">
-              <li><svg class="ic"><use href="#i-check"/></svg> 4 Saturday group sessions</li>
-              <li><svg class="ic"><use href="#i-check"/></svg> 4 Sunday 1:1 sessions</li>
-              <li><svg class="ic"><use href="#i-check"/></svg> Personal roadmap in writing</li>
-              <li><svg class="ic"><use href="#i-check"/></svg> Resume &amp; profile review</li>
-              <li><svg class="ic"><use href="#i-check"/></svg> WhatsApp access all month</li>
-            </ul>
-            <span class="plan-go">Selected</span>
-          </label>
-        </div>
-
-        <a href="#booking" class="btn btn-pri btn-full plan-cta" id="planCta" data-plan-cta="trial">
-          <span id="planCtaText">Book the trial</span> <svg class="ic"><use href="#i-right"/></svg>
-        </a>
-
-        <p class="pp-note" id="payNote">
-          <svg class="ic"><use href="#i-shield"/></svg>
-          Secure payment by UPI, card or netbanking. Your seat is held while you pay.
-        </p>
-      </aside>
-    </div>
-
-    <!-- ── ENROLMENT ── -->
-    <div class="book reveal" id="booking">
+<section class="sec book-sec" id="book">
+  <div class="wrap">
+    <header class="sec-hd reveal">
+      <span class="tagline"><span class="tag-n">05</span> Book</span>
+      <h2>Start with one hour</h2>
+      <p class="sec-sub">&#8377;200 for a single session. If it helps, the full
+         month is there. If it does not, you have lost an hour and two hundred
+         rupees &mdash; which is the point of starting small.</p>
+    </header>
+<div class="book reveal" id="booking">
       <header class="book-hd">
         <div>
           <span class="tagline">Book</span>
@@ -557,7 +492,6 @@ try { const t = localStorage.getItem('kc-site-theme'); if (t) document.documentE
     </div>
   </div>
 </section>
-
 <section class="sec" id="faq">
   <div class="wrap faq-grid">
     <div class="faq-side reveal">
@@ -591,16 +525,14 @@ try { const t = localStorage.getItem('kc-site-theme'); if (t) document.documentE
   </div>
 </section>
 
-<!-- ══ THE OTHER DOOR ══
-     A single, deliberate hand-off. Businesses arriving on the student page
-     get one clear route out rather than a page of mixed content. ══════ -->
+<!-- THE OTHER DOOR -->
 <section class="door">
   <div class="wrap door-in">
     <div>
       <span class="eyebrow"><svg class="ic"><use href="#i-crm"/></svg> Not a student?</span>
       <h2>We also build software for businesses</h2>
-      <p>Custom CRMs, online stores and websites — fixed price, published up front.
-         That side of the work lives on its own page.</p>
+      <p>Custom CRMs, online stores and websites &mdash; fixed price, published
+         up front. That side of the work lives on its own page.</p>
     </div>
     <a href="/business.html" class="btn btn-pri btn-lg">
       See business services <svg class="ic"><use href="#i-right"/></svg>
@@ -624,10 +556,10 @@ try { const t = localStorage.getItem('kc-site-theme'); if (t) document.documentE
     </div>
     <nav class="ftr-col" aria-label="Consulting">
       <h4>Consulting</h4>
-      <a href="#consulting">Career direction</a>
-      <a href="#consulting">Tech vs non-tech</a>
-      <a href="#consulting">Mock interviews</a>
-      <a href="#consulting">Profile building</a>
+      <a href="#you">Career direction</a>
+      <a href="#you">Tech vs non-tech</a>
+      <a href="#you">Mock interviews</a>
+      <a href="#you">Profile building</a>
       <a href="#booking">Book a session</a>
     </nav>
     <nav class="ftr-col" aria-label="Services">

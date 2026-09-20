@@ -45,7 +45,7 @@ export async function getSettings(db) {
     // Stored rather than kept in localStorage, so the choice follows you to
     // every device and every admin page instead of being per-browser.
     theme: THEMES.includes(doc?.theme) ? doc.theme : 'slate',
-    siteTheme: SITE_THEMES.includes(doc?.siteTheme) ? doc.siteTheme : 'rose',
+    siteTheme: SITE_THEMES.includes(doc?.siteTheme) ? doc.siteTheme : 'indigo',
   };
 }
 
