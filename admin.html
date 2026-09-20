@@ -1134,6 +1134,9 @@ $('#pricesForm').addEventListener('submit', async (e) => {
   finally { delete btn.dataset.busy; btn.disabled = false; }
 });
 
+/** An empty number field means "leave it", never zero. */
+const offerNum = (id) => ($(id).value.trim() === '' ? null : Number($(id).value));
+
 $('#offersForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const btn = e.target.querySelector('button');
@@ -1142,8 +1145,14 @@ $('#offersForm').addEventListener('submit', async (e) => {
     renderOffers(await api('/api/admin/coupons', {
       method: 'PATCH',
       body: JSON.stringify({
-        earlyBird: { monthly: Number($('#ebPrice').value) },
-        referral: { discount: Number($('#refDisc').value), reward: Number($('#refRew').value) },
+        // Number('') is 0, so an empty box used to save "early bird active,
+        // monthly price zero" — the month then sold for nothing. Blank now
+        // means null, which the server refuses while the offer is switched
+        // on, and the referral figures are simply left as they were.
+        earlyBird: { monthly: offerNum('#ebPrice') },
+        referral: Object.fromEntries(Object.entries({
+          discount: offerNum('#refDisc'), reward: offerNum('#refRew'),
+        }).filter(([, v]) => v !== null)),
       }),
     }));
     say('Offers saved.', 'ok');
