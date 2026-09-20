@@ -21,7 +21,10 @@ const PORT = Number(process.env.PORT || 3000);
 /* ── env ──────────────────────────────────────────────────────────────────── */
 const envFile = path.join(ROOT, '.env.local');
 if (fs.existsSync(envFile)) {
-  for (const line of fs.readFileSync(envFile, 'utf8').split('\n')) {
+  // Split on either line ending. A .env.local saved by Notepad — or rewritten
+  // by a tool on Windows — is CRLF, and a trailing \r makes (.*)$ fail to match
+  // at all, silently loading no variables whatsoever.
+  for (const line of fs.readFileSync(envFile, 'utf8').split(/\r?\n/)) {
     const m = /^\s*([A-Z0-9_]+)\s*=\s*(.*)$/.exec(line);
     // Real env vars win, so you can override on the command line.
     if (m && process.env[m[1]] === undefined) process.env[m[1]] = m[2].trim();

@@ -876,6 +876,13 @@ document.addEventListener('DOMContentLoaded', () => {
       showPlanPanel(t.dataset.plan);
       setPlan(t.dataset.plan);
     }));
+    // Hero cards choose the plan on the way down, so the form is already on
+    // the right one by the time it comes into view.
+    document.querySelectorAll('.pick-card[data-plan]').forEach(card =>
+      card.addEventListener('click', () => {
+        showPlanPanel(card.dataset.plan);
+        setPlan(card.dataset.plan);
+      }));
     document.querySelectorAll('[data-plan-cta]').forEach(a =>
       a.addEventListener('click', () => {
         showPlanPanel(a.dataset.planCta);
@@ -1164,6 +1171,18 @@ document.addEventListener('DOMContentLoaded', () => {
           document.documentElement.dataset.theme = theme;
         }
         try { localStorage.setItem('kc-site-theme', theme); } catch {}
+      }
+
+      // Keep the hero price honest: it is the first number anyone reads.
+      const eb = data?.offers?.earlyBird;
+      const heroPrice = document.getElementById('heroMonthly');
+      if (heroPrice && eb?.price) {
+        const was = document.getElementById('heroMonthlyWas');
+        heroPrice.firstChild.textContent = '₹' + Number(eb.price).toLocaleString('en-IN');
+        if (was) {
+          if (eb.listPrice > eb.price) was.textContent = '₹' + Number(eb.listPrice).toLocaleString('en-IN');
+          else was.remove();
+        }
       }
 
       renderOfferBar(data?.offers);

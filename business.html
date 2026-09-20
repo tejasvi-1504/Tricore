@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Custom Software, CRMs &amp; Online Stores — Kanishka Creates</title>
+<meta name="description" content="Career consulting for B.Tech students by Kanishka Sharma — SDE at BharatPe, 9,000+ DSA problems, interviewed at Google, Uber and ServiceNow. Plus custom CRMs, e-commerce stores and websites for Indian businesses.">
+<meta name="theme-color" content="#faeff4">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
+<link rel="canonical" href="https://kanishkacreates.vercel.app/business.html">
+<link rel="icon" type="image/png" sizes="96x96" href="assets/logo-96.png">
+<link rel="icon" type="image/png" sizes="256x256" href="assets/logo-256.png">
+<link rel="apple-touch-icon" href="assets/logo-256.png">
+<meta property="og:title" content="Kanishka Creates — Career Consulting for Students &amp; Custom Software for Business">
+<meta property="og:description" content="Career consulting for B.Tech students by Kanishka Sharma, plus custom CRMs, e-commerce stores and websites for Indian businesses.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://kanishkacreates.vercel.app/assets/logo-512.png">
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">
+<meta property="og:url" content="https://kanishkacreates.vercel.app/">
+<meta property="og:site_name" content="Kanishka Creates">
+<meta property="og:locale" content="en_IN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kanishkacreates.vercel.app/assets/logo-512.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "Kanishka Creates",
+  "url": "https://kanishkacreates.vercel.app/",
+  "logo": "https://kanishkacreates.vercel.app/assets/logo-512.png",
+  "image": "https://kanishkacreates.vercel.app/assets/logo-512.png",
+  "sameAs": ["https://www.linkedin.com/in/kanishka-sde102/"],
+  "description": "Career consulting for B.Tech students, plus custom CRMs, e-commerce stores and websites for Indian businesses.",
+  "areaServed": "IN",
+  "priceRange": "₹₹",
+  "founder": {
+    "@type": "Person",
+    "name": "Kanishka Sharma",
+    "jobTitle": "Software Development Engineer",
+    "sameAs": ["https://www.linkedin.com/in/kanishka-sde102/"],
+    "worksFor": { "@type": "Organization", "name": "BharatPe" }
+  },
+  "address": { "@type": "PostalAddress", "addressLocality": "Meerut", "addressRegion": "Uttar Pradesh", "addressCountry": "IN" },
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "customer service",
+    "telephone": "+91-9410891738",
+    "availableLanguage": ["en", "hi"]
+  },
+  "makesOffer": [
+    { "@type": "Offer", "name": "1-Day Trial", "price": "200", "priceCurrency": "INR",
+      "itemOffered": { "@type": "Service", "name": "Career consulting trial session" } },
+    { "@type": "Offer", "name": "Monthly Programme", "price": "2000", "priceCurrency": "INR",
+      "itemOffered": { "@type": "Service", "name": "Weekend career mentoring programme" } }
+  ]
+}
+</script>
+<script>
+/* Apply the last-known site theme before the stylesheet paints. The value is
+   cached from /api/companies on the previous visit, so only a first-ever
+   visit briefly shows the default. */
+try { const t = localStorage.getItem('kc-site-theme'); if (t) document.documentElement.dataset.theme = t; } catch {}
+</script>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<a href="#main" class="skip">Skip to content</a>
+
+<!-- Offer banner. Empty and hidden until /api/companies confirms an offer is
+     running — a switched-off offer must never flash on screen. -->
+<div class="offer-bar" id="offerBar" role="region" aria-label="Current offer" hidden></div>
+
+<!-- ══ ICON SPRITE ══ -->
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <symbol id="i-work" viewBox="0 0 24 24"><rect x="2.5" y="7" width="19" height="13" rx="2.5"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7M2.5 12.5h19"/></symbol>
+  <symbol id="i-crm" viewBox="0 0 24 24"><path d="M3 13h4v8H3zM10 3h4v18h-4zM17 8h4v13h-4z"/></symbol>
+  <symbol id="i-cart" viewBox="0 0 24 24"><path d="M3 4h2l2.6 11.6a2 2 0 0 0 2 1.4h7.7a2 2 0 0 0 2-1.5L21 8H6"/><circle cx="10" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 2.5 15.4 0 18M12 3c-2.5 2.6-2.5 15.4 0 18"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20h4L20 8a2.8 2.8 0 0 0-4-4L4 16v4z"/><path d="M14 6l4 4"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 20h18"/><path d="M6 16l4-5 3.5 3.5L20 6"/></symbol>
+  <symbol id="i-cap" viewBox="0 0 24 24"><path d="M2 8l10-4 10 4-10 4z"/><path d="M6 10.5V16c0 1.7 2.7 3 6 3s6-1.3 6-3v-5.5"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M6 3h3l2 5-2.5 1.5a12 12 0 0 0 5 5L15 12l5 2v3a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4 6.2 2 2 0 0 1 6 3z"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16.5 5.2a3.2 3.2 0 0 1 0 5.6M17.5 20a6.6 6.6 0 0 0-2-4.7"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6H14a3.5 3.5 0 0 1 0 7h-4a3.5 3.5 0 0 0 0 7h5.5"/></symbol>
+  <symbol id="i-wa" viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.6-.1 1.7-.7 1.9-1.3.2-.7.2-1.2.2-1.3-.1-.2-.3-.3-.5-.4M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-quote" viewBox="0 0 24 24"><path d="M9 6c-3 1-5 3.5-5 7v5h6v-6H6c0-2.5 1.2-4.2 3-5zM20 6c-3 1-5 3.5-5 7v5h6v-6h-4c0-2.5 1.2-4.2 3-5z" fill="currentColor" stroke="none"/></symbol>
+</svg>
+
+<!-- ══ HEADER ══ -->
+<header class="hdr" id="hdr">
+  <div class="wrap hdr-in">
+    <a href="/" class="logo">
+      <img class="logo-mk" src="assets/logo-96.png"
+           srcset="assets/logo-96.png 1x, assets/logo-256.png 2x"
+           alt="" aria-hidden="true" width="34" height="34" decoding="async">
+      <span class="wm">Kanishka <b>Creates</b></span>
+    </a>
+
+        <nav class="nav" id="nav" aria-label="Primary">
+      <a href="#services">Services</a>
+      <a href="#work">Work</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+      <a href="/" class="nav-cross"><svg class="ic"><use href="#i-cap"/></svg> For Students</a>
+      <a href="/history.html" class="acct" id="acct" title="See your bookings">
+        <span class="acct-av" id="acctAv" aria-hidden="true">
+          <svg class="ic"><use href="#i-user"/></svg>
+        </span>
+        <span class="acct-nm" id="acctNm">My bookings</span>
+      </a>
+      <a href="#contact" class="btn btn-pri nav-btn">Start a project</a>
+    </nav>
+
+    <button class="burger" id="burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ══ BUSINESS HERO ══ -->
+<section class="bhero">
+  <div class="hero-blob hero-blob-1" aria-hidden="true"></div>
+  <div class="hero-blob hero-blob-2" aria-hidden="true"></div>
+  <div class="hero-mesh" aria-hidden="true"></div>
+
+  <div class="wrap bhero-in">
+    <span class="eyebrow"><svg class="ic"><use href="#i-crm"/></svg> For Business</span>
+    <h1>Software that runs the <em>boring half</em> of your business</h1>
+    <p class="bhero-lead">CRMs, online stores and websites built for Indian businesses —
+       fixed price, published up front, delivered on a date we agree before we start.</p>
+
+    <div class="bhero-cta">
+      <a href="#contact" class="btn btn-pri btn-lg">Tell us what you need <svg class="ic"><use href="#i-right"/></svg></a>
+      <a href="#pricing" class="btn btn-ghost btn-lg">See prices</a>
+    </div>
+
+    <ul class="bhero-marks">
+      <li><svg class="ic"><use href="#i-check"/></svg> Fixed price, no hourly surprises</li>
+      <li><svg class="ic"><use href="#i-check"/></svg> A date agreed before we start</li>
+      <li><svg class="ic"><use href="#i-check"/></svg> You own the code and the data</li>
+    </ul>
+
+    <dl class="bhero-stats">
+      <div><dt><span class="counter" data-target="12">0</span>+</dt><dd>Projects delivered</dd></div>
+      <div><dt>₹<span class="counter" data-target="8000">0</span></dt><dd>Websites start at</dd></div>
+      <div><dt><span class="counter" data-target="2">0</span> wks</dt><dd>Typical website build</dd></div>
+    </dl>
+  </div>
+</section>
+<section class="sec sec-soft" id="services">
+  <div class="wrap">
+    <header class="sec-hd reveal">
+      <span class="tagline"><span class="tag-n">02</span> For Business</span>
+      <h2>Software, stores and websites</h2>
+      <p>We also build for businesses — from a first website to a full CRM, priced openly.</p>
+    </header>
+
+    <div class="cards">
+      <article class="card reveal">
+        <span class="card-ic"><svg class="ic"><use href="#i-crm"/></svg></span>
+        <h3>Custom CRM</h3>
+        <p>Lead pipelines, follow-up reminders and staff logins built around how your team actually sells.</p>
+        <span class="card-meta">From ₹30,000 <svg class="ic"><use href="#i-right"/></svg></span>
+      </article>
+      <article class="card reveal">
+        <span class="card-ic ic-2"><svg class="ic"><use href="#i-cart"/></svg></span>
+        <h3>E-Commerce</h3>
+        <p>Cart, checkout, UPI and card payments, and an admin panel to run stock and orders yourself.</p>
+        <span class="card-meta">From ₹20,000 <svg class="ic"><use href="#i-right"/></svg></span>
+      </article>
+      <article class="card reveal">
+        <span class="card-ic ic-3"><svg class="ic"><use href="#i-globe"/></svg></span>
+        <h3>Business Websites</h3>
+        <p>Fast, mobile-first sites that let people find your products, understand them and get in touch.</p>
+        <span class="card-meta">From ₹10,000 <svg class="ic"><use href="#i-right"/></svg></span>
+      </article>
+      <article class="card reveal">
+        <span class="card-ic ic-4"><svg class="ic"><use href="#i-grid"/></svg></span>
+        <h3>Management Systems</h3>
+        <p>Dashboards and ERPs — inventory, billing, GST and Tally integration, role-based access.</p>
+        <span class="card-meta">Quoted <svg class="ic"><use href="#i-right"/></svg></span>
+      </article>
+      <article class="card reveal">
+        <span class="card-ic ic-5"><svg class="ic"><use href="#i-pen"/></svg></span>
+        <h3>UI/UX Design</h3>
+        <p>Wireframe to final pixel. Interfaces that stay clear when the data gets messy.</p>
+        <span class="card-meta">Quoted <svg class="ic"><use href="#i-right"/></svg></span>
+      </article>
+      <article class="card reveal">
+        <span class="card-ic ic-6"><svg class="ic"><use href="#i-chart"/></svg></span>
+        <h3>SEO &amp; Growth</h3>
+        <p>Get found on Google, load fast, and turn visitors into enquiries you can actually answer.</p>
+        <span class="card-meta">Quoted <svg class="ic"><use href="#i-right"/></svg></span>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="why">
+  <div class="wrap why-grid">
+    <div class="why-copy reveal">
+      <span class="tagline">Why Kanishka</span>
+      <h2>A small team that actually picks up the phone</h2>
+      <p>We're new, and that's your advantage. You work directly with the people writing the code — no account managers, no ticket queues, no "we'll get back to you in five days."</p>
+      <ul class="why-list">
+        <li><svg class="ic"><use href="#i-check"/></svg> Work directly with the founders</li>
+        <li><svg class="ic"><use href="#i-check"/></svg> Real WhatsApp support, not a helpdesk</li>
+        <li><svg class="ic"><use href="#i-check"/></svg> UPI, Razorpay and GST built in</li>
+        <li><svg class="ic"><use href="#i-check"/></svg> Transparent pricing and honest timelines</li>
+      </ul>
+      <a href="#contact" class="btn btn-pri">Start your project <svg class="ic"><use href="#i-right"/></svg></a>
+    </div>
+
+    <div class="why-art reveal">
+      <div class="wa-card">
+        <span class="wa-ic"><svg class="ic"><use href="#i-shield"/></svg></span>
+        <h4>GST invoice</h4><p>Proper paperwork on every project.</p>
+      </div>
+      <div class="wa-card wa-up">
+        <span class="wa-ic ic-2"><svg class="ic"><use href="#i-clock"/></svg></span>
+        <h4>24hr replies</h4><p>Usually much faster than that.</p>
+      </div>
+      <div class="wa-card wa-up">
+        <span class="wa-ic ic-3"><svg class="ic"><use href="#i-wa"/></svg></span>
+        <h4>WhatsApp first</h4><p>Message us like you would a friend.</p>
+      </div>
+      <div class="wa-card">
+        <span class="wa-ic ic-4"><svg class="ic"><use href="#i-spark"/></svg></span>
+        <h4>Free maintenance</h4><p>Two to three months, included.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec sec-soft" id="work">
+  <div class="wrap">
+    <header class="sec-hd reveal">
+      <span class="tagline"><span class="tag-n">03</span> Our work</span>
+      <h2>Projects we've shipped</h2>
+      <p>Live client work, plus concepts we built to prove out a pattern.</p>
+    </header>
+
+    <div class="works">
+      <article class="work reveal">
+        <div class="work-top wt-1">
+          <span class="badge">Client</span>
+          <div class="wt-viz"><i style="--h:38%"></i><i style="--h:62%"></i><i style="--h:50%"></i><i style="--h:88%"></i><i style="--h:70%"></i></div>
+        </div>
+        <div class="work-body">
+          <h3>Property Sales CRM</h3>
+          <p>Enquiry capture, site-visit scheduling and a follow-up pipeline for a real-estate team.</p>
+          <ul class="chips"><li>Next.js</li><li>MongoDB</li><li>Dashboards</li></ul>
+        </div>
+      </article>
+
+      <article class="work reveal">
+        <div class="work-top wt-2">
+          <span class="badge">Concept</span>
+          <div class="wt-cells"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+        <div class="work-body">
+          <h3>Storefront &amp; Order Desk</h3>
+          <p>Cart, checkout and an admin panel built to be run end-to-end by one person.</p>
+          <ul class="chips"><li>React</li><li>Razorpay</li><li>Inventory</li></ul>
+        </div>
+      </article>
+
+      <article class="work reveal">
+        <div class="work-top wt-3">
+          <span class="badge">Client</span>
+          <div class="wt-lines"><i style="--w:70%"></i><i style="--w:100%"></i><i style="--w:46%"></i><i style="--w:84%"></i></div>
+        </div>
+        <div class="work-body">
+          <h3>Trust &amp; Outreach Site</h3>
+          <p>Programme pages and a donation-ready structure for a social-impact trust.</p>
+          <ul class="chips"><li>Static</li><li>SEO</li><li>Forms</li></ul>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="clients">
+  <div class="wrap">
+    <header class="sec-hd reveal">
+      <span class="tagline">Our clients</span>
+      <h2>Businesses that backed us first</h2>
+      <p>We're early — these are the teams that took the bet.</p>
+    </header>
+  </div>
+
+  <div class="cl-car" id="clCar">
+    <button class="car-btn car-side" id="clPrev" type="button" aria-label="Previous client"><svg class="ic"><use href="#i-left"/></svg></button>
+    <div class="cl-view">
+      <div class="cl-track" id="clTrack">
+        <!-- TODO: replace each .cl-note with the actual scope delivered -->
+        <article class="cl-card">
+          <span class="cl-mark"><svg class="ic"><use href="#i-quote"/></svg></span>
+          <p class="cl-note">Partnering with Kanishka Creates on their digital presence and ongoing web work.</p>
+          <div class="cl-who"><span class="cl-av">EP</span><div><strong>The Empire Properties</strong><span>Real Estate</span></div></div>
+        </article>
+        <article class="cl-card">
+          <span class="cl-mark"><svg class="ic"><use href="#i-quote"/></svg></span>
+          <p class="cl-note">Partnering with Kanishka Creates on their digital presence and ongoing web work.</p>
+          <div class="cl-who"><span class="cl-av cl-av2">SC</span><div><strong>Swati Crystal Solutions</strong><span>Business Services</span></div></div>
+        </article>
+        <article class="cl-card">
+          <span class="cl-mark"><svg class="ic"><use href="#i-quote"/></svg></span>
+          <p class="cl-note">Partnering with Kanishka Creates on their digital presence and ongoing web work.</p>
+          <div class="cl-who"><span class="cl-av cl-av3">YH</span><div><strong>Youth Helping Trust</strong><span>NGO &amp; Social Impact</span></div></div>
+        </article>
+        <article class="cl-card cl-cta">
+          <span class="cl-mark"><svg class="ic"><use href="#i-star"/></svg></span>
+          <p class="cl-note">Be our next success story. Early clients get founder attention and pricing that won't hold forever.</p>
+          <a href="#contact" class="btn btn-pri">Start your project <svg class="ic"><use href="#i-right"/></svg></a>
+        </article>
+      </div>
+    </div>
+    <button class="car-btn car-side" id="clNext" type="button" aria-label="Next client"><svg class="ic"><use href="#i-right"/></svg></button>
+  </div>
+  <div class="dots dots-dark" id="clDots" role="tablist" aria-label="Choose client"></div>
+</section>
+
+<section class="sec sec-soft" id="pricing">
+  <div class="wrap">
+    <header class="sec-hd reveal">
+      <span class="tagline"><span class="tag-n">04</span> Pricing</span>
+      <h2>Honest prices, published</h2>
+      <p>One-time cost, no retainer, no surprise line items. GST at 18% is extra.</p>
+    </header>
+
+    <div class="plans">
+      <article class="plan reveal">
+        <span class="plan-tag">Basic</span>
+        <h3>Basic Website</h3>
+        <p class="plan-for">Shops · Clinics · Local brands</p>
+        <p class="plan-amt"><span>₹</span><span class="counter" data-target="10000" data-fmt="in">0</span></p>
+        <p class="plan-note">one-time · no recurring charges</p>
+        <ul class="plan-list">
+          <li><svg class="ic"><use href="#i-check"/></svg> Up to 5 pages</li>
+          <li><svg class="ic"><use href="#i-check"/></svg> Product exploring pages</li>
+          <li><svg class="ic"><use href="#i-check"/></svg> Category browsing &amp; search</li>
+          <li><svg class="ic"><use href="#i-check"/></svg> Mobile responsive</li>
+          <li><svg class="ic"><use href="#i-check"/></svg> WhatsApp enquiry button</li>
+          <li><svg class="ic"><use href="#i-check"/></svg> Google Business &amp; basic SEO</li>
+          <li class="no"><svg class="ic"><use href="#i-x"/></svg> Cart &amp; online payments</li>
+          <li class="no"><svg class="ic"><use href="#i-x"/></svg> Admin panel</li>
+        </ul>
+        <p class="plan-free"><b>Free:</b> 1-year .in domain · 2 months maintenance</p>
+        <a href="#contact" class="btn btn-ghost btn-full">Get a Free Quote</a>
+      </article>
+
+      <article class="plan plan-best reveal">
+        <span class="ribbon">Most popular</span>
+        <span class="plan-tag">Advanced</span>
+        <h3>E-Commerce Store</h3>
+        <p class="plan-for">Retail · D2C · Boutiques</p>
+        <p class="plan-amt"><span>₹</span><span class="counter" data-target="20000" data-fmt="in">0</span></p>
+        <p class="plan-note">one-time · no recurring charges</p>
+        <ul class="plan-list">
+          <li><svg class="ic"><use href="#i-check"/></svg> Everything in Basic</li>
+          <li><svg class="ic"><use href="#i-check"/></svg> Add to cart &amp; checkout</li>
+          <li><svg class="ic"><use href="#i-check"/></svg> UPI, cards, Razorpay</li>
+          <li><svg class="ic"><use href="#i-check"/></svg> Admin panel — products, orders</li>
+          <li><svg class="ic"><use href="#i-check"/></svg> Stock &amp; inventory management</li>
+          <li><svg class="ic"><use href="#i-check"/></svg> Customer accounts &amp; history</li>
+          <li><svg class="ic"><use href="#i-check"/></svg> Order alerts on WhatsApp</li>
+        </ul>
+        <p class="plan-free"><b>Free:</b> domain · 2 months maintenance · gateway setup</p>
+        <a href="#contact" class="btn btn-pri btn-full">Get a Free Quote</a>
+      </article>
+
+      <article class="plan reveal">
+        <span class="plan-tag">Systems</span>
+        <h3>Basic CRM</h3>
+        <p class="plan-for">Real estate · Agencies · Clinics</p>
+        <p class="plan-amt"><span>₹</span><span class="counter" data-target="30000" data-fmt="in">0</span><small>–35K</small></p>
+        <p class="plan-note">complete project delivery</p>
+        <ul class="plan-list">
+          <li><svg class="ic"><use href="#i-check"/></svg> Lead capture &amp; sales pipeline</li>
+          <li><svg class="ic"><use href="#i-check"/></svg> Customer &amp; contact database</li>
+          <li><svg class="ic"><use href="#i-check"/></svg> Follow-up reminders &amp; tasks</li>
+          <li><svg class="ic"><use href="#i-check"/></svg> Role-based staff logins</li>
+          <li><svg class="ic"><use href="#i-check"/></svg> Reports, Excel / PDF export</li>
+          <li><svg class="ic"><use href="#i-check"/></svg> WhatsApp &amp; email integration</li>
+          <li><svg class="ic"><use href="#i-check"/></svg> Admin dashboard, live stats</li>
+        </ul>
+        <p class="plan-free"><b>Free:</b> 3 months maintenance · training · hosting</p>
+        <a href="#contact" class="btn btn-ghost btn-full">Get a Free Quote</a>
+      </article>
+    </div>
+
+    <aside class="consult reveal">
+      <div class="consult-l">
+        <span class="tagline tagline-light">Open consultation</span>
+        <h3>Not sure which one you need?</h3>
+        <p>Tell us what the business does. We'll say what to build, what to skip and what it costs — and we'll tell you if you don't need us at all.</p>
+      </div>
+      <div class="consult-r">
+        <p class="consult-amt">Free</p>
+        <p class="consult-sub">30-minute call · written quote in 24 hours</p>
+        <a href="#contact" class="btn btn-white btn-full">Book a call</a>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section class="sec" id="faq">
+  <div class="wrap faq-grid">
+    <div class="faq-side reveal">
+      <span class="tagline">FAQ</span>
+      <h2>Questions we get a lot</h2>
+      <p>Something not covered here? Message us on WhatsApp — we answer properly, not with a script.</p>
+      <a href="https://wa.me/919410891738" target="_blank" rel="noopener" class="btn btn-ghost"><svg class="ic"><use href="#i-wa"/></svg> Ask us anything</a>
+    </div>
+
+    <div class="faq-list reveal">
+      
+      
+      
+      
+      <details class="faq-item">
+        <summary>How long does a website or CRM take?<svg class="ic fq"><use href="#i-down"/></svg></summary>
+        <div class="faq-a"><p>A basic website is usually 1–2 weeks, an e-commerce store around 3 weeks, and a CRM 4–8 weeks depending on scope. We give you a firm timeline in writing before starting.</p></div>
+      </details>
+      <details class="faq-item">
+        <summary>What happens after the project is delivered?<svg class="ic fq"><use href="#i-down"/></svg></summary>
+        <div class="faq-a"><p>Two to three months of free maintenance is included depending on the plan. After that we can continue on a small monthly arrangement, or hand everything over — the code is yours.</p></div>
+      </details>
+      <details class="faq-item">
+        <summary>Do you provide a GST invoice?<svg class="ic fq"><use href="#i-down"/></svg></summary>
+        <div class="faq-a"><p>Yes, on every project. Listed prices are exclusive of GST at 18%. EMI options are available on request.</p></div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="contact">
+  <div class="wrap">
+    <header class="sec-hd reveal">
+      <span class="tagline"><span class="tag-n">05</span> Get in touch</span>
+      <h2>Tell us what you need</h2>
+      <p>A short, honest brief gets a short, honest answer — usually within 24 hours.</p>
+    </header>
+
+    <div class="ct-grid">
+      <aside class="ct-side reveal">
+        <div class="ct-item"><span class="ct-ic"><svg class="ic"><use href="#i-mail"/></svg></span>
+          <div><h4>Email us</h4><a href="mailto:itskanishka1202@gmail.com">itskanishka1202@gmail.com</a><a href="mailto:ys021373@gmail.com">ys021373@gmail.com</a></div></div>
+        <div class="ct-item"><span class="ct-ic ic-2"><svg class="ic"><use href="#i-phone"/></svg></span>
+          <div><h4>Call us</h4><a href="tel:+919410891738">+91 94108 91738</a></div></div>
+        <div class="ct-item"><span class="ct-ic ic-3"><svg class="ic"><use href="#i-wa"/></svg></span>
+          <div><h4>WhatsApp</h4><a href="https://wa.me/919410891738" target="_blank" rel="noopener">+91 94108 91738</a></div></div>
+        <div class="ct-item"><span class="ct-ic ic-4"><svg class="ic"><use href="#i-clock"/></svg></span>
+          <div><h4>Response time</h4><p>Within 24 hours, every day</p></div></div>
+      </aside>
+
+      <form class="ct-form reveal" id="contactForm" novalidate>
+        <div class="fields">
+          <div class="fld"><label for="name">Full name <i>*</i></label><input type="text" id="name" placeholder="Your name" autocomplete="name" required></div>
+          <div class="fld"><label for="phone">Phone</label><input type="tel" id="phone" placeholder="98765 43210" autocomplete="tel"></div>
+          <div class="fld fld-w"><label for="email">Email <i>*</i></label><input type="email" id="email" placeholder="you@example.com" autocomplete="email" required></div>
+          <div class="fld"><label for="service">What do you need?</label>
+            <select id="service">
+              <option value="">Select a service…</option>
+              <option value="career">Career consulting (student)</option>
+              <option value="basic-website">Basic website</option>
+              <option value="ecommerce">E-commerce store</option>
+              <option value="crm">Basic CRM</option>
+              <option value="management">Management system / ERP</option>
+              <option value="uiux">UI/UX design</option>
+              <option value="consultation">Not sure — open consultation</option>
+            </select></div>
+          <div class="fld"><label for="budget">Budget</label>
+            <select id="budget">
+              <option value="">Select a range…</option>
+              <option value="career">Student consulting</option>
+              <option value="b10">Around ₹10,000</option>
+              <option value="b20">Around ₹20,000</option>
+              <option value="b35">₹30,000 – ₹35,000</option>
+              <option value="b50">₹50,000+</option>
+              <option value="unsure">Not sure yet</option>
+            </select></div>
+          <div class="fld fld-w"><label for="message">Your brief <i>*</i></label>
+            <textarea id="message" rows="5" placeholder="What does the business do, what needs to exist, and by when?" required></textarea></div>
+        </div>
+        <div class="hp" aria-hidden="true"><label for="cwebsite">Website</label><input type="text" id="cwebsite" tabindex="-1" autocomplete="off"></div>
+        <p class="alert" id="contactStatus" role="status" hidden></p>
+        <button type="submit" class="btn btn-pri btn-full btn-lg">Send my brief <svg class="ic"><use href="#i-right"/></svg></button>
+      </form>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="ftr">
+  <div class="wrap ftr-top">
+    <div class="ftr-brand">
+      <a href="#" class="logo logo-ftr">
+        <img class="logo-mk" src="assets/logo-96.png"
+             srcset="assets/logo-96.png 1x, assets/logo-256.png 2x"
+             alt="" aria-hidden="true" width="40" height="40" loading="lazy" decoding="async">
+        <span class="wm">Kanishka <b>Creates</b></span>
+      </a>
+      <p>Career consulting for students, and custom software for Indian businesses.</p>
+      <a href="https://wa.me/919410891738" target="_blank" rel="noopener" class="btn btn-pri btn-sm"><svg class="ic"><use href="#i-wa"/></svg> Chat on WhatsApp</a>
+    </div>
+    <nav class="ftr-col" aria-label="Consulting">
+      <h4>Consulting</h4>
+      <a href="/#consulting">Career direction</a>
+      <a href="/#consulting">Tech vs non-tech</a>
+      <a href="/#consulting">Mock interviews</a>
+      <a href="/#consulting">Profile building</a>
+      <a href="/#booking">Book a session</a>
+    </nav>
+    <nav class="ftr-col" aria-label="Services">
+      <h4>For business</h4>
+      <a href="#pricing">Basic website</a>
+      <a href="#pricing">E-commerce store</a>
+      <a href="#pricing">Basic CRM</a>
+      <a href="#services">Management systems</a>
+      <a href="#services">UI/UX design</a>
+    </nav>
+    <nav class="ftr-col" aria-label="Company">
+      <h4>Company</h4>
+      <a href="#why">Why Kanishka</a>
+      <a href="#work">Our work</a>
+      <a href="#clients">Clients</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+  <div class="wrap ftr-btm">
+    <p>© 2026 Kanishka Creates. All rights reserved.</p>
+    <p class="ftr-social">
+      <a href="https://www.linkedin.com/in/kanishka-sde102/" target="_blank" rel="noopener me">LinkedIn</a>
+      <a href="/history.html">Your bookings</a>
+    </p>
+    <p>Made in India 🇮🇳</p>
+  </div>
+</footer>
+
+<a href="https://wa.me/919410891738?text=Hi%2C%20I%20am%20interested%20in%20Kanishka%20Creates" target="_blank" rel="noopener" class="fab" aria-label="Chat on WhatsApp">
+  <svg class="ic"><use href="#i-wa"/></svg>
+</a>
+
+<script src="script.js"></script>
+</body>
+</html>
