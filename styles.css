@@ -325,6 +325,15 @@ img,svg { display: block; max-width: 100%; }
 .chips { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1rem; }
 .chips li { font-size: .72rem; font-weight: 600; color: var(--body);
   background: var(--soft); border-radius: 100px; padding: .28rem .7rem; }
+.work-group-title { font-size: 1rem; font-weight: 700; color: var(--body);
+  margin-bottom: 1.25rem; letter-spacing: .01em; }
+.work-links { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1rem; }
+.work-link { display: inline-flex; align-items: center; font-size: .78rem; font-weight: 600;
+  color: var(--brand); background: var(--brand-100); border-radius: 100px;
+  padding: .3rem .85rem; text-decoration: none;
+  transition: background .2s, color .2s; }
+.work-link:hover { background: var(--brand); color: #fff; }
+.ic-7 { background: var(--accent-100); color: var(--accent); }
 
 /* ══ CLIENTS CAROUSEL ══ */
 .cl-car { display: flex; align-items: center; gap: 1rem;
